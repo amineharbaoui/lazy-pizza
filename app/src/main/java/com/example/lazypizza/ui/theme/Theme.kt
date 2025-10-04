@@ -1,11 +1,17 @@
 package com.example.lazypizza.ui.theme
 
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Typography
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
 
 val LightColorScheme: ColorScheme = lightColorScheme(
     primary = AppColors.Primary,
@@ -51,4 +57,21 @@ fun LazyPizzaTheme(
         typography = Typography,
         content = content
     )
+}
+
+@Composable
+fun LazyPizzaThemePreview(
+    content: @Composable () -> Unit
+) {
+    MaterialTheme(
+        colorScheme = LightColorScheme,
+        typography = Typography,
+    ) {
+        Column(
+            verticalArrangement = Arrangement.Center,
+            modifier = Modifier.fillMaxSize().padding(16.dp)
+        ) {
+            content()
+        }
+    }
 }

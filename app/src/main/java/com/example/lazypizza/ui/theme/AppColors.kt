@@ -23,8 +23,8 @@ object AppColors {
     val OnPrimary = Color(0xFFFFFFFF)
 
 
-    val PrimaryGradientStart = Color(0xFFF36B50) // #F36B50
-    val PrimaryGradientEnd = Color(0xFFF9966F) // #F9966F
+    val PrimaryGradientStart = Color(0xFFF36B50)
+    val PrimaryGradientEnd = Color(0xFFF9966F)
 
     val PrimaryGradientBrush: Brush
         get() = Brush.linearGradient(

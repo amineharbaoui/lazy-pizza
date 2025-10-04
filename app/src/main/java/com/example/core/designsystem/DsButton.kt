@@ -1,10 +1,8 @@
 package com.example.core.designsystem
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.indication
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -15,8 +13,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.ripple
@@ -25,12 +25,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.dropShadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.shadow.Shadow
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import com.example.core.designsystem.DsButton.Filled
 import com.example.core.designsystem.DsButton.Outlined
@@ -50,7 +48,6 @@ object DsButton {
         enabled: Boolean = true,
     ) {
         val interactionSource = remember { MutableInteractionSource() }
-        val indication = LocalIndication.current
         Surface(
             modifier = modifier
                 .height(Height)
@@ -120,6 +117,36 @@ object DsButton {
                     style = AppTypography.Title3SemiBold,
                     color = if (enabled) AppColors.Primary else AppColors.TextSecondary,
                     textAlign = TextAlign.Center
+                )
+            }
+        }
+    }
+
+    @Composable
+    fun SmallRounded(
+        icon: Painter,
+        iconTint: Color,
+        modifier: Modifier = Modifier,
+        enabled: Boolean = true,
+        onClick: () -> Unit,
+    ) {
+        Surface(
+            modifier = modifier.size(22.dp),
+            enabled = enabled,
+            onClick = onClick,
+            shape = RoundedCornerShape(8.dp),
+            color = AppColors.SurfaceHigher,
+            border = BorderStroke(
+                1.dp,
+                AppColors.Outline,
+            ),
+        ) {
+            Box(contentAlignment = Alignment.Center) {
+                Icon(
+                    modifier = Modifier.size(10.dp),
+                    painter = icon,
+                    tint = iconTint,
+                    contentDescription = "",
                 )
             }
         }
