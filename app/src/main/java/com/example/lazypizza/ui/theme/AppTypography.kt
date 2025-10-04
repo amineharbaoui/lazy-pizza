@@ -9,7 +9,7 @@ import com.example.lazypizza.R
 
 val InstrumentSans = FontFamily(
     Font(R.font.instrumentsans_regular, weight = FontWeight.Normal),
-    Font(R.font.instrumentsans_medium,  weight = FontWeight.Medium),
+    Font(R.font.instrumentsans_medium, weight = FontWeight.Medium),
     Font(R.font.instrumentsans_semibold, weight = FontWeight.SemiBold),
 )
 
@@ -61,6 +61,12 @@ object AppTypography {
     val Body3Medium = TextStyle(
         fontFamily = InstrumentSans,
         fontWeight = FontWeight.Medium,
+        fontSize = 14.sp,
+        lineHeight = 18.sp,
+    )
+    val Body3Bold = TextStyle(
+        fontFamily = InstrumentSans,
+        fontWeight = FontWeight.Bold,
         fontSize = 14.sp,
         lineHeight = 18.sp,
     )
