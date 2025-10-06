@@ -2,7 +2,8 @@ package com.example.lazypizza.features.home.presentation
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
@@ -17,9 +18,11 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.core.designsystem.components.DsCardRow
 import com.example.core.designsystem.utils.PreviewPhoneTablet
@@ -40,50 +43,69 @@ fun ProductList(
 ) {
     val configuration = LocalConfiguration.current
     val isWide = configuration.screenWidthDp >= 840
+    val isEmpty = sections.isEmpty() || sections.all { it.products.isEmpty() }
 
-    if (isWide) {
-        LazyVerticalGrid(
-            state = rememberLazyGridState(),
-            columns = GridCells.Fixed(2),
-            modifier = modifier.fillMaxSize(),
-            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+    if (isEmpty) {
+        Box(
+            modifier = modifier
+                .fillMaxSize()
+                .padding(32.dp),
+            contentAlignment = Alignment.Center
         ) {
-            sections.forEach { section ->
-                item(span = { GridItemSpan(2) }) {
-                    SectionHeader(section.category.value)
-                }
-                items(
-                    items = section.products,
-                    key = { it.id }
-                ) { product ->
-                    ProductCard(
-                        product = product,
-                        onProductClick = onProductClick
-                    )
-                }
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                Text(
+                    text = stringResource(R.string.no_products_found),
+                    style = AppTypography.Body1Medium,
+                    color = AppColors.TextSecondary
+                )
             }
         }
     } else {
-        LazyColumn(
-            state = rememberLazyListState(),
-            modifier = modifier.fillMaxSize(),
-            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            sections.forEach { section ->
-                item {
-                    SectionHeader(section.category.value)
+        if (isWide) {
+            LazyVerticalGrid(
+                state = rememberLazyGridState(),
+                columns = GridCells.Fixed(2),
+                modifier = modifier.fillMaxSize(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                sections.forEach { section ->
+                    item(span = { GridItemSpan(2) }) {
+                        SectionHeader(section.category.value)
+                    }
+                    items(
+                        items = section.products,
+                        key = { it.id }
+                    ) { product ->
+                        ProductCard(
+                            product = product,
+                            onProductClick = onProductClick
+                        )
+                    }
                 }
-                items(
-                    items = section.products,
-                    key = { it.id }
-                ) { product ->
-                    ProductCard(
-                        product = product,
-                        onProductClick = onProductClick
-                    )
+            }
+        } else {
+            LazyColumn(
+                state = rememberLazyListState(),
+                modifier = modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                sections.forEach { section ->
+                    item {
+                        SectionHeader(section.category.value)
+                    }
+                    items(
+                        items = section.products,
+                        key = { it.id }
+                    ) { product ->
+                        ProductCard(
+                            product = product,
+                            onProductClick = onProductClick
+                        )
+                    }
                 }
             }
         }

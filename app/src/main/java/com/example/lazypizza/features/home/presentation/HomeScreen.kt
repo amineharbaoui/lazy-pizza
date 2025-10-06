@@ -6,6 +6,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -17,11 +18,13 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
@@ -30,6 +33,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.core.designsystem.components.DsAppBar
 import com.example.core.designsystem.components.DsButton
 import com.example.core.designsystem.components.DsTextField
@@ -41,13 +46,17 @@ import com.example.lazypizza.ui.theme.AppColors
 import com.example.lazypizza.ui.theme.LazyPizzaThemePreview
 
 @Composable
-fun HomeScreen(innerPadding: PaddingValues) {
+fun HomeScreen(
+    innerPadding: PaddingValues,
+    viewModel: HomeScreenViewModel = hiltViewModel()
+) {
     val content = LocalContext.current
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     Column(
         modifier = Modifier
             .background(AppColors.Bg)
             .fillMaxSize()
-            .padding(innerPadding),
+            .padding(top = innerPadding.calculateTopPadding()),
     ) {
         DsAppBar.Primary(
             phoneNumber = stringResource(R.string.phone_number),
@@ -55,7 +64,13 @@ fun HomeScreen(innerPadding: PaddingValues) {
                 onPhoneClick(context = content, phoneNumber = phoneNumber)
             }
         )
-        HomeScreenContent(sections = emptyList())
+        when (val state = uiState) {
+            HomeScreenUiState.Loading -> HomeScreenLoadingState()
+            is HomeScreenUiState.Success -> HomeScreenContent(
+                sections = state.sections
+            )
+            HomeScreenUiState.Error -> HomeScreenErrorState()
+        }
     }
 }
 
@@ -110,7 +125,37 @@ fun HomeScreenContent(
 @Composable
 private fun HomeScreenPreview() {
     LazyPizzaThemePreview {
-        HomeScreen(PaddingValues())
+        val sections = ProductCategory.entries.map { category ->
+            CategorySection(
+                category = category,
+                products = sampleProducts().filter { it.category == category }
+            )
+        }
+        HomeScreenContent(sections = sections)
+    }
+}
+
+@Composable
+private fun HomeScreenLoadingState() {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(32.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(text = "Loading...")
+    }
+}
+
+@Composable
+private fun HomeScreenErrorState() {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(32.dp),
+        verticalArrangement = Arrangement.Center
+    ) {
+        Text(text = "Something went wrong")
     }
 }
 

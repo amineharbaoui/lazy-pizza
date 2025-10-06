@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">LazyPizza</string>
     <string name="phone_number">+1 (555) 321-7890</string>
+    <string name="no_products_found">No products found</string>
 </resources>
