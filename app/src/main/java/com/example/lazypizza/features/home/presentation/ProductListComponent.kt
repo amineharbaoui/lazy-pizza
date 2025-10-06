@@ -9,18 +9,17 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
+import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -39,12 +38,12 @@ import com.example.lazypizza.ui.theme.LazyPizzaThemePreview
 fun ProductList(
     sections: List<CategorySection>,
     onProductClick: (Product) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    isWide: Boolean,
+    listState: LazyListState,
+    gridState: LazyGridState
 ) {
-    val configuration = LocalConfiguration.current
-    val isWide = configuration.screenWidthDp >= 840
     val isEmpty = sections.isEmpty() || sections.all { it.products.isEmpty() }
-
     if (isEmpty) {
         Box(
             modifier = modifier
@@ -66,7 +65,7 @@ fun ProductList(
     } else {
         if (isWide) {
             LazyVerticalGrid(
-                state = rememberLazyGridState(),
+                state = gridState,
                 columns = GridCells.Fixed(2),
                 modifier = modifier.fillMaxSize(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -89,7 +88,7 @@ fun ProductList(
             }
         } else {
             LazyColumn(
-                state = rememberLazyListState(),
+                state = listState,
                 modifier = modifier.fillMaxSize(),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
@@ -168,7 +167,10 @@ private fun ProductListPreview() {
             onProductClick = { },
             modifier = Modifier
                 .fillMaxSize()
-                .background(AppColors.Bg)
+                .background(AppColors.Bg),
+            isWide = false,
+            listState = LazyListState(),
+            gridState = LazyGridState(),
         )
     }
 }

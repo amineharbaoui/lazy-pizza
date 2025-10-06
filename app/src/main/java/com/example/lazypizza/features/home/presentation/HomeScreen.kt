@@ -16,6 +16,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
@@ -23,11 +25,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -44,6 +48,7 @@ import com.example.lazypizza.features.home.domain.CategorySection
 import com.example.lazypizza.features.home.domain.ProductCategory
 import com.example.lazypizza.ui.theme.AppColors
 import com.example.lazypizza.ui.theme.LazyPizzaThemePreview
+import kotlinx.coroutines.launch
 
 @Composable
 fun HomeScreen(
@@ -69,6 +74,7 @@ fun HomeScreen(
             is HomeScreenUiState.Success -> HomeScreenContent(
                 sections = state.sections
             )
+
             HomeScreenUiState.Error -> HomeScreenErrorState()
         }
     }
@@ -78,7 +84,13 @@ fun HomeScreen(
 fun HomeScreenContent(
     sections: List<CategorySection>,
 ) {
+    val isWide = LocalConfiguration.current.screenWidthDp >= 840
     var searchQuery by remember { mutableStateOf("") }
+    val scope = rememberCoroutineScope()
+    val listState = rememberLazyListState()
+    val gridState = rememberLazyGridState()
+    val sectionIndexMap = remember(sections) { buildSectionHeaderIndexMap(sections) }
+
     Column(
         verticalArrangement = Arrangement.Top,
         modifier = Modifier.padding(horizontal = 16.dp)
@@ -106,17 +118,29 @@ fun HomeScreenContent(
                 .horizontalScroll(rememberScrollState()),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            ProductCategory.entries.forEach {
+            ProductCategory.entries.forEach { category ->
                 DsButton.Rounded(
-                    text = it.value,
-                    onClick = {}
+                    text = category.value,
+                    onClick = {
+                        val target = sectionIndexMap[category] ?: 0
+                        scope.launch {
+                            if (isWide) {
+                                gridState.animateScrollToItem(target)
+                            } else {
+                                listState.animateScrollToItem(target)
+                            }
+                        }
+                    }
                 )
             }
         }
         Spacer(Modifier.height(16.dp))
         ProductList(
             sections = sections,
-            onProductClick = {}
+            onProductClick = {},
+            isWide = isWide,
+            listState = listState,
+            gridState = gridState
         )
     }
 }
@@ -157,6 +181,18 @@ private fun HomeScreenErrorState() {
     ) {
         Text(text = "Something went wrong")
     }
+}
+
+private fun buildSectionHeaderIndexMap(
+    sections: List<CategorySection>
+): Map<ProductCategory, Int> {
+    val map = mutableMapOf<ProductCategory, Int>()
+    var currentIndex = 0
+    sections.forEach { section ->
+        map[section.category] = currentIndex
+        currentIndex += 1 + section.products.size
+    }
+    return map
 }
 
 private fun onPhoneClick(
