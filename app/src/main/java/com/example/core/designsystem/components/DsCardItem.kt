@@ -1,4 +1,4 @@
-package com.example.core.designsystem
+package com.example.core.designsystem.components
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.animateColorAsState
@@ -126,7 +126,7 @@ object DsCardItem {
                             style = AppTypography.Title1SemiBold,
                             color = AppColors.TextPrimary,
                         )
-                        DsButton.SmallRounded(
+                        DsButton.IconSmallRounded(
                             icon = painterResource(R.drawable.ic_plus),
                             iconTint = AppColors.Primary,
                             onClick = onAdd,
@@ -242,7 +242,7 @@ object DsCardItem {
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(12.dp),
         ) {
-            DsButton.SmallRounded(
+            DsButton.IconSmallRounded(
                 icon = painterResource(R.drawable.ic_minus),
                 iconTint = AppColors.TextSecondary,
                 onClick = onMinus,
@@ -251,7 +251,7 @@ object DsCardItem {
                 text = quantity.toString(),
                 style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.SemiBold),
             )
-            DsButton.SmallRounded(
+            DsButton.IconSmallRounded(
                 icon = painterResource(R.drawable.ic_plus),
                 iconTint = AppColors.TextSecondary,
                 onClick = onPlus,

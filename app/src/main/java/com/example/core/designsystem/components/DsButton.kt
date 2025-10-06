@@ -1,7 +1,8 @@
-package com.example.core.designsystem
+package com.example.core.designsystem.components
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -27,11 +28,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.core.designsystem.DsButton.Filled
-import com.example.core.designsystem.DsButton.Outlined
+import com.example.lazypizza.R
 import com.example.lazypizza.ui.theme.AppColors
 import com.example.lazypizza.ui.theme.AppTypography
 import com.example.lazypizza.ui.theme.LazyPizzaTheme
@@ -123,7 +124,7 @@ object DsButton {
     }
 
     @Composable
-    fun SmallRounded(
+    fun IconSmallRounded(
         icon: Painter,
         iconTint: Color,
         modifier: Modifier = Modifier,
@@ -151,6 +152,44 @@ object DsButton {
             }
         }
     }
+
+    @Composable
+    fun Rounded(
+        text: String,
+        modifier: Modifier = Modifier,
+        enabled: Boolean = true,
+        onClick: () -> Unit,
+    ) {
+        val shape = RoundedCornerShape(8.dp)
+        val interactionSource = remember { MutableInteractionSource() }
+        Surface(
+            modifier = modifier
+                .height(Height)
+                .clip(shape)
+                .background(color = Color.Transparent, shape = shape)
+                .border(1.dp, AppColors.Outline, shape)
+                .clickable(
+                    interactionSource = interactionSource,
+                    indication = ripple(color = AppColors.Primary),
+                    enabled = enabled,
+                    onClick = onClick
+                ),
+            color = Color.Transparent,
+            shape = Shape,
+        ) {
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier.padding(horizontal = 12.dp, vertical = 7.dp),
+            ) {
+                Text(
+                    text = text,
+                    style = AppTypography.Title3SemiBold,
+                    color = AppColors.TextPrimary,
+                    textAlign = TextAlign.Center
+                )
+            }
+        }
+    }
 }
 
 @Preview(showBackground = true)
@@ -167,12 +206,12 @@ private fun FilledPreview() {
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Filled(
+                DsButton.Filled(
                     text = "Filled Enabled",
                     onClick = {}
                 )
                 Spacer(Modifier.width(8.dp))
-                Filled(
+                DsButton.Filled(
                     text = "Filled Disabled",
                     enabled = false,
                     onClick = {}
@@ -184,15 +223,44 @@ private fun FilledPreview() {
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Outlined(
+                DsButton.Outlined(
                     text = "Outlined Enabled",
                     onClick = {}
                 )
                 Spacer(Modifier.width(8.dp))
-                Outlined(
+                DsButton.Outlined(
                     text = "Outlined Disabled",
                     enabled = false,
                     onClick = {}
+                )
+            }
+            Spacer(Modifier.height(8.dp))
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                DsButton.IconSmallRounded(
+                    icon = painterResource(R.drawable.ic_remove),
+                    iconTint = AppColors.Primary,
+                    onClick = {}
+                )
+                Spacer(Modifier.width(8.dp))
+                DsButton.IconSmallRounded(
+                    icon = painterResource(R.drawable.ic_plus),
+                    iconTint = AppColors.TextSecondary,
+                    onClick = {}
+                )
+            }
+            Spacer(Modifier.height(8.dp))
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                DsButton.Rounded(
+                    text = "Button",
+                    onClick = { }
                 )
             }
         }

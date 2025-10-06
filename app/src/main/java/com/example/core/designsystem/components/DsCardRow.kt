@@ -1,4 +1,4 @@
-package com.example.core.designsystem
+package com.example.core.designsystem.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -27,7 +27,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.core.designsystem.DsCardRow.MenuItem
 import com.example.lazypizza.R
 import com.example.lazypizza.ui.theme.AppColors
 import com.example.lazypizza.ui.theme.AppTypography
@@ -164,7 +163,7 @@ object DsCardRow {
                             overflow = TextOverflow.Ellipsis,
                             modifier = Modifier.weight(1f),
                         )
-                        DsButton.SmallRounded(
+                        DsButton.IconSmallRounded(
                             icon = painterResource(R.drawable.ic_remove),
                             iconTint = AppColors.Primary,
                             onClick = onRemove,
@@ -180,7 +179,7 @@ object DsCardRow {
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.spacedBy(16.dp),
                         ) {
-                            DsButton.SmallRounded(
+                            DsButton.IconSmallRounded(
                                 icon = painterResource(R.drawable.ic_minus),
                                 iconTint = AppColors.TextSecondary,
                                 onClick = onDecrease,
@@ -190,7 +189,7 @@ object DsCardRow {
                                 style = AppTypography.Title2SemiBold,
                                 color = AppColors.TextPrimary,
                             )
-                            DsButton.SmallRounded(
+                            DsButton.IconSmallRounded(
                                 icon = painterResource(R.drawable.ic_plus),
                                 iconTint = AppColors.TextSecondary,
                                 onClick = onIncrease,
@@ -223,7 +222,7 @@ object DsCardRow {
         title: String,
         price: String,
         image: Painter,
-        buttonText: String,
+        buttonText: String = "Add to Cart",
         onAddToCart: () -> Unit,
         modifier: Modifier = Modifier,
         onClick: () -> Unit = {},
@@ -291,7 +290,7 @@ object DsCardRow {
 @Composable
 private fun PizzaCardPreview() {
     LazyPizzaThemePreview {
-        MenuItem(
+        DsCardRow.MenuItem(
             title = "Margherita",
             description = "Tomato sauce, mozzarella, fresh basil, olive oil",
             price = "$8.99",

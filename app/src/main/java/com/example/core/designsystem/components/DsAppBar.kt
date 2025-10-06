@@ -1,4 +1,4 @@
-package com.example.core.designsystem
+package com.example.core.designsystem.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -17,13 +17,11 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -32,61 +30,60 @@ import com.example.lazypizza.ui.theme.AppColors
 import com.example.lazypizza.ui.theme.AppTypography
 import com.example.lazypizza.ui.theme.LazyPizzaThemePreview
 
-object DsNavigationBar {
+object DsAppBar {
     @Composable
     fun Primary(
-        onPhoneClick: () -> Unit,
+        phoneNumber: String,
+        onPhoneClick: (phoneNumber: String) -> Unit,
         modifier: Modifier = Modifier,
     ) {
-        Surface(
+
+        Row(
             modifier = modifier
                 .fillMaxWidth()
                 .height(64.dp)
-                .statusBarsPadding(),
-            color = Color.Transparent
+                .padding(horizontal = 16.dp, vertical = 10.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Image(
+                    painter = painterResource(R.drawable.ic_logo),
+                    contentDescription = "App Logo",
+                    modifier = Modifier.size(20.dp)
+                )
+                Spacer(Modifier.width(8.dp))
+                Text(
+                    text = "LazzyPizza",
+                    style = AppTypography.Body3Bold,
+                    color = AppColors.TextPrimary
+                )
+            }
+            Spacer(Modifier.weight(1f))
             Row(
                 modifier = Modifier
-                    .padding(horizontal = 16.dp, vertical = 10.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
+                    .clip(RoundedCornerShape(8.dp))
+                    .clickable(onClick = {
+                        onPhoneClick(phoneNumber)
+                    })
+                    .padding(horizontal = 8.dp, vertical = 6.dp),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Image(
-                        painter = painterResource(R.drawable.ic_logo),
-                        contentDescription = "App Logo",
-                        modifier = Modifier.size(20.dp)
-                    )
-                    Spacer(Modifier.width(8.dp))
-                    Text(
-                        text = "LazzyPizza",
-                        style = AppTypography.Body3Bold,
-                        color = AppColors.TextPrimary
-                    )
-                }
-                Spacer(Modifier.weight(1f))
-                Row(
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(8.dp))
-                        .clickable(onClick = onPhoneClick)
-                        .padding(horizontal = 8.dp, vertical = 6.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Icon(
-                        modifier = Modifier.size(15.dp),
-                        painter = painterResource(R.drawable.ic_phone),
-                        contentDescription = "Phone Number Icon",
-                        tint = AppColors.TextSecondary
-                    )
-                    Spacer(Modifier.width(6.dp))
-                    Text(
-                        text = "+1 (555) 321-7890",
-                        style = AppTypography.Body1Regular,
-                        color = AppColors.TextPrimary
-                    )
-                }
+                Icon(
+                    modifier = Modifier.size(15.dp),
+                    painter = painterResource(R.drawable.ic_phone),
+                    contentDescription = "Phone Number Icon",
+                    tint = AppColors.TextSecondary
+                )
+                Spacer(Modifier.width(6.dp))
+                Text(
+                    text = phoneNumber,
+                    style = AppTypography.Body1Regular,
+                    color = AppColors.TextPrimary
+                )
             }
         }
+
     }
 
     @Composable
@@ -126,11 +123,12 @@ object DsNavigationBar {
 @Composable
 private fun MainPreview() {
     LazyPizzaThemePreview {
-        DsNavigationBar.Primary(
+        DsAppBar.Primary(
+            phoneNumber = "+1 (555) 321-7890",
             onPhoneClick = { }
         )
         Spacer(Modifier.height(16.dp))
-        DsNavigationBar.Secondary(
+        DsAppBar.Secondary(
             onBackClick = { },
         )
     }
