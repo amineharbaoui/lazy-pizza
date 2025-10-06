@@ -23,10 +23,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -37,7 +35,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.core.designsystem.components.DsAppBar
 import com.example.core.designsystem.components.DsButton
@@ -57,6 +55,7 @@ fun HomeScreen(
 ) {
     val content = LocalContext.current
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
     Column(
         modifier = Modifier
             .background(AppColors.Bg)
@@ -72,7 +71,9 @@ fun HomeScreen(
         when (val state = uiState) {
             HomeScreenUiState.Loading -> HomeScreenLoadingState()
             is HomeScreenUiState.Success -> HomeScreenContent(
-                sections = state.sections
+                sections = state.displaySections,
+                searchQuery = state.searchQuery,
+                onSearchQueryChange = viewModel::onSearchQueryChange
             )
 
             HomeScreenUiState.Error -> HomeScreenErrorState()
@@ -83,9 +84,10 @@ fun HomeScreen(
 @Composable
 fun HomeScreenContent(
     sections: List<CategorySection>,
+    searchQuery: String,
+    onSearchQueryChange: (String) -> Unit
 ) {
     val isWide = LocalConfiguration.current.screenWidthDp >= 840
-    var searchQuery by remember { mutableStateOf("") }
     val scope = rememberCoroutineScope()
     val listState = rememberLazyListState()
     val gridState = rememberLazyGridState()
@@ -108,9 +110,7 @@ fun HomeScreenContent(
         DsTextField.Search(
             modifier = Modifier.fillMaxWidth(),
             value = searchQuery,
-            onValueChange = {
-                searchQuery = it
-            }
+            onValueChange = onSearchQueryChange
         )
         Spacer(Modifier.height(16.dp))
         Row(
@@ -155,7 +155,11 @@ private fun HomeScreenPreview() {
                 products = sampleProducts().filter { it.category == category }
             )
         }
-        HomeScreenContent(sections = sections)
+        HomeScreenContent(
+            sections = sections,
+            searchQuery = "",
+            onSearchQueryChange = {}
+        )
     }
 }
 
