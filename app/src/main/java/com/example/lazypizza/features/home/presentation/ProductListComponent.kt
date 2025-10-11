@@ -29,19 +29,20 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import coil3.compose.rememberAsyncImagePainter
 import com.example.core.designsystem.components.DsCardRow
 import com.example.core.designsystem.utils.PreviewPhoneTablet
 import com.example.lazypizza.R
-import com.example.lazypizza.features.home.domain.CategorySection
-import com.example.lazypizza.features.home.domain.Product
-import com.example.lazypizza.features.home.domain.ProductCategory
-import com.example.lazypizza.features.home.domain.ProductCategory.PIZZA
+import com.example.lazypizza.features.home.data.sample.HomeSampleData
+import com.example.lazypizza.features.home.domain.models.CategorySection
+import com.example.lazypizza.features.home.domain.models.Product
+import com.example.lazypizza.features.home.domain.models.ProductCategory.PIZZA
 import com.example.lazypizza.ui.theme.AppColors
 import com.example.lazypizza.ui.theme.AppTypography
 import com.example.lazypizza.ui.theme.LazyPizzaThemePreview
+import java.text.NumberFormat
 
 @Composable
 fun ProductList(
@@ -132,7 +133,7 @@ fun ProductCard(
                 title = product.name,
                 description = product.description,
                 price = product.price.toString(),
-                image = painterResource(R.drawable.img_pizza),
+                image = rememberAsyncImagePainter(product.imageUrl),
                 onClick = { onProductClick(product) },
             )
         }
@@ -151,7 +152,7 @@ fun ProductCard(
                     DsCardRow.AddToCartItem(
                         title = product.name,
                         price = product.price.asMoney(),
-                        image = painterResource(R.drawable.img_bacon),
+                        image = rememberAsyncImagePainter(product.imageUrl),
                         onAddToCart = { qty = 1 },
                         onClick = { onProductClick(product) }
                     )
@@ -160,7 +161,7 @@ fun ProductCard(
                         title = product.name,
                         unitPrice = product.price,
                         quantity = qty,
-                        image = painterResource(R.drawable.img_bacon),
+                        image = rememberAsyncImagePainter(product.imageUrl),
                         onIncrease = { qty += 1 },
                         onDecrease = {
                             if (qty <= 1) qty = 0 else qty -= 1
@@ -174,8 +175,7 @@ fun ProductCard(
     }
 }
 
-private fun Double.asMoney(): String =
-    java.text.NumberFormat.getCurrencyInstance().format(this)
+private fun Double.asMoney(): String = NumberFormat.getCurrencyInstance().format(this)
 
 @Composable
 private fun SectionHeader(title: String) {
@@ -191,16 +191,8 @@ private fun SectionHeader(title: String) {
 @Composable
 private fun ProductListPreview() {
     LazyPizzaThemePreview {
-        val products = sampleProducts()
-        val sections = ProductCategory.entries.map { category ->
-            CategorySection(
-                category = category,
-                products = products.filter { it.category == category }
-            )
-        }
-
         ProductList(
-            sections = sections,
+            sections = HomeSampleData.sampleSections,
             onProductClick = { },
             modifier = Modifier
                 .fillMaxSize()

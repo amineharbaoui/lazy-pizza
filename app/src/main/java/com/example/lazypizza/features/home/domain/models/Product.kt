@@ -1,4 +1,4 @@
-package com.example.lazypizza.features.home.domain
+package com.example.lazypizza.features.home.domain.models
 
 data class Product(
     val id: String,

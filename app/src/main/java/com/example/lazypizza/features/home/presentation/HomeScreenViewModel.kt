@@ -2,21 +2,19 @@ package com.example.lazypizza.features.home.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.lazypizza.features.home.domain.CategorySection
+import com.example.lazypizza.features.home.domain.models.CategorySection
 import com.example.lazypizza.features.home.domain.usecase.GetHomeSectionsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.WhileSubscribed
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.onStart
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import kotlin.time.Duration.Companion.milliseconds
-import kotlin.time.Duration.Companion.seconds
 
 @HiltViewModel
 class HomeScreenViewModel @Inject constructor(
@@ -24,31 +22,36 @@ class HomeScreenViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<HomeScreenUiState>(HomeScreenUiState.Loading)
-    val uiState: StateFlow<HomeScreenUiState> = _uiState
-        .onStart { loadSections() }
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5.seconds),
-            initialValue = HomeScreenUiState.Loading
-        )
+    val uiState: StateFlow<HomeScreenUiState> = _uiState.asStateFlow()
 
     private var searchJob: Job? = null
 
-    private fun loadSections() {
+    init {
+        observeSections()
+    }
+
+    private fun observeSections() {
         viewModelScope.launch {
-            runCatching { getHomeSectionsUseCase() }
-                .onSuccess { sections ->
+            getHomeSectionsUseCase()
+                .onStart { _uiState.value = HomeScreenUiState.Loading }
+                .catch { _uiState.value = HomeScreenUiState.Error }
+                .collect { sections ->
+                    val currentQuery =
+                        (uiState.value as? HomeScreenUiState.Success)?.searchQuery.orEmpty()
+                    val display = if (currentQuery.isBlank()) {
+                        sections
+                    } else {
+                        filterSections(sections, currentQuery)
+                    }
                     _uiState.value = HomeScreenUiState.Success(
                         originalSections = sections,
-                        displaySections = sections,
-                        searchQuery = ""
+                        displaySections = display,
+                        searchQuery = currentQuery
                     )
-                }
-                .onFailure {
-                    _uiState.value = HomeScreenUiState.Error
                 }
         }
     }
+
 
     fun onSearchQueryChange(newSearchQuery: String) {
         searchJob?.cancel()

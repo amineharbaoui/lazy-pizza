@@ -1,6 +1,6 @@
 package com.example.lazypizza.features.home.presentation
 
-import com.example.lazypizza.features.home.domain.CategorySection
+import com.example.lazypizza.features.home.domain.models.CategorySection
 
 sealed interface HomeScreenUiState {
     data object Loading : HomeScreenUiState

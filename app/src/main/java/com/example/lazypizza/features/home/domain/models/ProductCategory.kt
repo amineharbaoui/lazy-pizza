@@ -1,4 +1,4 @@
-package com.example.lazypizza.features.home.domain
+package com.example.lazypizza.features.home.domain.models
 
 enum class ProductCategory(val value: String) {
     PIZZA("Pizza"),

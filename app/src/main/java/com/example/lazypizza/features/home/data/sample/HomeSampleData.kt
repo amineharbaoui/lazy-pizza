@@ -1,85 +1,126 @@
 package com.example.lazypizza.features.home.data.sample
 
-import com.example.lazypizza.features.home.domain.Product
-import com.example.lazypizza.features.home.domain.ProductCategory
+import com.example.lazypizza.features.home.domain.models.CategorySection
+import com.example.lazypizza.features.home.domain.models.Product
+import com.example.lazypizza.features.home.domain.models.ProductCategory
 
 object HomeSampleData {
-    val products: List<Product> = listOf(
-        // 🍕 Pizzas
-        Product(
-            id = "pizza_margherita",
+    val sampleSections = listOf(
+        CategorySection(
             category = ProductCategory.PIZZA,
-            name = "Margherita",
-            description = "Tomato sauce, mozzarella, fresh basil, olive oil",
-            price = 8.99,
-            imageUrl = "https://www.cicis.com/media/1243/pizza_trad_pepperoni.png"
+            products = listOf(
+                Product(
+                    "p1",
+                    ProductCategory.PIZZA,
+                    "Margherita",
+                    "Tomato sauce, mozzarella, fresh basil, olive oil",
+                    8.99,
+                    "https://example.com/pizza_margherita.png"
+                ),
+                Product(
+                    "p2",
+                    ProductCategory.PIZZA,
+                    "Pepperoni",
+                    "Tomato sauce, mozzarella, pepperoni",
+                    9.99,
+                    "https://example.com/pizza_pepperoni.png"
+                ),
+                Product(
+                    "p3",
+                    ProductCategory.PIZZA,
+                    "Hawaiian",
+                    "Tomato sauce, mozzarella, ham, pineapple",
+                    10.49,
+                    "https://example.com/pizza_hawaiian.png"
+                ),
+                Product(
+                    "p4",
+                    ProductCategory.PIZZA,
+                    "BBQ Chicken",
+                    "BBQ sauce, mozzarella, grilled chicken, onion, corn",
+                    11.49,
+                    "https://example.com/pizza_bbqchicken.png"
+                ),
+                Product(
+                    "p5",
+                    ProductCategory.PIZZA,
+                    "Four Cheese",
+                    "Mozzarella, gorgonzola, parmesan, ricotta",
+                    11.99,
+                    "https://example.com/pizza_fourcheese.png"
+                ),
+                Product(
+                    "p6",
+                    ProductCategory.PIZZA,
+                    "Veggie Delight",
+                    "Tomatoes, olives, bell pepper, onion, mushrooms",
+                    9.79,
+                    "https://example.com/pizza_veggiedelight.png"
+                ),
+                Product(
+                    "p7",
+                    ProductCategory.PIZZA,
+                    "Meat Lovers",
+                    "Tomato sauce, mozzarella, pepperoni, ham, bacon, sausage",
+                    12.49,
+                    "https://example.com/pizza_meatlovers.png"
+                ),
+                Product(
+                    "p8",
+                    ProductCategory.PIZZA,
+                    "Spicy Inferno",
+                    "Tomato sauce, mozzarella, spicy salami, jalapeños, red chili pepper",
+                    11.29,
+                    "https://example.com/pizza_spicyinferno.png"
+                ),
+                Product(
+                    "p9",
+                    ProductCategory.PIZZA,
+                    "Seafood Special",
+                    "Tomato sauce, mozzarella, shrimp, mussels, squid, parsley",
+                    13.99,
+                    "https://example.com/pizza_seafoodspecial.png"
+                ),
+                Product(
+                    "p10",
+                    ProductCategory.PIZZA,
+                    "Truffle Mushroom",
+                    "Cream sauce, mozzarella, mushrooms, truffle oil, parmesan",
+                    12.99,
+                    "https://example.com/pizza_trufflemushroom.png"
+                )
+            )
         ),
-        Product(
-            id = "pizza_bbq",
-            category = ProductCategory.PIZZA,
-            name = "BBQ Chicken",
-            description = "BBQ sauce, mozzarella, grilled chicken, onion, corn",
-            price = 11.49,
-            imageUrl = "https://www.cicis.com/media/1249/pizza_bbqchicken.png"
-        ),
-        Product(
-            id = "pizza_truffle",
-            category = ProductCategory.PIZZA,
-            name = "Truffle Mushroom",
-            description = "Cream sauce, mushrooms, truffle oil, parmesan",
-            price = 12.99,
-            imageUrl = "https://www.cicis.com/media/1247/pizza_veggie.png"
-        ),
-        // 🥤 Drinks
-        Product(
-            id = "drink_pepsi",
+        CategorySection(
             category = ProductCategory.DRINKS,
-            name = "Pepsi",
-            description = "Refreshing cola beverage",
-            price = 1.99,
-            imageUrl = "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a8/Pepsi_can_330ml.jpg/320px-Pepsi_can_330ml.jpg"
+            products = listOf(
+                Product("d1", ProductCategory.DRINKS, "Mineral Water", "500ml bottle", 1.49, "https://example.com/drink_water.png"),
+                Product("d2", ProductCategory.DRINKS, "7-Up", "Refreshing lemon-lime soda", 1.89, "https://example.com/drink_7up.png"),
+                Product("d3", ProductCategory.DRINKS, "Pepsi", "Classic cola taste", 1.99, "https://example.com/drink_pepsi.png"),
+                Product("d4", ProductCategory.DRINKS, "Orange Juice", "Fresh squeezed oranges", 2.49, "https://example.com/drink_orangejuice.png"),
+                Product("d5", ProductCategory.DRINKS, "Apple Juice", "100% pure apple juice", 2.29, "https://example.com/drink_applejuice.png"),
+                Product("d6", ProductCategory.DRINKS, "Iced Tea (Lemon)", "Chilled lemon-flavored tea", 2.19, "https://example.com/drink_icedtea.png")
+            )
         ),
-        Product(
-            id = "drink_orange",
-            category = ProductCategory.DRINKS,
-            name = "Orange Juice",
-            description = "100% pure orange juice",
-            price = 2.49,
-            imageUrl = "https://upload.wikimedia.org/wikipedia/commons/0/0b/Orange_juice_1.jpg"
-        ),
-        // 🍯 Sauces
-        Product(
-            id = "sauce_garlic",
+        CategorySection(
             category = ProductCategory.SAUCES,
-            name = "Garlic Sauce",
-            description = "Creamy garlic dip",
-            price = 0.59,
-            imageUrl = "https://upload.wikimedia.org/wikipedia/commons/5/50/Garlic_Sauce.jpg"
+            products = listOf(
+                Product("s1", ProductCategory.SAUCES, "Garlic Sauce", "Creamy garlic flavor", 0.59, "https://example.com/sauce_garlic.png"),
+                Product("s2", ProductCategory.SAUCES, "BBQ Sauce", "Sweet smoky barbecue taste", 0.59, "https://example.com/sauce_bbq.png"),
+                Product("s3", ProductCategory.SAUCES, "Cheese Sauce", "Rich melted cheese dip", 0.89, "https://example.com/sauce_cheese.png"),
+                Product("s4", ProductCategory.SAUCES, "Spicy Chili Sauce", "Hot and tangy chili kick", 0.59, "https://example.com/sauce_spicychili.png")
+            )
         ),
-        Product(
-            id = "sauce_bbq",
-            category = ProductCategory.SAUCES,
-            name = "BBQ Sauce",
-            description = "Smoky barbecue flavor",
-            price = 0.59,
-            imageUrl = "https://upload.wikimedia.org/wikipedia/commons/8/87/BBQ_sauce.jpg"
-        ),
-        // 🍨 Ice Cream
-        Product(
-            id = "ice_vanilla",
+        CategorySection(
             category = ProductCategory.ICE_CREAM,
-            name = "Vanilla Ice Cream",
-            description = "Classic vanilla flavor",
-            price = 2.49,
-            imageUrl = "https://upload.wikimedia.org/wikipedia/commons/8/84/Vanilla_ice_cream_cone.jpg"
-        ),
-        Product(
-            id = "ice_chocolate",
-            category = ProductCategory.ICE_CREAM,
-            name = "Chocolate Ice Cream",
-            description = "Rich chocolate delight",
-            price = 2.49,
-            imageUrl = "https://upload.wikimedia.org/wikipedia/commons/1/1f/Chocolate_ice_cream_in_a_bowl.jpg"
+            products = listOf(
+                Product("i1", ProductCategory.ICE_CREAM, "Vanilla Ice Cream", "Classic creamy vanilla", 2.49, "https://example.com/icecream_vanilla.png"),
+                Product("i2", ProductCategory.ICE_CREAM, "Chocolate Ice Cream", "Rich chocolate flavor", 2.49, "https://example.com/icecream_chocolate.png"),
+                Product("i3", ProductCategory.ICE_CREAM, "Strawberry Ice Cream", "Sweet strawberry blend", 2.49, "https://example.com/icecream_strawberry.png"),
+                Product("i4", ProductCategory.ICE_CREAM, "Cookies Ice Cream", "Cookies & cream goodness", 2.79, "https://example.com/icecream_cookies.png"),
+                Product("i5", ProductCategory.ICE_CREAM, "Pistachio Ice Cream", "Nutty and creamy pistachio", 2.99, "https://example.com/icecream_pistachio.png"),
+                Product("i6", ProductCategory.ICE_CREAM, "Mango Sorbet", "Refreshing tropical mango", 2.69, "https://example.com/icecream_mango.png")
+            )
         )
     )
 }

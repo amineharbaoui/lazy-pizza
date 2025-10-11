@@ -42,8 +42,9 @@ import com.example.core.designsystem.components.DsButton
 import com.example.core.designsystem.components.DsTextField
 import com.example.core.designsystem.utils.PreviewPhoneTablet
 import com.example.lazypizza.R
-import com.example.lazypizza.features.home.domain.CategorySection
-import com.example.lazypizza.features.home.domain.ProductCategory
+import com.example.lazypizza.features.home.data.sample.HomeSampleData
+import com.example.lazypizza.features.home.domain.models.CategorySection
+import com.example.lazypizza.features.home.domain.models.ProductCategory
 import com.example.lazypizza.ui.theme.AppColors
 import com.example.lazypizza.ui.theme.LazyPizzaThemePreview
 import kotlinx.coroutines.launch
@@ -149,14 +150,8 @@ fun HomeScreenContent(
 @Composable
 private fun HomeScreenPreview() {
     LazyPizzaThemePreview {
-        val sections = ProductCategory.entries.map { category ->
-            CategorySection(
-                category = category,
-                products = sampleProducts().filter { it.category == category }
-            )
-        }
         HomeScreenContent(
-            sections = sections,
+            sections = HomeSampleData.sampleSections,
             searchQuery = "",
             onSearchQueryChange = {}
         )
@@ -167,7 +162,7 @@ private fun HomeScreenPreview() {
 private fun HomeScreenLoadingState() {
     Box(
         modifier = Modifier
-            .fillMaxWidth()
+            .fillMaxSize()
             .padding(32.dp),
         contentAlignment = Alignment.Center
     ) {
@@ -177,11 +172,11 @@ private fun HomeScreenLoadingState() {
 
 @Composable
 private fun HomeScreenErrorState() {
-    Column(
+    Box(
         modifier = Modifier
-            .fillMaxWidth()
+            .fillMaxSize()
             .padding(32.dp),
-        verticalArrangement = Arrangement.Center
+        contentAlignment = Alignment.Center
     ) {
         Text(text = "Something went wrong")
     }
