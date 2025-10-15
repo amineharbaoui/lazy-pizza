@@ -1,4 +1,4 @@
-package com.example.lazypizza.ui.theme
+package com.example.core.designsystem.theme
 
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
@@ -7,13 +7,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import com.example.lazypizza.R
 
-val InstrumentSans = FontFamily(
-    Font(R.font.instrumentsans_regular, weight = FontWeight.Normal),
-    Font(R.font.instrumentsans_medium, weight = FontWeight.Medium),
-    Font(R.font.instrumentsans_semibold, weight = FontWeight.SemiBold),
-)
-
 object AppTypography {
+    private val InstrumentSans = FontFamily(
+        Font(R.font.instrumentsans_regular, weight = FontWeight.Normal),
+        Font(R.font.instrumentsans_medium, weight = FontWeight.Medium),
+        Font(R.font.instrumentsans_semibold, weight = FontWeight.SemiBold),
+    )
+
     val Title1SemiBold = TextStyle(
         fontFamily = InstrumentSans,
         fontWeight = FontWeight.SemiBold,

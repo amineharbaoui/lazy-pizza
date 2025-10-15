@@ -1,4 +1,4 @@
-package com.example.lazypizza.ui.theme
+package com.example.core.designsystem.theme
 
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color

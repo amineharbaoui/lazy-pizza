@@ -4,8 +4,8 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.hilt)
     alias(libs.plugins.ksp)
-//    id(libs.plugins.google.services.get().pluginId)
-    id("com.google.gms.google-services")
+    alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.google.services)
 }
 
 android {

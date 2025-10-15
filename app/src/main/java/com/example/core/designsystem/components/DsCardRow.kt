@@ -27,10 +27,10 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.core.designsystem.theme.AppColors
+import com.example.core.designsystem.theme.AppTypography
+import com.example.core.designsystem.theme.LazyPizzaThemePreview
 import com.example.lazypizza.R
-import com.example.lazypizza.ui.theme.AppColors
-import com.example.lazypizza.ui.theme.AppTypography
-import com.example.lazypizza.ui.theme.LazyPizzaThemePreview
 import java.text.NumberFormat
 import java.util.Locale
 

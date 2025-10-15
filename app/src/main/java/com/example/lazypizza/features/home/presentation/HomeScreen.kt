@@ -40,18 +40,19 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.core.designsystem.components.DsAppBar
 import com.example.core.designsystem.components.DsButton
 import com.example.core.designsystem.components.DsTextField
+import com.example.core.designsystem.theme.AppColors
+import com.example.core.designsystem.theme.LazyPizzaThemePreview
 import com.example.core.designsystem.utils.PreviewPhoneTablet
 import com.example.lazypizza.R
-import com.example.lazypizza.features.home.data.sample.HomeSampleData
+import com.example.lazypizza.features.home.data.utils.HomeSampleData
 import com.example.lazypizza.features.home.domain.models.CategorySection
 import com.example.lazypizza.features.home.domain.models.ProductCategory
-import com.example.lazypizza.ui.theme.AppColors
-import com.example.lazypizza.ui.theme.LazyPizzaThemePreview
 import kotlinx.coroutines.launch
 
 @Composable
 fun HomeScreen(
     innerPadding: PaddingValues,
+    onProductClick: (productId: String) -> Unit,
     viewModel: HomeScreenViewModel = hiltViewModel()
 ) {
     val content = LocalContext.current
@@ -74,6 +75,7 @@ fun HomeScreen(
             is HomeScreenUiState.Success -> HomeScreenContent(
                 sections = state.displaySections,
                 searchQuery = state.searchQuery,
+                onProductClick = onProductClick,
                 onSearchQueryChange = viewModel::onSearchQueryChange
             )
 
@@ -86,6 +88,7 @@ fun HomeScreen(
 fun HomeScreenContent(
     sections: List<CategorySection>,
     searchQuery: String,
+    onProductClick: (productId: String) -> Unit,
     onSearchQueryChange: (String) -> Unit
 ) {
     val isWide = LocalConfiguration.current.screenWidthDp >= 840
@@ -138,7 +141,7 @@ fun HomeScreenContent(
         Spacer(Modifier.height(16.dp))
         ProductList(
             sections = sections,
-            onProductClick = {},
+            onProductClick = onProductClick,
             isWide = isWide,
             listState = listState,
             gridState = gridState
@@ -153,6 +156,7 @@ private fun HomeScreenPreview() {
         HomeScreenContent(
             sections = HomeSampleData.sampleSections,
             searchQuery = "",
+            onProductClick = {},
             onSearchQueryChange = {}
         )
     }

@@ -45,10 +45,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.core.designsystem.theme.AppColors
+import com.example.core.designsystem.theme.AppTypography
+import com.example.core.designsystem.theme.LazyPizzaThemePreview
 import com.example.lazypizza.R
-import com.example.lazypizza.ui.theme.AppColors
-import com.example.lazypizza.ui.theme.AppTypography
-import com.example.lazypizza.ui.theme.LazyPizzaThemePreview
 
 object DsCardItem {
     @Composable

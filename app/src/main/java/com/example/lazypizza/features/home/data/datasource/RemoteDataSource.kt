@@ -29,4 +29,25 @@ class RemoteDataSource @Inject constructor(
 
         awaitClose { registration.remove() }
     }
+
+    fun observeProductById(productId: String): Flow<ProductDTO?> = callbackFlow {
+        val reg = firestore
+            .collectionGroup("products")
+            .whereEqualTo("id", productId)
+            .limit(1)
+            .addSnapshotListener { snapshot, error ->
+                if (error != null) {
+                    close(error)
+                    return@addSnapshotListener
+                }
+                val dto = snapshot?.documents?.firstOrNull()
+                    ?.toObject(ProductDTO::class.java)
+                    ?.copy(
+                        id = snapshot.documents.firstOrNull()?.id ?: productId,
+                        category = snapshot.documents.firstOrNull()?.getString("category").orEmpty()
+                    )
+                trySend(dto).isSuccess
+            }
+        awaitClose { reg.remove() }
+    }
 }

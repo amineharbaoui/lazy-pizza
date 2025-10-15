@@ -33,21 +33,21 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import coil3.compose.rememberAsyncImagePainter
 import com.example.core.designsystem.components.DsCardRow
+import com.example.core.designsystem.theme.AppColors
+import com.example.core.designsystem.theme.AppTypography
+import com.example.core.designsystem.theme.LazyPizzaThemePreview
 import com.example.core.designsystem.utils.PreviewPhoneTablet
 import com.example.lazypizza.R
-import com.example.lazypizza.features.home.data.sample.HomeSampleData
+import com.example.lazypizza.features.home.data.utils.HomeSampleData
 import com.example.lazypizza.features.home.domain.models.CategorySection
 import com.example.lazypizza.features.home.domain.models.Product
 import com.example.lazypizza.features.home.domain.models.ProductCategory.PIZZA
-import com.example.lazypizza.ui.theme.AppColors
-import com.example.lazypizza.ui.theme.AppTypography
-import com.example.lazypizza.ui.theme.LazyPizzaThemePreview
 import java.text.NumberFormat
 
 @Composable
 fun ProductList(
     sections: List<CategorySection>,
-    onProductClick: (Product) -> Unit,
+    onProductClick: (productId: String) -> Unit,
     modifier: Modifier = Modifier,
     isWide: Boolean,
     listState: LazyListState,
@@ -125,7 +125,7 @@ fun ProductList(
 @Composable
 fun ProductCard(
     product: Product,
-    onProductClick: (Product) -> Unit,
+    onProductClick: (productId: String) -> Unit,
 ) {
     when (product.category) {
         PIZZA -> {
@@ -134,7 +134,7 @@ fun ProductCard(
                 description = product.description,
                 price = product.price.toString(),
                 image = rememberAsyncImagePainter(product.imageUrl),
-                onClick = { onProductClick(product) },
+                onClick = { onProductClick(product.id) },
             )
         }
 
@@ -154,7 +154,7 @@ fun ProductCard(
                         price = product.price.asMoney(),
                         image = rememberAsyncImagePainter(product.imageUrl),
                         onAddToCart = { qty = 1 },
-                        onClick = { onProductClick(product) }
+                        onClick = { onProductClick(product.id) }
                     )
                 } else {
                     DsCardRow.CartItem(
@@ -167,7 +167,7 @@ fun ProductCard(
                             if (qty <= 1) qty = 0 else qty -= 1
                         },
                         onRemove = { qty = 0 },
-                        onClick = { onProductClick(product) }
+                        onClick = { onProductClick(product.id) }
                     )
                 }
             }

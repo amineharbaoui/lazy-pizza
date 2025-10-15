@@ -5,6 +5,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.example.lazypizza.features.detail.presentation.DetailScreen
 import com.example.lazypizza.features.home.presentation.HomeScreen
 
 @Composable
@@ -14,10 +15,21 @@ fun RootNavGraph(
 ) {
     NavHost(
         navController = navController,
-        startDestination = "home"
+        startDestination = Route.Home
     ) {
-        composable("home") {
-            HomeScreen(innerPadding = innerPadding)
+        composable<Route.Home> {
+            HomeScreen(
+                innerPadding = innerPadding,
+                onProductClick = { productId ->
+                    navController.navigate(Route.Detail(productId))
+                }
+            )
+        }
+
+        composable<Route.Detail> { backStackEntry ->
+            DetailScreen(
+                innerPadding = innerPadding
+            )
         }
     }
 }
