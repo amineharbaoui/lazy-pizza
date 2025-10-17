@@ -59,6 +59,7 @@ dependencies {
     // Dependency Injection (Hilt)
     implementation(libs.hilt.android)
     implementation(libs.hilt.navigation.compose)
+    implementation(libs.androidx.compose.adaptive)
     ksp(libs.hilt.compiler)
 
     implementation(libs.coil.compose)

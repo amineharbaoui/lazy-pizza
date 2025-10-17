@@ -150,7 +150,7 @@ object DsCardItem {
     ) {
         val active = quantity > 0
         val shape = RoundedCornerShape(12.dp)
-        val highlightColor = if (active) MaterialTheme.colorScheme.primary else Color.Transparent
+        val highlightColor = if (active) MaterialTheme.colorScheme.primary else AppColors.Outline_50
         val borderColor by animateColorAsState(highlightColor, label = "border")
 
         Surface(

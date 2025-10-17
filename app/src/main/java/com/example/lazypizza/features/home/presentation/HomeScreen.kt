@@ -16,11 +16,18 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
+import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -29,7 +36,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -37,16 +43,19 @@ import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.window.core.layout.WindowWidthSizeClass
 import com.example.core.designsystem.components.DsAppBar
 import com.example.core.designsystem.components.DsButton
 import com.example.core.designsystem.components.DsTextField
 import com.example.core.designsystem.theme.AppColors
+import com.example.core.designsystem.theme.AppTypography
 import com.example.core.designsystem.theme.LazyPizzaThemePreview
 import com.example.core.designsystem.utils.PreviewPhoneTablet
 import com.example.lazypizza.R
 import com.example.lazypizza.features.home.data.utils.HomeSampleData
 import com.example.lazypizza.features.home.domain.models.CategorySection
 import com.example.lazypizza.features.home.domain.models.ProductCategory
+import com.example.lazypizza.features.home.presentation.components.ProductCard
 import kotlinx.coroutines.launch
 
 @Composable
@@ -62,7 +71,7 @@ fun HomeScreen(
         modifier = Modifier
             .background(AppColors.Bg)
             .fillMaxSize()
-            .padding(top = innerPadding.calculateTopPadding()),
+            .padding(innerPadding),
     ) {
         DsAppBar.Primary(
             phoneNumber = stringResource(R.string.phone_number),
@@ -91,16 +100,126 @@ fun HomeScreenContent(
     onProductClick: (productId: String) -> Unit,
     onSearchQueryChange: (String) -> Unit
 ) {
-    val isWide = LocalConfiguration.current.screenWidthDp >= 840
+    val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass.windowWidthSizeClass
+    val isWide = windowSizeClass != WindowWidthSizeClass.COMPACT
     val scope = rememberCoroutineScope()
     val listState = rememberLazyListState()
     val gridState = rememberLazyGridState()
     val sectionIndexMap = remember(sections) { buildSectionHeaderIndexMap(sections) }
+    val isEmpty = sections.isEmpty() || sections.all { it.products.isEmpty() }
 
     Column(
         verticalArrangement = Arrangement.Top,
         modifier = Modifier.padding(horizontal = 16.dp)
     ) {
+        if (isEmpty) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(32.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Text(
+                        text = stringResource(R.string.no_products_found),
+                        style = AppTypography.Body1Medium,
+                        color = AppColors.TextSecondary
+                    )
+                }
+            }
+        } else {
+            if (isWide) {
+                LazyVerticalGrid(
+                    state = gridState,
+                    columns = GridCells.Fixed(2),
+                    modifier = Modifier
+                        .fillMaxSize(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    item(span = { GridItemSpan(maxLineSpan) }) {
+                        Header(
+                            searchQuery = searchQuery,
+                            onSearchQueryChange = onSearchQueryChange,
+                            onScroll = { target ->
+                                scope.launch {
+                                    gridState.animateScrollToItem(
+                                        target
+                                    )
+                                }
+                            },
+                            sectionIndexMap = sectionIndexMap
+                        )
+                    }
+                    sections.forEach { section ->
+                        item(span = { GridItemSpan(maxLineSpan) }) {
+                            Text(
+                                text = section.category.value.uppercase(),
+                                style = AppTypography.Label2SemiBold,
+                                color = AppColors.TextSecondary,
+                                modifier = Modifier.padding(bottom = 8.dp)
+                            )
+                        }
+                        items(section.products, key = { it.id }) { product ->
+                            ProductCard(product, onProductClick)
+                        }
+                        item(span = { GridItemSpan(maxLineSpan) }) { Spacer(Modifier.height(16.dp)) }
+                    }
+                }
+            } else {
+                LazyColumn(
+                    state = listState,
+                    modifier = Modifier
+                        .fillMaxSize(),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    item {
+                        Header(
+                            searchQuery = searchQuery,
+                            onSearchQueryChange = onSearchQueryChange,
+                            onScroll = { target ->
+                                scope.launch {
+                                    listState.animateScrollToItem(
+                                        target
+                                    )
+                                }
+                            },
+                            sectionIndexMap = sectionIndexMap
+                        )
+                    }
+                    sections.forEach { section ->
+                        item {
+                            Text(
+                                text = section.category.value.uppercase(),
+                                style = AppTypography.Label2SemiBold,
+                                color = AppColors.TextSecondary,
+                                modifier = Modifier.padding(bottom = 8.dp)
+                            )
+                        }
+                        items(section.products, key = { it.id }) { product ->
+                            ProductCard(product, onProductClick)
+                        }
+                        item { Spacer(Modifier.height(16.dp)) }
+                    }
+                }
+            }
+        }
+        Spacer(Modifier.height(16.dp))
+    }
+}
+
+@Composable
+fun Header(
+    searchQuery: String,
+    onSearchQueryChange: (String) -> Unit,
+    onScroll: (targetPosition: Int) -> Unit,
+    sectionIndexMap: Map<ProductCategory, Int>,
+    modifier: Modifier = Modifier,
+) {
+    Column(modifier = modifier) {
         Image(
             modifier = Modifier
                 .fillMaxWidth()
@@ -118,8 +237,7 @@ fun HomeScreenContent(
         )
         Spacer(Modifier.height(16.dp))
         Row(
-            modifier = Modifier
-                .horizontalScroll(rememberScrollState()),
+            modifier = Modifier.horizontalScroll(rememberScrollState()),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             ProductCategory.entries.forEach { category ->
@@ -127,38 +245,12 @@ fun HomeScreenContent(
                     text = category.value,
                     onClick = {
                         val target = sectionIndexMap[category] ?: 0
-                        scope.launch {
-                            if (isWide) {
-                                gridState.animateScrollToItem(target)
-                            } else {
-                                listState.animateScrollToItem(target)
-                            }
-                        }
+                        onScroll(target)
                     }
                 )
             }
         }
         Spacer(Modifier.height(16.dp))
-        ProductList(
-            sections = sections,
-            onProductClick = onProductClick,
-            isWide = isWide,
-            listState = listState,
-            gridState = gridState
-        )
-    }
-}
-
-@PreviewPhoneTablet
-@Composable
-private fun HomeScreenPreview() {
-    LazyPizzaThemePreview {
-        HomeScreenContent(
-            sections = HomeSampleData.sampleSections,
-            searchQuery = "",
-            onProductClick = {},
-            onSearchQueryChange = {}
-        )
     }
 }
 
@@ -183,6 +275,19 @@ private fun HomeScreenErrorState() {
         contentAlignment = Alignment.Center
     ) {
         Text(text = "Something went wrong")
+    }
+}
+
+@PreviewPhoneTablet
+@Composable
+private fun HomeScreenPreview() {
+    LazyPizzaThemePreview {
+        HomeScreenContent(
+            sections = HomeSampleData.sampleSections,
+            searchQuery = "",
+            onProductClick = {},
+            onSearchQueryChange = {}
+        )
     }
 }
 
