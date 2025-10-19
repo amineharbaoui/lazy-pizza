@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -123,13 +124,16 @@ object DsAppBar {
 @Composable
 private fun MainPreview() {
     LazyPizzaThemePreview {
-        DsAppBar.Primary(
-            phoneNumber = "+1 (555) 321-7890",
-            onPhoneClick = { }
-        )
-        Spacer(Modifier.height(16.dp))
-        DsAppBar.Secondary(
-            onBackClick = { },
-        )
+        Column(
+            verticalArrangement = Arrangement.Top,
+            modifier = Modifier
+        ) {
+            DsAppBar.Primary(
+                phoneNumber = "+1 (555) 321-7890",
+                onPhoneClick = { }
+            )
+            Spacer(Modifier.height(16.dp))
+            DsAppBar.Secondary(onBackClick = { },)
+        }
     }
 }

@@ -3,6 +3,7 @@ package com.example.lazypizza.features.home.presentation
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.lazypizza.features.home.domain.models.CategorySection
+import com.example.lazypizza.features.home.domain.models.ProductCategory
 import com.example.lazypizza.features.home.domain.usecase.GetHomeSectionsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
@@ -28,6 +29,8 @@ class HomeScreenViewModel @Inject constructor(
 
     init {
         observeSections()
+
+
     }
 
     private fun observeSections() {
@@ -36,8 +39,9 @@ class HomeScreenViewModel @Inject constructor(
                 .onStart { _uiState.value = HomeScreenUiState.Loading }
                 .catch { _uiState.value = HomeScreenUiState.Error }
                 .collect { sections ->
-                    val currentQuery =
-                        (uiState.value as? HomeScreenUiState.Success)?.searchQuery.orEmpty()
+                    val currentQuery = (uiState.value as? HomeScreenUiState.Success)
+                        ?.searchQuery
+                        .orEmpty()
                     val display = if (currentQuery.isBlank()) {
                         sections
                     } else {
@@ -46,6 +50,9 @@ class HomeScreenViewModel @Inject constructor(
                     _uiState.value = HomeScreenUiState.Success(
                         originalSections = sections,
                         displaySections = display,
+                        filterTags = ProductCategory.entries
+                            .filterNot { it == ProductCategory.TOPPINGS }
+                            .map { it.value },
                         searchQuery = currentQuery
                     )
                 }

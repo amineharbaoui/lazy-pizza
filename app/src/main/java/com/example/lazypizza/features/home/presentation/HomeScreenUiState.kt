@@ -7,6 +7,7 @@ sealed interface HomeScreenUiState {
     data class Success(
         val originalSections: List<CategorySection>,
         val displaySections: List<CategorySection>,
+        val filterTags: List<String> = emptyList(),
         val searchQuery: String = ""
     ) : HomeScreenUiState
     data object Error : HomeScreenUiState

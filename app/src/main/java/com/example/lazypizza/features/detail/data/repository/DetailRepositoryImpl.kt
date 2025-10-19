@@ -1,16 +1,24 @@
 package com.example.lazypizza.features.detail.data.repository
 
+import com.example.core.firebase.firestore.datasource.ProductDatasource
 import com.example.lazypizza.features.detail.domain.repository.DetailRepository
-import com.example.lazypizza.features.home.data.datasource.RemoteDataSource
 import com.example.lazypizza.features.home.data.mapper.toDomain
 import com.example.lazypizza.features.home.domain.models.Product
+import com.example.lazypizza.features.home.domain.models.ProductCategory
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 class DetailRepositoryImpl @Inject constructor(
-    private val remote: RemoteDataSource,
+    private val productDatasource: ProductDatasource,
 ) : DetailRepository {
-    override suspend fun observeProductById(productId: String): Flow<Product?> =
-        remote.observeProductById(productId).map { it?.toDomain() }
+    override fun observeProductById(productId: String): Flow<Product?> =
+        productDatasource.observeProductById(productId).map { it?.toDomain() }
+
+    override fun observeToppings(): Flow<List<Product>> =
+        productDatasource.observeSections().map { list ->
+            list.map { it.toDomain() }
+                .filter { it.category == ProductCategory.TOPPINGS }
+        }
+
 }

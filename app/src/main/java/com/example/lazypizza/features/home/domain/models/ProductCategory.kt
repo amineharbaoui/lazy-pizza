@@ -4,5 +4,6 @@ enum class ProductCategory(val value: String) {
     PIZZA("Pizza"),
     DRINKS("Drinks"),
     SAUCES("Sauces"),
-    ICE_CREAM("Ice Cream")
+    ICE_CREAM("Ice Cream"),
+    TOPPINGS("Toppings")
 }

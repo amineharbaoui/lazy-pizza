@@ -4,6 +4,9 @@ import com.example.lazypizza.features.home.domain.models.Product
 
 sealed interface DetailUiState {
     data object Loading : DetailUiState
-    data class Success(val product: Product) : DetailUiState
+    data class Success(
+        val product: Product,
+        val toppings: List<Product>
+    ) : DetailUiState
     data object Error : DetailUiState
 }

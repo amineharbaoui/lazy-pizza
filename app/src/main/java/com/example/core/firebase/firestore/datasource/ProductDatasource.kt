@@ -1,4 +1,4 @@
-package com.example.lazypizza.features.home.data.datasource
+package com.example.core.firebase.firestore.datasource
 
 import com.example.lazypizza.features.home.data.models.ProductDTO
 import com.google.firebase.firestore.FirebaseFirestore
@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import javax.inject.Inject
 
-class RemoteDataSource @Inject constructor(
+class ProductDatasource @Inject constructor(
     private val firestore: FirebaseFirestore
 ) {
     fun observeSections(): Flow<List<ProductDTO>> = callbackFlow {
