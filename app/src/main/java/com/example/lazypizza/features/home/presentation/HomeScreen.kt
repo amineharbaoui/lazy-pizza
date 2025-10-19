@@ -62,13 +62,14 @@ import kotlinx.coroutines.launch
 fun HomeScreen(
     innerPadding: PaddingValues,
     onProductClick: (productId: String) -> Unit,
+    modifier: Modifier = Modifier,
     viewModel: HomeScreenViewModel = hiltViewModel()
 ) {
     val content = LocalContext.current
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     Column(
-        modifier = Modifier
+        modifier = modifier
             .background(AppColors.Bg)
             .fillMaxSize()
             .padding(innerPadding),
@@ -98,7 +99,8 @@ fun HomeScreenContent(
     sections: List<CategorySection>,
     searchQuery: String,
     onProductClick: (productId: String) -> Unit,
-    onSearchQueryChange: (String) -> Unit
+    onSearchQueryChange: (String) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass.windowWidthSizeClass
     val isWide = windowSizeClass != WindowWidthSizeClass.COMPACT
@@ -110,7 +112,7 @@ fun HomeScreenContent(
 
     Column(
         verticalArrangement = Arrangement.Top,
-        modifier = Modifier.padding(horizontal = 16.dp)
+        modifier = modifier.padding(horizontal = 16.dp)
     ) {
         if (isEmpty) {
             Box(
@@ -212,7 +214,7 @@ fun HomeScreenContent(
 }
 
 @Composable
-fun Header(
+private fun Header(
     searchQuery: String,
     onSearchQueryChange: (String) -> Unit,
     onScroll: (targetPosition: Int) -> Unit,
