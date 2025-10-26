@@ -74,6 +74,29 @@ object DsCardItem {
     }
 
     @Composable
+    fun AddonCard(
+        title: String,
+        priceText: String,
+        image: Painter,
+        quantity: Int,
+        onQuantityChange: (Int) -> Unit,
+        modifier: Modifier = Modifier,
+        minQty: Int = 1,
+        maxQty: Int = 3,
+    ) {
+        Base(
+            title = title,
+            priceText = priceText,
+            image = image,
+            quantity = quantity,
+            onQuantityChange = onQuantityChange,
+            modifier = modifier,
+            minQty = minQty,
+            maxQty = maxQty,
+        )
+    }
+
+    @Composable
     fun ExtraItem(
         title: String,
         price: String,

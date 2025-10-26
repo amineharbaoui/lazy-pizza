@@ -4,7 +4,6 @@ import com.example.core.firebase.firestore.datasource.ProductDatasource
 import com.example.lazypizza.features.detail.domain.repository.DetailRepository
 import com.example.lazypizza.features.home.data.mapper.toDomain
 import com.example.lazypizza.features.home.domain.models.Product
-import com.example.lazypizza.features.home.domain.models.ProductCategory
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
@@ -16,9 +15,7 @@ class DetailRepositoryImpl @Inject constructor(
         productDatasource.observeProductById(productId).map { it?.toDomain() }
 
     override fun observeToppings(): Flow<List<Product>> =
-        productDatasource.observeSections().map { list ->
+        productDatasource.observeProductsInCategory("TOPPINGS").map { list ->
             list.map { it.toDomain() }
-                .filter { it.category == ProductCategory.TOPPINGS }
         }
-
 }

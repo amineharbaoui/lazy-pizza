@@ -30,6 +30,24 @@ class ProductDatasource @Inject constructor(
         awaitClose { registration.remove() }
     }
 
+    fun observeProductsInCategory(categoryId: String): Flow<List<ProductDTO>> = callbackFlow {
+        val reg = firestore
+            .collection("categories")
+            .document(categoryId)
+            .collection("products")
+            .addSnapshotListener { snap, err ->
+                if (err != null) {
+                    close(err)
+                    return@addSnapshotListener
+                }
+                val items = snap?.documents
+                    ?.mapNotNull { it.toObject(ProductDTO::class.java) }
+                    .orEmpty()
+                trySend(items).isSuccess
+            }
+        awaitClose { reg.remove() }
+    }
+
     fun observeProductById(productId: String): Flow<ProductDTO?> = callbackFlow {
         val reg = firestore
             .collectionGroup("products")

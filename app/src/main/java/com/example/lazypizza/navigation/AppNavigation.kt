@@ -27,7 +27,8 @@ fun RootNavGraph(
         }
         composable<Route.Detail> { backStackEntry ->
             DetailScreen(
-                innerPadding = innerPadding
+                innerPadding = innerPadding,
+                onBackClick = { navController.popBackStack() },
             )
         }
     }

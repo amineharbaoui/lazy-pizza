@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -38,7 +37,6 @@ object DsAppBar {
         onPhoneClick: (phoneNumber: String) -> Unit,
         modifier: Modifier = Modifier,
     ) {
-
         Row(
             modifier = modifier
                 .fillMaxWidth()
@@ -84,7 +82,6 @@ object DsAppBar {
                 )
             }
         }
-
     }
 
     @Composable
@@ -96,13 +93,12 @@ object DsAppBar {
             modifier = modifier
                 .fillMaxWidth()
                 .height(64.dp)
-                .statusBarsPadding()
                 .padding(horizontal = 16.dp, vertical = 10.dp),
             contentAlignment = Alignment.CenterStart
         ) {
             IconButton(
                 modifier = Modifier
-                    .size(32.dp)
+                    .size(44.dp)
                     .background(
                         color = AppColors.TextSecondary_8,
                         shape = CircleShape
@@ -110,7 +106,7 @@ object DsAppBar {
                 onClick = onBackClick,
             ) {
                 Icon(
-                    modifier = Modifier.size(15.dp),
+                    modifier = Modifier.size(16.dp),
                     painter = painterResource(R.drawable.ic_left_arrow),
                     contentDescription = "Phone Number Icon",
                     tint = AppColors.TextSecondary
@@ -133,7 +129,7 @@ private fun MainPreview() {
                 onPhoneClick = { }
             )
             Spacer(Modifier.height(16.dp))
-            DsAppBar.Secondary(onBackClick = { },)
+            DsAppBar.Secondary(onBackClick = { })
         }
     }
 }

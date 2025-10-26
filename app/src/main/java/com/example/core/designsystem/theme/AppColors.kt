@@ -30,6 +30,5 @@ object AppColors {
         get() = Brush.linearGradient(
             listOf(PrimaryGradientStart, PrimaryGradientEnd)
         )
-
     val PrimaryShadow = Color(0x40F36B50)
 }
