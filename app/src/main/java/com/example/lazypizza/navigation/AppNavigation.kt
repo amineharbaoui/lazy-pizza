@@ -5,19 +5,21 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.example.lazypizza.features.cart.presentation.CartScreen
 import com.example.lazypizza.features.detail.presentation.DetailScreen
+import com.example.lazypizza.features.history.presentation.HistoryScreen
 import com.example.lazypizza.features.home.presentation.HomeScreen
 
 @Composable
 fun RootNavGraph(
     navController: NavHostController,
-    innerPadding: PaddingValues
+    innerPadding: PaddingValues,
 ) {
     NavHost(
         navController = navController,
-        startDestination = Route.Home
+        startDestination = Route.Menu
     ) {
-        composable<Route.Home> {
+        composable<Route.Menu> {
             HomeScreen(
                 innerPadding = innerPadding,
                 onProductClick = { productId ->
@@ -27,6 +29,18 @@ fun RootNavGraph(
         }
         composable<Route.Detail> { backStackEntry ->
             DetailScreen(
+                innerPadding = innerPadding,
+                onBackClick = { navController.popBackStack() },
+            )
+        }
+        composable<Route.Cart> { backStackEntry ->
+            CartScreen(
+                innerPadding = innerPadding,
+                onBackClick = { navController.popBackStack() },
+            )
+        }
+        composable<Route.History> { backStackEntry ->
+            HistoryScreen(
                 innerPadding = innerPadding,
                 onBackClick = { navController.popBackStack() },
             )

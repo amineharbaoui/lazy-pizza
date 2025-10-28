@@ -6,8 +6,14 @@ import kotlinx.serialization.Serializable
 sealed interface Route {
 
     @Serializable
-    object Home : Route
+    object Menu : Route
 
     @Serializable
     data class Detail(val productId: String) : Route
+
+    @Serializable
+    object Cart : Route
+
+    @Serializable
+    object History : Route
 }

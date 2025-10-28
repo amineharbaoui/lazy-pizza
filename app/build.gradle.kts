@@ -60,6 +60,7 @@ dependencies {
     implementation(libs.hilt.android)
     implementation(libs.hilt.navigation.compose)
     implementation(libs.androidx.compose.adaptive)
+    implementation(libs.androidx.compose.material3.adaptive.navigation.suite)
     ksp(libs.hilt.compiler)
 
     implementation(libs.coil.compose)
