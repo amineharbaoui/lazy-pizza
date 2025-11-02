@@ -27,7 +27,6 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
-import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -43,14 +42,14 @@ import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.window.core.layout.WindowWidthSizeClass
-import com.example.core.designsystem.components.DsAppBar
 import com.example.core.designsystem.components.DsButton
 import com.example.core.designsystem.components.DsTextField
+import com.example.core.designsystem.components.DsTopBar
 import com.example.core.designsystem.theme.AppColors
 import com.example.core.designsystem.theme.AppTypography
 import com.example.core.designsystem.theme.LazyPizzaThemePreview
 import com.example.core.designsystem.utils.PreviewPhoneTablet
+import com.example.core.designsystem.utils.isWideLayout
 import com.example.lazypizza.R
 import com.example.lazypizza.features.home.data.utils.HomeSampleData
 import com.example.lazypizza.features.home.domain.models.CategorySection
@@ -63,7 +62,7 @@ fun HomeScreen(
     innerPadding: PaddingValues,
     onProductClick: (productId: String) -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: HomeScreenViewModel = hiltViewModel()
+    viewModel: HomeScreenViewModel = hiltViewModel(),
 ) {
     val content = LocalContext.current
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -74,7 +73,7 @@ fun HomeScreen(
             .fillMaxSize()
             .padding(innerPadding),
     ) {
-        DsAppBar.Primary(
+        DsTopBar.Primary(
             phoneNumber = stringResource(R.string.phone_number),
             onPhoneClick = { phoneNumber ->
                 onPhoneClick(context = content, phoneNumber = phoneNumber)
@@ -102,8 +101,7 @@ fun HomeScreenContent(
     onSearchQueryChange: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass.windowWidthSizeClass
-    val isWide = windowSizeClass != WindowWidthSizeClass.COMPACT
+    val isWide = isWideLayout()
     val scope = rememberCoroutineScope()
     val listState = rememberLazyListState()
     val gridState = rememberLazyGridState()
@@ -280,21 +278,8 @@ private fun HomeScreenErrorState() {
     }
 }
 
-@PreviewPhoneTablet
-@Composable
-private fun HomeScreenPreview() {
-    LazyPizzaThemePreview {
-        HomeScreenContent(
-            sections = HomeSampleData.sampleSections,
-            searchQuery = "",
-            onProductClick = {},
-            onSearchQueryChange = {}
-        )
-    }
-}
-
 private fun buildSectionHeaderIndexMap(
-    sections: List<CategorySection>
+    sections: List<CategorySection>,
 ): Map<ProductCategory, Int> {
     val map = mutableMapOf<ProductCategory, Int>()
     var currentIndex = 0
@@ -307,10 +292,23 @@ private fun buildSectionHeaderIndexMap(
 
 private fun onPhoneClick(
     context: Context,
-    phoneNumber: String
+    phoneNumber: String,
 ) {
     val intent = Intent(Intent.ACTION_DIAL).apply {
         setData("tel:$phoneNumber".toUri())
     }
     context.startActivity(intent)
+}
+
+@PreviewPhoneTablet
+@Composable
+private fun HomeScreenPreview() {
+    LazyPizzaThemePreview {
+        HomeScreenContent(
+            sections = HomeSampleData.sampleSections,
+            searchQuery = "",
+            onProductClick = {},
+            onSearchQueryChange = {}
+        )
+    }
 }

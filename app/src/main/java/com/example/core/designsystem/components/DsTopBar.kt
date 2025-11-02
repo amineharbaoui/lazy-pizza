@@ -4,7 +4,6 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -23,6 +22,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.core.designsystem.theme.AppColors
@@ -30,7 +30,7 @@ import com.example.core.designsystem.theme.AppTypography
 import com.example.core.designsystem.theme.LazyPizzaThemePreview
 import com.example.lazypizza.R
 
-object DsAppBar {
+object DsTopBar {
     @Composable
     fun Primary(
         phoneNumber: String,
@@ -86,30 +86,41 @@ object DsAppBar {
 
     @Composable
     fun Secondary(
-        onBackClick: () -> Unit,
         modifier: Modifier = Modifier,
+        title: String? = null,
+        onBackClick: (() -> Unit)? = null,
     ) {
-        Box(
+        Row(
             modifier = modifier
                 .fillMaxWidth()
                 .height(64.dp)
-                .padding(horizontal = 16.dp, vertical = 10.dp),
-            contentAlignment = Alignment.CenterStart
+                .padding(horizontal = 10.dp),
+            verticalAlignment = Alignment.CenterVertically,
         ) {
-            IconButton(
-                modifier = Modifier
-                    .size(44.dp)
-                    .background(
-                        color = AppColors.TextSecondary_8,
-                        shape = CircleShape
-                    ),
-                onClick = onBackClick,
-            ) {
-                Icon(
-                    modifier = Modifier.size(16.dp),
-                    painter = painterResource(R.drawable.ic_left_arrow),
-                    contentDescription = "Phone Number Icon",
-                    tint = AppColors.TextSecondary
+            onBackClick?.let {
+                IconButton(
+                    modifier = Modifier
+                        .size(44.dp)
+                        .background(
+                            color = AppColors.TextSecondary_8,
+                            shape = CircleShape
+                        ),
+                    onClick = it,
+                ) {
+                    Icon(
+                        modifier = Modifier.size(16.dp),
+                        painter = painterResource(R.drawable.ic_left_arrow),
+                        contentDescription = "Phone Number Icon",
+                        tint = AppColors.TextSecondary
+                    )
+                }
+            }
+            title?.let {
+                Text(
+                    modifier = Modifier.fillMaxWidth(),
+                    text = it,
+                    style = AppTypography.Body1Medium,
+                    textAlign = TextAlign.Center,
                 )
             }
         }
@@ -122,14 +133,17 @@ private fun MainPreview() {
     LazyPizzaThemePreview {
         Column(
             verticalArrangement = Arrangement.Top,
-            modifier = Modifier
         ) {
-            DsAppBar.Primary(
+            DsTopBar.Primary(
                 phoneNumber = "+1 (555) 321-7890",
                 onPhoneClick = { }
             )
             Spacer(Modifier.height(16.dp))
-            DsAppBar.Secondary(onBackClick = { })
+            DsTopBar.Secondary(onBackClick = { })
+            Spacer(Modifier.height(16.dp))
+            DsTopBar.Secondary(onBackClick = { }, title = "History")
+            Spacer(Modifier.height(16.dp))
+            DsTopBar.Secondary(title = "History")
         }
     }
 }

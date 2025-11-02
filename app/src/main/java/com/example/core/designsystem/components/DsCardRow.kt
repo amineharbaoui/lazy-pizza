@@ -290,29 +290,34 @@ object DsCardRow {
 @Composable
 private fun PizzaCardPreview() {
     LazyPizzaThemePreview {
-        DsCardRow.MenuItem(
-            title = "Margherita",
-            description = "Tomato sauce, mozzarella, fresh basil, olive oil",
-            price = "$8.99",
-            image = painterResource(R.drawable.img_pizza),
-        )
-        Spacer(Modifier.height(8.dp))
-        DsCardRow.CartItem(
-            title = "Margherita",
-            unitPrice = 8.99,
-            quantity = 2,
-            image = painterResource(R.drawable.img_pizza),
-            onIncrease = {},
-            onDecrease = {},
-            onRemove = {},
-        )
-        Spacer(Modifier.height(8.dp))
-        DsCardRow.AddToCartItem(
-            title = "Margherita",
-            price = "$8.99",
-            onAddToCart = {},
-            image = painterResource(R.drawable.img_pizza),
-            buttonText = "Add to Cart",
-        )
+        Column(
+            verticalArrangement = Arrangement.Top,
+            modifier = Modifier
+        ) {
+            DsCardRow.MenuItem(
+                title = "Margherita",
+                description = "Tomato sauce, mozzarella, fresh basil, olive oil",
+                price = "$8.99",
+                image = painterResource(R.drawable.img_pizza),
+            )
+            Spacer(Modifier.height(8.dp))
+            DsCardRow.CartItem(
+                title = "Margherita",
+                unitPrice = 8.99,
+                quantity = 2,
+                image = painterResource(R.drawable.img_pizza),
+                onIncrease = {},
+                onDecrease = {},
+                onRemove = {},
+            )
+            Spacer(Modifier.height(8.dp))
+            DsCardRow.AddToCartItem(
+                title = "Margherita",
+                price = "$8.99",
+                onAddToCart = {},
+                image = painterResource(R.drawable.img_pizza),
+                buttonText = "Add to Cart",
+            )
+        }
     }
 }

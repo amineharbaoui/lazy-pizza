@@ -6,25 +6,10 @@ package com.example.lazypizza.features.cart.domain.model
  */
 
 data class Cart(
-    val items: List<CartItem> = emptyList()
+    val items: List<CartItem> = emptyList(),
 ) {
     fun itemCount(): Int = items.size
 }
-
-/**
- * One configured pizza item in the cart.
- *
- * @property id Stable identifier for this CartItem (unique within the cart)
- * @property productId The product/pizza id
- * @property basePrice Base price of the pizza
- * @property toppings Selected toppings with their unit prices and quantities
- */
-data class CartItem(
-    val id: String,
-    val productId: String,
-    val basePrice: Double,
-    val toppings: List<CartToppingSelection>
-)
 
 /**
  * Represents a selected topping for a cart item.

@@ -17,9 +17,9 @@ fun RootNavGraph(
 ) {
     NavHost(
         navController = navController,
-        startDestination = Route.Menu
+        startDestination = Route.Home.Menu
     ) {
-        composable<Route.Menu> {
+        composable<Route.Home.Menu> {
             HomeScreen(
                 innerPadding = innerPadding,
                 onProductClick = { productId ->
@@ -33,17 +33,11 @@ fun RootNavGraph(
                 onBackClick = { navController.popBackStack() },
             )
         }
-        composable<Route.Cart> { backStackEntry ->
-            CartScreen(
-                innerPadding = innerPadding,
-                onBackClick = { navController.popBackStack() },
-            )
+        composable<Route.Home.Cart> { backStackEntry ->
+            CartScreen(innerPadding = innerPadding)
         }
-        composable<Route.History> { backStackEntry ->
-            HistoryScreen(
-                innerPadding = innerPadding,
-                onBackClick = { navController.popBackStack() },
-            )
+        composable<Route.Home.History> { backStackEntry ->
+            HistoryScreen(innerPadding = innerPadding)
         }
     }
 }

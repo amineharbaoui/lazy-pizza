@@ -10,7 +10,6 @@ import androidx.compose.ui.Modifier
 @Composable
 fun HistoryScreen(
     innerPadding: PaddingValues,
-    onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(

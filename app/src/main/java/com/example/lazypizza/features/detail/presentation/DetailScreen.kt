@@ -18,7 +18,6 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
-import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateMapOf
@@ -31,15 +30,15 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.window.core.layout.WindowWidthSizeClass
 import coil3.compose.rememberAsyncImagePainter
-import com.example.core.designsystem.components.DsAppBar
 import com.example.core.designsystem.components.DsButton
 import com.example.core.designsystem.components.DsCardItem
+import com.example.core.designsystem.components.DsTopBar
 import com.example.core.designsystem.theme.AppColors
 import com.example.core.designsystem.theme.AppTypography
 import com.example.core.designsystem.theme.LazyPizzaThemePreview
 import com.example.core.designsystem.utils.PreviewPhoneTablet
+import com.example.core.designsystem.utils.isWideLayout
 import com.example.lazypizza.R
 import com.example.lazypizza.features.home.domain.models.Product
 import com.example.lazypizza.features.home.domain.models.ProductCategory
@@ -58,7 +57,7 @@ fun DetailScreen(
             .fillMaxSize()
             .padding(innerPadding),
     ) {
-        DsAppBar.Secondary(onBackClick = onBackClick)
+        DsTopBar.Secondary(onBackClick = onBackClick)
         when (val state = uiState) {
             is DetailUiState.Loading -> DetailLoadingState()
             is DetailUiState.Success -> DetailContent(uiState = state)
@@ -71,8 +70,7 @@ fun DetailScreen(
 private fun DetailContent(
     uiState: DetailUiState.Success,
 ) {
-    val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass.windowWidthSizeClass
-    val isWide = windowSizeClass != WindowWidthSizeClass.COMPACT
+    val isWide = isWideLayout()
 
     // Keep selection state at screen level so both phone and wide layouts share it
     val selectedQuantities = remember { mutableStateMapOf<String, Int>() }
