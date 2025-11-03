@@ -28,15 +28,9 @@ import com.example.lazypizza.navigation.Route
 @Composable
 fun MainScreen() {
     val navController = rememberNavController()
-
-    // Your own size check (e.g., from WindowSizeClass or your util)
     val isWide = isWideLayout()
-
-    // Observe current destination
     val backStackEntry by navController.currentBackStackEntryAsState()
     val destination = backStackEntry?.destination
-
-    // Show nav chrome only on top-level destinations
     val showNav = destination.isTopLevel()
 
     Scaffold(
@@ -69,21 +63,11 @@ fun MainScreen() {
     }
 }
 
-/* ---------------- helpers ---------------- */
-
-private fun NavDestination?.isTopLevel(): Boolean =
-    this?.hierarchy?.any { dest ->
-        dest.hasRoute<Route.Home.Menu>() ||
-                dest.hasRoute<Route.Home.Cart>() ||
-                dest.hasRoute<Route.Home.History>()
-    } == true
-
 @Composable
 private fun buildMenuItems(
     currentDest: NavDestination?,
     navController: NavHostController,
 ): List<DsNavigationBar.NavItem> {
-
     fun navigateTo(route: Route) {
         navController.navigate(route) {
             popUpTo(navController.graph.findStartDestination().id) {
@@ -104,21 +88,26 @@ private fun buildMenuItems(
             badgeCount = 0,
             route = Route.Home.Menu,
             isSelected = onMenu,
-            onClick = { if (!onMenu) navigateTo(it) }
+            onClick = { navigateTo(it) }
         ),
         DsNavigationBar.NavItem(
             icon = painterResource(R.drawable.ic_cart),
-            badgeCount = 3, // bind to your cart count state
+            badgeCount = 3,
             route = Route.Home.Cart,
             isSelected = onCart,
-            onClick = { if (!onCart) navigateTo(it) }
+            onClick = { navigateTo(it) }
         ),
         DsNavigationBar.NavItem(
             icon = painterResource(R.drawable.ic_history),
             badgeCount = 0,
             route = Route.Home.History,
             isSelected = onHistory,
-            onClick = { if (!onHistory) navigateTo(it) }
+            onClick = { navigateTo(it) }
         )
     )
 }
+
+private fun NavDestination?.isTopLevel(): Boolean =
+    this?.hierarchy?.any { dest ->
+        dest.hasRoute<Route.Home.Menu>() || dest.hasRoute<Route.Home.Cart>() || dest.hasRoute<Route.Home.History>()
+    } == true

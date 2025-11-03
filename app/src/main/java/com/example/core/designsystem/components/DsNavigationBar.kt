@@ -50,7 +50,7 @@ object DsNavigationBar {
                 menuItems.forEach { item ->
                     NavigationBarItem(
                         selected = item.isSelected,
-                        onClick = { item.onClick(item.route) },
+                        onClick = { if (item.isSelected.not()) item.onClick(item.route) },
                         icon = { NavIcon(item.icon, item.route.title, item.badgeCount) },
                         label = { Text(text = item.route.title) },
                         colors = NavigationBarItemColors(
@@ -82,7 +82,7 @@ object DsNavigationBar {
                 menuItems.forEach { item ->
                     NavigationRailItem(
                         selected = item.isSelected,
-                        onClick = { item.onClick(item.route) },
+                        onClick = { if (item.isSelected.not()) item.onClick(item.route) },
                         icon = { NavIcon(item.icon, item.route.title, item.badgeCount) },
                         label = { Text(item.route.title) },
                         colors = NavigationRailItemColors(

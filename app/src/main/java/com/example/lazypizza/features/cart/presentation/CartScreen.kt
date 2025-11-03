@@ -153,10 +153,9 @@ private fun CartItemsSection(
             DsCardRow.CartItem(
                 title = item.title,
                 unitPrice = item.unitPrice,
-                quantity = item.quantity,
                 image = painterResource(id = item.imageRes),
-                onIncrease = { onIncrease(item.id) },
-                onDecrease = { onDecrease(item.id) },
+                quantity = item.quantity,
+                onQuantityChange = { },
                 onRemove = { onRemove(item.id) },
             )
         }

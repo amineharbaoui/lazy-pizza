@@ -164,7 +164,7 @@ fun HomeScreenContent(
                             )
                         }
                         items(section.products, key = { it.id }) { product ->
-                            ProductCard(product, onProductClick)
+                            ProductCard(product, {})
                         }
                         item(span = { GridItemSpan(maxLineSpan) }) { Spacer(Modifier.height(16.dp)) }
                     }

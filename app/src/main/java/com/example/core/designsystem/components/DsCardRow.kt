@@ -18,6 +18,9 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -31,8 +34,6 @@ import com.example.core.designsystem.theme.AppColors
 import com.example.core.designsystem.theme.AppTypography
 import com.example.core.designsystem.theme.LazyPizzaThemePreview
 import com.example.lazypizza.R
-import java.text.NumberFormat
-import java.util.Locale
 
 object DsCardRow {
     val radius = 12.dp
@@ -108,26 +109,20 @@ object DsCardRow {
     fun CartItem(
         title: String,
         unitPrice: Double,
-        quantity: Int,
         image: Painter,
-        onIncrease: () -> Unit,
-        onDecrease: () -> Unit,
+        quantity: Int,
+        onQuantityChange: (Int) -> Unit,
         onRemove: () -> Unit,
         modifier: Modifier = Modifier,
-        currencyLocale: Locale = Locale.US,
-        onClick: () -> Unit = {},
     ) {
-        val currencyFmt = NumberFormat.getCurrencyInstance(currencyLocale)
-        val total = unitPrice * quantity
-        val totalText = currencyFmt.format(total)
-        val unitText = currencyFmt.format(unitPrice)
-
+        val totalPrice by remember(quantity, unitPrice) {
+            derivedStateOf { unitPrice * quantity }
+        }
         Card(
             modifier = modifier.fillMaxWidth(),
             shape = RoundedCornerShape(radius),
             colors = CardDefaults.cardColors(containerColor = Color.White),
             elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-            onClick = onClick,
         ) {
             Row {
                 Image(
@@ -182,7 +177,10 @@ object DsCardRow {
                             DsButton.IconSmallRounded(
                                 icon = painterResource(R.drawable.ic_minus),
                                 iconTint = AppColors.TextSecondary,
-                                onClick = onDecrease,
+                                onClick = {
+                                    val newQty = (quantity - 1).coerceAtLeast(0)
+                                    onQuantityChange(newQty)
+                                },
                             )
                             Text(
                                 text = quantity.toString(),
@@ -192,7 +190,10 @@ object DsCardRow {
                             DsButton.IconSmallRounded(
                                 icon = painterResource(R.drawable.ic_plus),
                                 iconTint = AppColors.TextSecondary,
-                                onClick = onIncrease,
+                                onClick = {
+                                    val newQty = quantity + 1
+                                    onQuantityChange(newQty)
+                                },
                             )
                         }
 
@@ -201,12 +202,12 @@ object DsCardRow {
                             verticalArrangement = Arrangement.Center,
                         ) {
                             Text(
-                                text = totalText,
+                                text = "$$totalPrice",
                                 style = AppTypography.Title1SemiBold,
                                 color = AppColors.TextPrimary,
                             )
                             Text(
-                                text = "$quantity × $unitText",
+                                text = "$quantity × $$unitPrice",
                                 style = AppTypography.Body3Regular,
                                 color = AppColors.TextSecondary,
                             )
@@ -225,14 +226,12 @@ object DsCardRow {
         buttonText: String = "Add to Cart",
         onAddToCart: () -> Unit,
         modifier: Modifier = Modifier,
-        onClick: () -> Unit = {},
     ) {
         Card(
             modifier = modifier.fillMaxWidth(),
             shape = RoundedCornerShape(radius),
             colors = CardDefaults.cardColors(containerColor = Color.White),
             elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-            onClick = onClick,
         ) {
             Row {
                 Image(
@@ -304,10 +303,9 @@ private fun PizzaCardPreview() {
             DsCardRow.CartItem(
                 title = "Margherita",
                 unitPrice = 8.99,
-                quantity = 2,
                 image = painterResource(R.drawable.img_pizza),
-                onIncrease = {},
-                onDecrease = {},
+                quantity = 0,
+                onQuantityChange = {},
                 onRemove = {},
             )
             Spacer(Modifier.height(8.dp))

@@ -6,7 +6,8 @@ sealed interface DetailUiState {
     data object Loading : DetailUiState
     data class Success(
         val product: Product,
-        val toppings: List<Product>
+        val toppings: List<Product>,
+
     ) : DetailUiState
     data object Error : DetailUiState
 }

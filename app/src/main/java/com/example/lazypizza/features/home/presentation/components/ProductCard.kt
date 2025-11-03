@@ -8,6 +8,7 @@ import androidx.compose.animation.togetherWith
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import coil3.compose.rememberAsyncImagePainter
@@ -33,35 +34,34 @@ fun ProductCard(
         }
 
         else -> {
-            var qty by rememberSaveable(product.id) { mutableIntStateOf(0) }
+            var shouldAddToCart by rememberSaveable(product.id) { mutableStateOf(false) }
+            var quantity by rememberSaveable { mutableIntStateOf(0) }
 
             AnimatedContent(
-                targetState = qty > 0,
+                targetState = shouldAddToCart,
                 label = "cardSwitch",
                 transitionSpec = {
                     fadeIn() togetherWith fadeOut() using SizeTransform(clip = false)
                 }
-            ) { inCart ->
-                if (!inCart) {
+            ) { targetState ->
+                if (!targetState) {
                     DsCardRow.AddToCartItem(
                         title = product.name,
                         price = product.price.asMoney(),
                         image = rememberAsyncImagePainter(product.imageUrl),
-                        onAddToCart = { qty = 1 },
-                        onClick = { onProductClick(product.id) }
+                        onAddToCart = {
+                            shouldAddToCart = true
+                            quantity = 1
+                        },
                     )
                 } else {
                     DsCardRow.CartItem(
                         title = product.name,
                         unitPrice = product.price,
-                        quantity = qty,
                         image = rememberAsyncImagePainter(product.imageUrl),
-                        onIncrease = { qty += 1 },
-                        onDecrease = {
-                            if (qty <= 1) qty = 0 else qty -= 1
-                        },
-                        onRemove = { qty = 0 },
-                        onClick = { onProductClick(product.id) }
+                        quantity = quantity,
+                        onQuantityChange = { quantity = it },
+                        onRemove = { shouldAddToCart = false },
                     )
                 }
             }
