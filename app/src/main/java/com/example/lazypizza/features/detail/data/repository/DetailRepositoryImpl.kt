@@ -1,8 +1,8 @@
 package com.example.lazypizza.features.detail.data.repository
 
 import com.example.core.firebase.firestore.datasource.ProductDatasource
+import com.example.lazypizza.data.mapper.toDomain
 import com.example.lazypizza.features.detail.domain.repository.DetailRepository
-import com.example.lazypizza.features.home.data.mapper.toDomain
 import com.example.lazypizza.features.home.domain.models.Product
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map

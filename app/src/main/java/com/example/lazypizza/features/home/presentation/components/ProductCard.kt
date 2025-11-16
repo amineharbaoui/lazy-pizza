@@ -11,23 +11,25 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
 import coil3.compose.rememberAsyncImagePainter
 import com.example.core.designsystem.components.DsCardRow
-import com.example.lazypizza.features.home.domain.models.Product
 import com.example.lazypizza.features.home.domain.models.ProductCategory.PIZZA
-import java.text.NumberFormat
+import com.example.lazypizza.features.home.presentation.ProductDisplayModel
 
 @Composable
 fun ProductCard(
-    product: Product,
+    modifier: Modifier = Modifier,
+    product: ProductDisplayModel,
     onProductClick: (productId: String) -> Unit,
 ) {
     when (product.category) {
         PIZZA -> {
             DsCardRow.MenuItem(
+                modifier = modifier,
                 title = product.name,
                 description = product.description,
-                price = product.price.toString(),
+                price = product.priceFormatted,
                 image = rememberAsyncImagePainter(product.imageUrl),
                 onClick = { onProductClick(product.id) },
             )
@@ -46,8 +48,9 @@ fun ProductCard(
             ) { targetState ->
                 if (!targetState) {
                     DsCardRow.AddToCartItem(
+                        modifier = modifier,
                         title = product.name,
-                        price = product.price.asMoney(),
+                        price = product.priceFormatted,
                         image = rememberAsyncImagePainter(product.imageUrl),
                         onAddToCart = {
                             shouldAddToCart = true
@@ -56,6 +59,7 @@ fun ProductCard(
                     )
                 } else {
                     DsCardRow.CartItem(
+                        modifier = modifier,
                         title = product.name,
                         unitPrice = product.price,
                         image = rememberAsyncImagePainter(product.imageUrl),
@@ -68,5 +72,3 @@ fun ProductCard(
         }
     }
 }
-
-private fun Double.asMoney(): String = NumberFormat.getCurrencyInstance().format(this)

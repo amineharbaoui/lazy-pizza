@@ -2,36 +2,36 @@ package com.example.lazypizza.features.home.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.lazypizza.features.home.domain.models.CategorySection
 import com.example.lazypizza.features.home.domain.models.ProductCategory
 import com.example.lazypizza.features.home.domain.usecase.GetHomeSectionsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import kotlin.time.Duration.Companion.milliseconds
 
 @HiltViewModel
 class HomeScreenViewModel @Inject constructor(
-    private val getHomeSectionsUseCase: GetHomeSectionsUseCase
+    private val getHomeSectionsUseCase: GetHomeSectionsUseCase,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<HomeScreenUiState>(HomeScreenUiState.Loading)
-    val uiState: StateFlow<HomeScreenUiState> = _uiState.asStateFlow()
+    val uiState: StateFlow<HomeScreenUiState> = _uiState.onStart {
+        observeSections()
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.Lazily,
+        initialValue = HomeScreenUiState.Loading
+    )
 
     private var searchJob: Job? = null
-
-    init {
-        observeSections()
-
-
-    }
 
     private fun observeSections() {
         viewModelScope.launch {
@@ -42,13 +42,15 @@ class HomeScreenViewModel @Inject constructor(
                     val currentQuery = (uiState.value as? HomeScreenUiState.Success)
                         ?.searchQuery
                         .orEmpty()
+
+                    val mapped = sections.toDisplayModels()
                     val display = if (currentQuery.isBlank()) {
-                        sections
+                        mapped
                     } else {
-                        filterSections(sections, currentQuery)
+                        filterSections(mapped, currentQuery)
                     }
                     _uiState.value = HomeScreenUiState.Success(
-                        originalSections = sections,
+                        originalSections = mapped,
                         displaySections = display,
                         filterTags = ProductCategory.entries
                             .filterNot { it == ProductCategory.TOPPINGS }
@@ -58,7 +60,6 @@ class HomeScreenViewModel @Inject constructor(
                 }
         }
     }
-
 
     fun onSearchQueryChange(newSearchQuery: String) {
         searchJob?.cancel()
@@ -81,12 +82,11 @@ class HomeScreenViewModel @Inject constructor(
     }
 
     private fun filterSections(
-        sections: List<CategorySection>,
-        query: String
+        sections: List<CategorySectionDisplayModel>,
+        query: String,
     ) = sections.mapNotNull { section ->
         val filteredProducts = section.products.filter { product ->
-            product.name.contains(query, ignoreCase = true) ||
-                    product.description.contains(query, ignoreCase = true)
+            product.name.contains(query, ignoreCase = true) || product.description.contains(query, ignoreCase = true)
         }
         if (filteredProducts.isNotEmpty()) {
             section.copy(products = filteredProducts)

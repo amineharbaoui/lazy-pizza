@@ -8,5 +8,5 @@ import javax.inject.Inject
 class GetHomeSectionsUseCase @Inject constructor(
     private val repository: HomeRepository
 ) {
-    suspend operator fun invoke(): Flow<List<CategorySection>> = repository.observeHomeSections()
+    operator fun invoke(): Flow<List<CategorySection>> = repository.observeHomeSections()
 }

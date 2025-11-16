@@ -6,10 +6,10 @@ data class Product(
     val name: String,
     val description: String,
     val price: Double,
-    val imageUrl: String
+    val imageUrl: String,
 )
 
 data class CategorySection(
     val category: ProductCategory,
-    val products: List<Product>
+    val products: List<Product>,
 )

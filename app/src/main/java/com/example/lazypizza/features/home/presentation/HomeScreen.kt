@@ -52,8 +52,6 @@ import com.example.core.designsystem.utils.PreviewPhoneTablet
 import com.example.core.designsystem.utils.isWideLayout
 import com.example.lazypizza.R
 import com.example.lazypizza.features.home.data.utils.HomeSampleData
-import com.example.lazypizza.features.home.domain.models.CategorySection
-import com.example.lazypizza.features.home.domain.models.ProductCategory
 import com.example.lazypizza.features.home.presentation.components.ProductCard
 import kotlinx.coroutines.launch
 
@@ -83,6 +81,7 @@ fun HomeScreen(
             HomeScreenUiState.Loading -> HomeScreenLoadingState()
             is HomeScreenUiState.Success -> HomeScreenContent(
                 sections = state.displaySections,
+                filterTags = state.filterTags,
                 searchQuery = state.searchQuery,
                 onProductClick = onProductClick,
                 onSearchQueryChange = viewModel::onSearchQueryChange
@@ -95,22 +94,21 @@ fun HomeScreen(
 
 @Composable
 fun HomeScreenContent(
-    sections: List<CategorySection>,
+    sections: List<CategorySectionDisplayModel>,
+    filterTags: List<String>,
     searchQuery: String,
     onProductClick: (productId: String) -> Unit,
     onSearchQueryChange: (String) -> Unit,
-    modifier: Modifier = Modifier,
 ) {
     val isWide = isWideLayout()
     val scope = rememberCoroutineScope()
     val listState = rememberLazyListState()
     val gridState = rememberLazyGridState()
-    val sectionIndexMap = remember(sections) { buildSectionHeaderIndexMap(sections) }
+    val sectionStartIndices: List<Int> = remember(sections) { buildSectionStartIndices(sections) }
     val isEmpty = sections.isEmpty() || sections.all { it.products.isEmpty() }
 
     Column(
         verticalArrangement = Arrangement.Top,
-        modifier = modifier.padding(horizontal = 16.dp)
     ) {
         if (isEmpty) {
             Box(
@@ -142,16 +140,15 @@ fun HomeScreenContent(
                 ) {
                     item(span = { GridItemSpan(maxLineSpan) }) {
                         Header(
+                            filterTags = filterTags,
                             searchQuery = searchQuery,
                             onSearchQueryChange = onSearchQueryChange,
-                            onScroll = { target ->
+                            onScroll = { tagIndex ->
+                                val target = sectionStartIndices.getOrElse(tagIndex) { 0 }
                                 scope.launch {
-                                    gridState.animateScrollToItem(
-                                        target
-                                    )
+                                    gridState.animateScrollToItem(target)
                                 }
                             },
-                            sectionIndexMap = sectionIndexMap
                         )
                     }
                     sections.forEach { section ->
@@ -160,11 +157,17 @@ fun HomeScreenContent(
                                 text = section.category.value.uppercase(),
                                 style = AppTypography.Label2SemiBold,
                                 color = AppColors.TextSecondary,
-                                modifier = Modifier.padding(bottom = 8.dp)
+                                modifier = Modifier
+                                    .padding(bottom = 8.dp)
+                                    .padding(horizontal = 16.dp)
                             )
                         }
                         items(section.products, key = { it.id }) { product ->
-                            ProductCard(product, {})
+                            ProductCard(
+                                modifier = Modifier.padding(horizontal = 16.dp),
+                                product = product,
+                                onProductClick = onProductClick
+                            )
                         }
                         item(span = { GridItemSpan(maxLineSpan) }) { Spacer(Modifier.height(16.dp)) }
                     }
@@ -178,16 +181,15 @@ fun HomeScreenContent(
                 ) {
                     item {
                         Header(
+                            filterTags = filterTags,
                             searchQuery = searchQuery,
                             onSearchQueryChange = onSearchQueryChange,
-                            onScroll = { target ->
+                            onScroll = { tagIndex ->
+                                val target = sectionStartIndices.getOrElse(tagIndex) { 0 }
                                 scope.launch {
-                                    listState.animateScrollToItem(
-                                        target
-                                    )
+                                    listState.animateScrollToItem(target)
                                 }
                             },
-                            sectionIndexMap = sectionIndexMap
                         )
                     }
                     sections.forEach { section ->
@@ -196,11 +198,17 @@ fun HomeScreenContent(
                                 text = section.category.value.uppercase(),
                                 style = AppTypography.Label2SemiBold,
                                 color = AppColors.TextSecondary,
-                                modifier = Modifier.padding(bottom = 8.dp)
+                                modifier = Modifier
+                                    .padding(bottom = 8.dp)
+                                    .padding(horizontal = 16.dp)
                             )
                         }
                         items(section.products, key = { it.id }) { product ->
-                            ProductCard(product, onProductClick)
+                            ProductCard(
+                                modifier = Modifier.padding(horizontal = 16.dp),
+                                product = product,
+                                onProductClick = onProductClick
+                            )
                         }
                         item { Spacer(Modifier.height(16.dp)) }
                     }
@@ -216,7 +224,7 @@ private fun Header(
     searchQuery: String,
     onSearchQueryChange: (String) -> Unit,
     onScroll: (targetPosition: Int) -> Unit,
-    sectionIndexMap: Map<ProductCategory, Int>,
+    filterTags: List<String>,
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier) {
@@ -224,6 +232,7 @@ private fun Header(
             modifier = Modifier
                 .fillMaxWidth()
                 .heightIn(max = 160.dp)
+                .padding(horizontal = 16.dp)
                 .clip(RoundedCornerShape(8.dp)),
             painter = painterResource(R.drawable.img_home_screen),
             contentDescription = "Image Home Screen",
@@ -231,22 +240,23 @@ private fun Header(
         )
         Spacer(Modifier.height(16.dp))
         DsTextField.Search(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp),
             value = searchQuery,
             onValueChange = onSearchQueryChange
         )
         Spacer(Modifier.height(16.dp))
         Row(
-            modifier = Modifier.horizontalScroll(rememberScrollState()),
+            modifier = Modifier
+                .horizontalScroll(rememberScrollState())
+                .padding(horizontal = 16.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            ProductCategory.entries.forEach { category ->
+            filterTags.forEachIndexed { index, tagName ->
                 DsButton.Rounded(
-                    text = category.value,
-                    onClick = {
-                        val target = sectionIndexMap[category] ?: 0
-                        onScroll(target)
-                    }
+                    text = tagName,
+                    onClick = { onScroll(index) }
                 )
             }
         }
@@ -278,18 +288,6 @@ private fun HomeScreenErrorState() {
     }
 }
 
-private fun buildSectionHeaderIndexMap(
-    sections: List<CategorySection>,
-): Map<ProductCategory, Int> {
-    val map = mutableMapOf<ProductCategory, Int>()
-    var currentIndex = 0
-    sections.forEach { section ->
-        map[section.category] = currentIndex
-        currentIndex += 1 + section.products.size
-    }
-    return map
-}
-
 private fun onPhoneClick(
     context: Context,
     phoneNumber: String,
@@ -300,15 +298,27 @@ private fun onPhoneClick(
     context.startActivity(intent)
 }
 
+private fun buildSectionStartIndices(sections: List<CategorySectionDisplayModel>): List<Int> {
+    val indices = mutableListOf<Int>()
+    var current = 1
+    sections.forEach { section ->
+        indices += current
+        current += 1 + section.products.size + 1
+    }
+    return indices
+}
+
+
 @PreviewPhoneTablet
 @Composable
 private fun HomeScreenPreview() {
     LazyPizzaThemePreview {
         HomeScreenContent(
-            sections = HomeSampleData.sampleSections,
+            sections = HomeSampleData.sampleSections.toDisplayModels(),
             searchQuery = "",
             onProductClick = {},
-            onSearchQueryChange = {}
+            onSearchQueryChange = {},
+            filterTags = emptyList(),
         )
     }
 }

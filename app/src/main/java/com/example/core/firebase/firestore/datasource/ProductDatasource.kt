@@ -1,6 +1,6 @@
 package com.example.core.firebase.firestore.datasource
 
-import com.example.lazypizza.features.home.data.models.ProductDTO
+import com.example.core.firebase.firestore.dto.ProductRemoteDto
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
 import kotlinx.coroutines.channels.awaitClose
@@ -9,9 +9,9 @@ import kotlinx.coroutines.flow.callbackFlow
 import javax.inject.Inject
 
 class ProductDatasource @Inject constructor(
-    private val firestore: FirebaseFirestore
+    private val firestore: FirebaseFirestore,
 ) {
-    fun observeSections(): Flow<List<ProductDTO>> = callbackFlow {
+    fun observeSections(): Flow<List<ProductRemoteDto>> = callbackFlow {
         val registration: ListenerRegistration =
             firestore.collectionGroup("products")
                 .addSnapshotListener { snapshot, error ->
@@ -21,7 +21,7 @@ class ProductDatasource @Inject constructor(
                     }
                     val items = snapshot
                         ?.documents
-                        ?.mapNotNull { it.toObject(ProductDTO::class.java) }
+                        ?.mapNotNull { it.toObject(ProductRemoteDto::class.java) }
                         .orEmpty()
 
                     trySend(items).isSuccess
@@ -30,7 +30,7 @@ class ProductDatasource @Inject constructor(
         awaitClose { registration.remove() }
     }
 
-    fun observeProductsInCategory(categoryId: String): Flow<List<ProductDTO>> = callbackFlow {
+    fun observeProductsInCategory(categoryId: String): Flow<List<ProductRemoteDto>> = callbackFlow {
         val reg = firestore
             .collection("categories")
             .document(categoryId)
@@ -41,14 +41,14 @@ class ProductDatasource @Inject constructor(
                     return@addSnapshotListener
                 }
                 val items = snap?.documents
-                    ?.mapNotNull { it.toObject(ProductDTO::class.java) }
+                    ?.mapNotNull { it.toObject(ProductRemoteDto::class.java) }
                     .orEmpty()
                 trySend(items).isSuccess
             }
         awaitClose { reg.remove() }
     }
 
-    fun observeProductById(productId: String): Flow<ProductDTO?> = callbackFlow {
+    fun observeProductById(productId: String): Flow<ProductRemoteDto?> = callbackFlow {
         val reg = firestore
             .collectionGroup("products")
             .whereEqualTo("id", productId)
@@ -59,7 +59,7 @@ class ProductDatasource @Inject constructor(
                     return@addSnapshotListener
                 }
                 val dto = snapshot?.documents?.firstOrNull()
-                    ?.toObject(ProductDTO::class.java)
+                    ?.toObject(ProductRemoteDto::class.java)
                     ?.copy(
                         id = snapshot.documents.firstOrNull()?.id ?: productId,
                         category = snapshot.documents.firstOrNull()?.getString("category").orEmpty()

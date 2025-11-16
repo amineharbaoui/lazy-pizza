@@ -1,7 +1,7 @@
 package com.example.lazypizza.features.home.data.repository
 
 import com.example.core.firebase.firestore.datasource.ProductDatasource
-import com.example.lazypizza.features.home.data.mapper.toDomain
+import com.example.lazypizza.data.mapper.toDomain
 import com.example.lazypizza.features.home.data.mapper.toSections
 import com.example.lazypizza.features.home.domain.models.CategorySection
 import com.example.lazypizza.features.home.domain.models.ProductCategory
@@ -16,11 +16,10 @@ class HomeRepositoryImpl @Inject constructor(
     private val productDatasource: ProductDatasource,
 ) : HomeRepository {
 
-    override suspend fun observeHomeSections(): Flow<List<CategorySection>> =
+    override fun observeHomeSections(): Flow<List<CategorySection>> =
         productDatasource.observeSections().map { list ->
             list.map { it.toDomain() }
                 .toSections()
                 .filterNot { it.category == ProductCategory.TOPPINGS }
         }
 }
-
