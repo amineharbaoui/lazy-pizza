@@ -19,9 +19,9 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.example.core.designsystem.components.DsNavigationBar
 import com.example.core.designsystem.utils.isWideLayout
 import com.example.lazypizza.R
+import com.example.lazypizza.core.designsystem.components.DsNavigationBar
 import com.example.lazypizza.navigation.RootNavGraph
 import com.example.lazypizza.navigation.Route
 

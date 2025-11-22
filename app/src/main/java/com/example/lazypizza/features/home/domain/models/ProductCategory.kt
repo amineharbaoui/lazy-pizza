@@ -1,3 +1,9 @@
 package com.example.lazypizza.features.home.domain.models
 
-// Moved to :core:model module
+enum class ProductCategory(val value: String) {
+    PIZZA("Pizza"),
+    DRINKS("Drinks"),
+    SAUCES("Sauces"),
+    ICE_CREAM("Ice Cream"),
+    TOPPINGS("Toppings")
+}

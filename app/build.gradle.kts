@@ -45,10 +45,6 @@ android {
 
 dependencies {
 
-    implementation(project(":core:model"))
-    implementation(project(":core:firebase"))
-    implementation(project(":core:designsystem"))
-
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)

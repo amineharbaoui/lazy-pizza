@@ -37,9 +37,9 @@ import com.example.core.designsystem.components.DsTopBar
 import com.example.core.designsystem.theme.AppColors
 import com.example.core.designsystem.theme.AppTypography
 import com.example.core.designsystem.theme.LazyPizzaThemePreview
-import com.example.core.designsystem.utils.PreviewPhoneTablet
 import com.example.core.designsystem.utils.isWideLayout
 import com.example.lazypizza.R
+import com.example.lazypizza.core.designsystem.utils.PreviewPhoneTablet
 import com.example.lazypizza.features.home.domain.models.Product
 import com.example.lazypizza.features.home.domain.models.ProductCategory
 import java.text.NumberFormat
