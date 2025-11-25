@@ -10,8 +10,8 @@ internal fun Product.toDisplayModel(): ProductDisplayModel = ProductDisplayModel
     category = category,
     name = name,
     description = description,
-    price = price,
-    priceFormatted = NumberFormat.getCurrencyInstance(Locale.US).format(price),
+    price = basePrice,
+    priceFormatted = NumberFormat.getCurrencyInstance(Locale.US).format(basePrice),
     imageUrl = imageUrl,
 )
 

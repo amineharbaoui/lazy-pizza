@@ -18,10 +18,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.example.core.designsystem.components.DsButton
-import com.example.core.designsystem.components.DsCardItem
-import com.example.core.designsystem.theme.AppColors
-import com.example.core.designsystem.theme.AppTypography
+import com.example.designsystem.components.DsButton
+import com.example.designsystem.components.DsCardItem
+import com.example.designsystem.theme.AppColors
+import com.example.designsystem.theme.AppTypography
 import com.example.lazypizza.R
 import com.example.lazypizza.features.cart.presentation.UiExtraItem
 

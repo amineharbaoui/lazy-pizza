@@ -21,4 +21,5 @@ dependencyResolutionManagement {
 
 rootProject.name = "LazyPizza"
 include(":app")
- 
+include(":core:designsystem")
+include(":features:menu")

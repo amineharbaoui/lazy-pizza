@@ -13,23 +13,22 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import coil3.compose.rememberAsyncImagePainter
-import com.example.core.designsystem.components.DsCardRow
-import com.example.lazypizza.features.home.domain.models.ProductCategory.PIZZA
-import com.example.lazypizza.features.home.presentation.ProductDisplayModel
+import com.example.designsystem.components.DsCardRow
+import com.example.menu.presentation.model.MenuItemDisplayModel
 
 @Composable
 fun ProductCard(
     modifier: Modifier = Modifier,
-    product: ProductDisplayModel,
+    product: MenuItemDisplayModel,
     onProductClick: (productId: String) -> Unit,
 ) {
-    when (product.category) {
-        PIZZA -> {
+    when (product) {
+        is MenuItemDisplayModel.Pizza -> {
             DsCardRow.MenuItem(
                 modifier = modifier,
                 title = product.name,
                 description = product.description,
-                price = product.priceFormatted,
+                price = product.priceText,
                 image = rememberAsyncImagePainter(product.imageUrl),
                 onClick = { onProductClick(product.id) },
             )
@@ -50,7 +49,7 @@ fun ProductCard(
                     DsCardRow.AddToCartItem(
                         modifier = modifier,
                         title = product.name,
-                        price = product.priceFormatted,
+                        price = product.priceText,
                         image = rememberAsyncImagePainter(product.imageUrl),
                         onAddToCart = {
                             shouldAddToCart = true
@@ -61,7 +60,7 @@ fun ProductCard(
                     DsCardRow.CartItem(
                         modifier = modifier,
                         title = product.name,
-                        unitPrice = product.price,
+                        unitPrice = 0.0, // FIXME //product.price,
                         image = rememberAsyncImagePainter(product.imageUrl),
                         quantity = quantity,
                         onQuantityChange = { quantity = it },

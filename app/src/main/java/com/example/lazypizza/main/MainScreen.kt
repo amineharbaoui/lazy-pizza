@@ -8,54 +8,50 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavDestination
-import androidx.navigation.NavDestination.Companion.hasRoute
-import androidx.navigation.NavDestination.Companion.hierarchy
-import androidx.navigation.NavGraph.Companion.findStartDestination
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.currentBackStackEntryAsState
-import androidx.navigation.compose.rememberNavController
-import com.example.core.designsystem.utils.isWideLayout
-import com.example.lazypizza.R
-import com.example.lazypizza.core.designsystem.components.DsNavigationBar
+import com.example.designsystem.utils.isWideLayout
+import com.example.lazypizza.navigation.BottomBar
+import com.example.lazypizza.navigation.NavigationRail
 import com.example.lazypizza.navigation.RootNavGraph
 import com.example.lazypizza.navigation.Route
+import com.example.lazypizza.navigation.TopLevelBackStack
+
 
 @Composable
 fun MainScreen() {
-    val navController = rememberNavController()
     val isWide = isWideLayout()
-    val backStackEntry by navController.currentBackStackEntryAsState()
-    val destination = backStackEntry?.destination
-    val showNav = destination.isTopLevel()
+    val topLevelBackStack = remember { TopLevelBackStack<Any>(Route.TopLevel.Menu) }
+    val currentRoute: Route = topLevelBackStack.topLevelKey as? Route ?: Route.TopLevel.Menu
 
     Scaffold(
         contentWindowInsets = WindowInsets.safeDrawing,
         bottomBar = {
-            if (showNav && !isWide) {
-                DsNavigationBar.Bottom(
-                    menuItems = buildMenuItems(destination, navController)
+            if (!isWide) {
+                BottomBar(
+                    currentRoute = currentRoute,
+                    onRouteSelect = { newRoute ->
+                        topLevelBackStack.addTopLevel(newRoute)
+                    }
                 )
             }
         }
     ) { innerPadding ->
         Row(Modifier.padding(innerPadding)) {
-            if (showNav && isWide) {
-                DsNavigationBar.Rail(
-                    menuItems = buildMenuItems(destination, navController)
+            if (isWide) {
+                NavigationRail(
+                    currentRoute = currentRoute,
+                    onRouteSelect = { newRoute ->
+                        topLevelBackStack.addTopLevel(newRoute)
+                    }
                 )
             }
 
-            // App content
             Box(Modifier.weight(1f)) {
                 RootNavGraph(
-                    navController = navController,
-                    // We already consumed safe top+horizontal insets via contentWindowInsets.
-                    // Bottom is handled by Scaffold when bottomBar is present.
+                    backStack = topLevelBackStack.backStack,
+                    onBack = { topLevelBackStack.removeLast() },
                     innerPadding = PaddingValues(0.dp)
                 )
             }
@@ -63,51 +59,3 @@ fun MainScreen() {
     }
 }
 
-@Composable
-private fun buildMenuItems(
-    currentDest: NavDestination?,
-    navController: NavHostController,
-): List<DsNavigationBar.NavItem> {
-    fun navigateTo(route: Route) {
-        navController.navigate(route) {
-            popUpTo(navController.graph.findStartDestination().id) {
-                saveState = true
-            }
-            launchSingleTop = true
-            restoreState = true
-        }
-    }
-
-    val onMenu = currentDest?.hierarchy?.any { it.hasRoute<Route.Home.Menu>() } == true
-    val onCart = currentDest?.hierarchy?.any { it.hasRoute<Route.Home.Cart>() } == true
-    val onHistory = currentDest?.hierarchy?.any { it.hasRoute<Route.Home.History>() } == true
-
-    return listOf(
-        DsNavigationBar.NavItem(
-            icon = painterResource(R.drawable.ic_menu),
-            badgeCount = 0,
-            route = Route.Home.Menu,
-            isSelected = onMenu,
-            onClick = { navigateTo(it) }
-        ),
-        DsNavigationBar.NavItem(
-            icon = painterResource(R.drawable.ic_cart),
-            badgeCount = 3,
-            route = Route.Home.Cart,
-            isSelected = onCart,
-            onClick = { navigateTo(it) }
-        ),
-        DsNavigationBar.NavItem(
-            icon = painterResource(R.drawable.ic_history),
-            badgeCount = 0,
-            route = Route.Home.History,
-            isSelected = onHistory,
-            onClick = { navigateTo(it) }
-        )
-    )
-}
-
-private fun NavDestination?.isTopLevel(): Boolean =
-    this?.hierarchy?.any { dest ->
-        dest.hasRoute<Route.Home.Menu>() || dest.hasRoute<Route.Home.Cart>() || dest.hasRoute<Route.Home.History>()
-    } == true

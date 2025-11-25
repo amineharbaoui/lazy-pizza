@@ -42,17 +42,21 @@ import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.example.core.designsystem.components.DsButton
-import com.example.core.designsystem.components.DsTextField
-import com.example.core.designsystem.components.DsTopBar
-import com.example.core.designsystem.theme.AppColors
-import com.example.core.designsystem.theme.AppTypography
-import com.example.core.designsystem.theme.LazyPizzaThemePreview
-import com.example.core.designsystem.utils.isWideLayout
-import com.example.lazypizza.R
-import com.example.lazypizza.core.designsystem.utils.PreviewPhoneTablet
-import com.example.lazypizza.features.home.data.utils.HomeSampleData
+import com.example.designsystem.R
+import com.example.designsystem.components.DsButton
+import com.example.designsystem.components.DsTextField
+import com.example.designsystem.components.DsTopBar
+import com.example.designsystem.theme.AppColors
+import com.example.designsystem.theme.AppTypography
+import com.example.designsystem.theme.LazyPizzaThemePreview
+import com.example.designsystem.utils.PreviewPhoneTablet
+import com.example.designsystem.utils.isWideLayout
 import com.example.lazypizza.features.home.presentation.components.ProductCard
+import com.example.menu.domain.model.ProductCategory
+import com.example.menu.presentation.menu.MenuUiState
+import com.example.menu.presentation.menu.MenuViewModel
+import com.example.menu.presentation.model.MenuSectionDisplayModel
+import com.example.menu.presentation.model.toDisplayName
 import kotlinx.coroutines.launch
 
 @Composable
@@ -60,7 +64,7 @@ fun HomeScreen(
     innerPadding: PaddingValues,
     onProductClick: (productId: String) -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: HomeScreenViewModel = hiltViewModel(),
+    viewModel: MenuViewModel = hiltViewModel(),
 ) {
     val content = LocalContext.current
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -78,24 +82,24 @@ fun HomeScreen(
             }
         )
         when (val state = uiState) {
-            HomeScreenUiState.Loading -> HomeScreenLoadingState()
-            is HomeScreenUiState.Success -> HomeScreenContent(
-                sections = state.displaySections,
+            MenuUiState.Loading -> HomeScreenLoadingState()
+            is MenuUiState.Success -> HomeScreenContent(
+                sections = state.filteredMenu,
                 filterTags = state.filterTags,
                 searchQuery = state.searchQuery,
                 onProductClick = onProductClick,
                 onSearchQueryChange = viewModel::onSearchQueryChange
             )
 
-            HomeScreenUiState.Error -> HomeScreenErrorState()
+            MenuUiState.Error -> HomeScreenErrorState()
         }
     }
 }
 
 @Composable
 fun HomeScreenContent(
-    sections: List<CategorySectionDisplayModel>,
-    filterTags: List<String>,
+    sections: List<MenuSectionDisplayModel>,
+    filterTags: List<ProductCategory>,
     searchQuery: String,
     onProductClick: (productId: String) -> Unit,
     onSearchQueryChange: (String) -> Unit,
@@ -105,7 +109,7 @@ fun HomeScreenContent(
     val listState = rememberLazyListState()
     val gridState = rememberLazyGridState()
     val sectionStartIndices: List<Int> = remember(sections) { buildSectionStartIndices(sections) }
-    val isEmpty = sections.isEmpty() || sections.all { it.products.isEmpty() }
+    val isEmpty = sections.isEmpty() || sections.all { it.items.isEmpty() }
 
     Column(
         verticalArrangement = Arrangement.Top,
@@ -154,7 +158,7 @@ fun HomeScreenContent(
                     sections.forEach { section ->
                         item(span = { GridItemSpan(maxLineSpan) }) {
                             Text(
-                                text = section.category.value.uppercase(),
+                                text = section.category.name.uppercase(),
                                 style = AppTypography.Label2SemiBold,
                                 color = AppColors.TextSecondary,
                                 modifier = Modifier
@@ -162,7 +166,7 @@ fun HomeScreenContent(
                                     .padding(horizontal = 16.dp)
                             )
                         }
-                        items(section.products, key = { it.id }) { product ->
+                        items(section.items, key = { it.id }) { product ->
                             ProductCard(
                                 modifier = Modifier.padding(horizontal = 16.dp),
                                 product = product,
@@ -195,7 +199,7 @@ fun HomeScreenContent(
                     sections.forEach { section ->
                         item {
                             Text(
-                                text = section.category.value.uppercase(),
+                                text = section.category.name.uppercase(),
                                 style = AppTypography.Label2SemiBold,
                                 color = AppColors.TextSecondary,
                                 modifier = Modifier
@@ -203,7 +207,7 @@ fun HomeScreenContent(
                                     .padding(horizontal = 16.dp)
                             )
                         }
-                        items(section.products, key = { it.id }) { product ->
+                        items(section.items, key = { it.id }) { product ->
                             ProductCard(
                                 modifier = Modifier.padding(horizontal = 16.dp),
                                 product = product,
@@ -224,7 +228,7 @@ private fun Header(
     searchQuery: String,
     onSearchQueryChange: (String) -> Unit,
     onScroll: (targetPosition: Int) -> Unit,
-    filterTags: List<String>,
+    filterTags: List<ProductCategory>,
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier) {
@@ -253,9 +257,9 @@ private fun Header(
                 .padding(horizontal = 16.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            filterTags.forEachIndexed { index, tagName ->
+            filterTags.forEachIndexed { index, tag ->
                 DsButton.Rounded(
-                    text = tagName,
+                    text = tag.toDisplayName(),
                     onClick = { onScroll(index) }
                 )
             }
@@ -298,12 +302,12 @@ private fun onPhoneClick(
     context.startActivity(intent)
 }
 
-private fun buildSectionStartIndices(sections: List<CategorySectionDisplayModel>): List<Int> {
+private fun buildSectionStartIndices(sections: List<MenuSectionDisplayModel>): List<Int> {
     val indices = mutableListOf<Int>()
     var current = 1
     sections.forEach { section ->
         indices += current
-        current += 1 + section.products.size + 1
+        current += 1 + section.items.size + 1
     }
     return indices
 }
@@ -314,7 +318,7 @@ private fun buildSectionStartIndices(sections: List<CategorySectionDisplayModel>
 private fun HomeScreenPreview() {
     LazyPizzaThemePreview {
         HomeScreenContent(
-            sections = HomeSampleData.sampleSections.toDisplayModels(),
+            sections = emptyList(),//HomeSampleData.sampleSections.toDisplayModels(),
             searchQuery = "",
             onProductClick = {},
             onSearchQueryChange = {},

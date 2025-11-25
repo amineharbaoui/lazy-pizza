@@ -45,6 +45,9 @@ android {
 
 dependencies {
 
+    implementation(project(":core:designsystem"))
+    implementation(project(":features:menu"))
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -54,8 +57,10 @@ dependencies {
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.core.splashscreen)
-    implementation(libs.androidx.navigation.compose)
-    
+    implementation(libs.androidx.navigation3.runtime)
+    implementation(libs.androidx.navigation3.ui)
+    implementation(libs.androidx.lifecycle.viewmodel.navigation3)
+
     // Dependency Injection (Hilt)
     implementation(libs.hilt.android)
     implementation(libs.hilt.navigation.compose)

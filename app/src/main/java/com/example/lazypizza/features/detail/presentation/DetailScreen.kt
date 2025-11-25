@@ -31,17 +31,17 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.rememberAsyncImagePainter
-import com.example.core.designsystem.components.DsButton
-import com.example.core.designsystem.components.DsCardItem
-import com.example.core.designsystem.components.DsTopBar
-import com.example.core.designsystem.theme.AppColors
-import com.example.core.designsystem.theme.AppTypography
-import com.example.core.designsystem.theme.LazyPizzaThemePreview
-import com.example.core.designsystem.utils.isWideLayout
-import com.example.lazypizza.R
-import com.example.lazypizza.core.designsystem.utils.PreviewPhoneTablet
+import com.example.designsystem.R
+import com.example.designsystem.components.DsButton
+import com.example.designsystem.components.DsCardItem
+import com.example.designsystem.components.DsTopBar
+import com.example.designsystem.theme.AppColors
+import com.example.designsystem.theme.AppTypography
+import com.example.designsystem.theme.LazyPizzaThemePreview
+import com.example.designsystem.utils.PreviewPhoneTablet
+import com.example.designsystem.utils.isWideLayout
 import com.example.lazypizza.features.home.domain.models.Product
-import com.example.lazypizza.features.home.domain.models.ProductCategory
+import com.example.menu.domain.model.ProductCategory
 import java.text.NumberFormat
 
 @Composable
@@ -77,9 +77,9 @@ private fun DetailContent(
     val onQuantityChange: (String, Int) -> Unit = { id, qty ->
         if (qty <= 0) selectedQuantities.remove(id) else selectedQuantities[id] = qty
     }
-    val totalPrice: Double = uiState.product.price + uiState.toppings.fold(0.0) { acc, topping ->
+    val totalPrice: Double = uiState.product.basePrice + uiState.toppings.fold(0.0) { acc, topping ->
         val qty = selectedQuantities[topping.id] ?: 0
-        acc + (qty.toDouble() * topping.price)
+        acc + (qty.toDouble() * topping.basePrice)
     }
 
     if (isWide) {
@@ -319,7 +319,7 @@ fun ExtraToppingsContent(
                 val qty = selectedQuantities[item.id] ?: 0
                 DsCardItem.AddonCard(
                     title = item.name,
-                    priceText = item.price.asMoney(),
+                    priceText = item.basePrice.asMoney(),
                     image = rememberAsyncImagePainter(item.imageUrl),
                     quantity = qty,
                     onQuantityChange = { newQty -> onQuantityChange(item.id, newQty) },
@@ -340,15 +340,15 @@ private fun DetailContentPreview() {
                     category = ProductCategory.PIZZA,
                     name = "Margherita",
                     description = "Classic pizza with tomato, mozzarella, and basil.",
-                    price = 9.99,
+                    basePrice = 9.99,
                     imageUrl = ""
                 ),
                 toppings = listOf(
-                    Product("t1", ProductCategory.TOPPINGS, "Olives", "", 1.0, ""),
-                    Product("t2", ProductCategory.TOPPINGS, "Mushrooms", "", 1.0, ""),
-                    Product("t3", ProductCategory.TOPPINGS, "Extra Cheese", "", 1.5, ""),
-                    Product("t4", ProductCategory.TOPPINGS, "Pepperoni", "", 2.0, ""),
-                    Product("t5", ProductCategory.TOPPINGS, "Onions", "", 0.5, ""),
+//                    Product("t1", ProductCategory.TOPPINGS, "Olives", "", 1.0, ""),
+//                    Product("t2", ProductCategory.TOPPINGS, "Mushrooms", "", 1.0, ""),
+//                    Product("t3", ProductCategory.TOPPINGS, "Extra Cheese", "", 1.5, ""),
+//                    Product("t4", ProductCategory.TOPPINGS, "Pepperoni", "", 2.0, ""),
+//                    Product("t5", ProductCategory.TOPPINGS, "Onions", "", 0.5, ""),
                 )
             )
         )
