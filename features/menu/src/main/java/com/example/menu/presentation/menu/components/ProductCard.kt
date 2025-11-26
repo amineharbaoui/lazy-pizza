@@ -1,4 +1,4 @@
-package com.example.lazypizza.features.home.presentation.components
+package com.example.menu.presentation.menu.components
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.SizeTransform
@@ -28,7 +28,7 @@ fun ProductCard(
                 modifier = modifier,
                 title = product.name,
                 description = product.description,
-                price = product.priceText,
+                price = product.formattedPrice,
                 image = rememberAsyncImagePainter(product.imageUrl),
                 onClick = { onProductClick(product.id) },
             )
@@ -49,7 +49,7 @@ fun ProductCard(
                     DsCardRow.AddToCartItem(
                         modifier = modifier,
                         title = product.name,
-                        price = product.priceText,
+                        price = product.formattedPrice,
                         image = rememberAsyncImagePainter(product.imageUrl),
                         onAddToCart = {
                             shouldAddToCart = true
@@ -60,7 +60,7 @@ fun ProductCard(
                     DsCardRow.CartItem(
                         modifier = modifier,
                         title = product.name,
-                        unitPrice = 0.0, // FIXME //product.price,
+                        unitPrice = product.price,
                         image = rememberAsyncImagePainter(product.imageUrl),
                         quantity = quantity,
                         onQuantityChange = { quantity = it },

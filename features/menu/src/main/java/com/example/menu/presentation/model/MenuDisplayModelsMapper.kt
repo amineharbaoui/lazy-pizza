@@ -20,7 +20,8 @@ fun MenuItem.toDisplayModel(): MenuItemDisplayModel =
             id = id,
             name = name,
             imageUrl = imageUrl,
-            priceText = currencyFormat.format(price),
+            price = price,
+            formattedPrice = currencyFormat.format(price),
             description = description,
         )
 
@@ -28,16 +29,16 @@ fun MenuItem.toDisplayModel(): MenuItemDisplayModel =
             id = id,
             name = name,
             imageUrl = imageUrl,
-            priceText = currencyFormat.format(price),
+            price = price,
+            formattedPrice = currencyFormat.format(price),
             category = category,
         )
     }
 
-fun ProductCategory.toDisplayName(): String =
-    when (this) {
-        ProductCategory.PIZZA -> "Pizza"
-        ProductCategory.DRINK -> "Drinks"
-        ProductCategory.SAUCE -> "Sauces"
-        ProductCategory.ICE_CREAM -> "Ice Cream"
-        ProductCategory.TOPPING -> "Toppings"
-    }
+fun ProductCategory.toMenuTag(): MenuTag? = when (this) {
+    ProductCategory.PIZZA -> MenuTag.PIZZA
+    ProductCategory.DRINK -> MenuTag.DRINK
+    ProductCategory.SAUCE -> MenuTag.SAUCE
+    ProductCategory.ICE_CREAM -> MenuTag.ICE_CREAM
+    ProductCategory.TOPPING -> null
+}

@@ -8,7 +8,7 @@ import androidx.navigation3.ui.NavDisplay
 import com.example.lazypizza.features.cart.presentation.CartScreen
 import com.example.lazypizza.features.detail.presentation.DetailScreen
 import com.example.lazypizza.features.history.presentation.HistoryScreen
-import com.example.lazypizza.features.home.presentation.HomeScreen
+import com.example.menu.presentation.menu.MenuScreen
 
 @Composable
 fun RootNavGraph(
@@ -21,7 +21,7 @@ fun RootNavGraph(
         onBack = onBack,
         entryProvider = entryProvider {
             entry<Route.TopLevel.Menu> {
-                HomeScreen(
+                MenuScreen(
                     innerPadding = innerPadding,
                     onProductClick = { productId ->
 //                        navController.navigate()

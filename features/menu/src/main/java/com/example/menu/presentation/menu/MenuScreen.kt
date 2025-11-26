@@ -1,4 +1,4 @@
-package com.example.lazypizza.features.home.presentation
+package com.example.menu.presentation.menu
 
 import android.content.Context
 import android.content.Intent
@@ -42,7 +42,6 @@ import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.example.designsystem.R
 import com.example.designsystem.components.DsButton
 import com.example.designsystem.components.DsTextField
 import com.example.designsystem.components.DsTopBar
@@ -51,16 +50,14 @@ import com.example.designsystem.theme.AppTypography
 import com.example.designsystem.theme.LazyPizzaThemePreview
 import com.example.designsystem.utils.PreviewPhoneTablet
 import com.example.designsystem.utils.isWideLayout
-import com.example.lazypizza.features.home.presentation.components.ProductCard
-import com.example.menu.domain.model.ProductCategory
-import com.example.menu.presentation.menu.MenuUiState
-import com.example.menu.presentation.menu.MenuViewModel
+import com.example.menu.R
+import com.example.menu.presentation.menu.components.ProductCard
 import com.example.menu.presentation.model.MenuSectionDisplayModel
-import com.example.menu.presentation.model.toDisplayName
+import com.example.menu.presentation.model.MenuTag
 import kotlinx.coroutines.launch
 
 @Composable
-fun HomeScreen(
+fun MenuScreen(
     innerPadding: PaddingValues,
     onProductClick: (productId: String) -> Unit,
     modifier: Modifier = Modifier,
@@ -82,24 +79,24 @@ fun HomeScreen(
             }
         )
         when (val state = uiState) {
-            MenuUiState.Loading -> HomeScreenLoadingState()
-            is MenuUiState.Success -> HomeScreenContent(
+            MenuUiState.Loading -> MenuScreenLoadingState()
+            is MenuUiState.Success -> MenuScreenContent(
                 sections = state.filteredMenu,
-                filterTags = state.filterTags,
+                menuTags = state.menuTags,
                 searchQuery = state.searchQuery,
                 onProductClick = onProductClick,
                 onSearchQueryChange = viewModel::onSearchQueryChange
             )
 
-            MenuUiState.Error -> HomeScreenErrorState()
+            MenuUiState.Error -> MenuScreenErrorState()
         }
     }
 }
 
 @Composable
-fun HomeScreenContent(
+fun MenuScreenContent(
     sections: List<MenuSectionDisplayModel>,
-    filterTags: List<ProductCategory>,
+    menuTags: List<MenuTag>,
     searchQuery: String,
     onProductClick: (productId: String) -> Unit,
     onSearchQueryChange: (String) -> Unit,
@@ -114,47 +111,33 @@ fun HomeScreenContent(
     Column(
         verticalArrangement = Arrangement.Top,
     ) {
-        if (isEmpty) {
-            Box(
+        if (isWide) {
+            LazyVerticalGrid(
+                state = gridState,
+                columns = GridCells.Fixed(2),
                 modifier = Modifier
-                    .fillMaxSize()
-                    .padding(32.dp),
-                contentAlignment = Alignment.Center
+                    .fillMaxSize(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center
-                ) {
-                    Text(
-                        text = stringResource(R.string.no_products_found),
-                        style = AppTypography.Body1Medium,
-                        color = AppColors.TextSecondary
+                item(span = { GridItemSpan(maxLineSpan) }) {
+                    Header(
+                        menuTags = menuTags,
+                        searchQuery = searchQuery,
+                        onSearchQueryChange = onSearchQueryChange,
+                        onScroll = { tagIndex ->
+                            val target = sectionStartIndices.getOrElse(tagIndex) { 0 }
+                            scope.launch {
+                                gridState.animateScrollToItem(target)
+                            }
+                        },
                     )
                 }
-            }
-        } else {
-            if (isWide) {
-                LazyVerticalGrid(
-                    state = gridState,
-                    columns = GridCells.Fixed(2),
-                    modifier = Modifier
-                        .fillMaxSize(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
+                if (isEmpty) {
                     item(span = { GridItemSpan(maxLineSpan) }) {
-                        Header(
-                            filterTags = filterTags,
-                            searchQuery = searchQuery,
-                            onSearchQueryChange = onSearchQueryChange,
-                            onScroll = { tagIndex ->
-                                val target = sectionStartIndices.getOrElse(tagIndex) { 0 }
-                                scope.launch {
-                                    gridState.animateScrollToItem(target)
-                                }
-                            },
-                        )
+                        NoProductsMessage()
                     }
+                } else {
                     sections.forEach { section ->
                         item(span = { GridItemSpan(maxLineSpan) }) {
                             Text(
@@ -176,26 +159,32 @@ fun HomeScreenContent(
                         item(span = { GridItemSpan(maxLineSpan) }) { Spacer(Modifier.height(16.dp)) }
                     }
                 }
-            } else {
-                LazyColumn(
-                    state = listState,
-                    modifier = Modifier
-                        .fillMaxSize(),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
+            }
+        } else {
+            LazyColumn(
+                state = listState,
+                modifier = Modifier
+                    .fillMaxSize(),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                item {
+                    Header(
+                        menuTags = menuTags,
+                        searchQuery = searchQuery,
+                        onSearchQueryChange = onSearchQueryChange,
+                        onScroll = { tagIndex ->
+                            val target = sectionStartIndices.getOrElse(tagIndex) { 0 }
+                            scope.launch {
+                                listState.animateScrollToItem(target)
+                            }
+                        },
+                    )
+                }
+                if (isEmpty) {
                     item {
-                        Header(
-                            filterTags = filterTags,
-                            searchQuery = searchQuery,
-                            onSearchQueryChange = onSearchQueryChange,
-                            onScroll = { tagIndex ->
-                                val target = sectionStartIndices.getOrElse(tagIndex) { 0 }
-                                scope.launch {
-                                    listState.animateScrollToItem(target)
-                                }
-                            },
-                        )
+                        NoProductsMessage()
                     }
+                } else {
                     sections.forEach { section ->
                         item {
                             Text(
@@ -228,7 +217,7 @@ private fun Header(
     searchQuery: String,
     onSearchQueryChange: (String) -> Unit,
     onScroll: (targetPosition: Int) -> Unit,
-    filterTags: List<ProductCategory>,
+    menuTags: List<MenuTag>,
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier) {
@@ -257,9 +246,9 @@ private fun Header(
                 .padding(horizontal = 16.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            filterTags.forEachIndexed { index, tag ->
+            menuTags.forEachIndexed { index, tag ->
                 DsButton.Rounded(
-                    text = tag.toDisplayName(),
+                    text = tag.displayName,
                     onClick = { onScroll(index) }
                 )
             }
@@ -269,7 +258,7 @@ private fun Header(
 }
 
 @Composable
-private fun HomeScreenLoadingState() {
+private fun MenuScreenLoadingState() {
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -281,7 +270,7 @@ private fun HomeScreenLoadingState() {
 }
 
 @Composable
-private fun HomeScreenErrorState() {
+private fun MenuScreenErrorState() {
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -289,6 +278,27 @@ private fun HomeScreenErrorState() {
         contentAlignment = Alignment.Center
     ) {
         Text(text = "Something went wrong")
+    }
+}
+
+@Composable
+fun NoProductsMessage() {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(32.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            Text(
+                text = stringResource(R.string.no_products_found),
+                style = AppTypography.Body1Medium,
+                color = AppColors.TextSecondary
+            )
+        }
     }
 }
 
@@ -312,17 +322,16 @@ private fun buildSectionStartIndices(sections: List<MenuSectionDisplayModel>): L
     return indices
 }
 
-
 @PreviewPhoneTablet
 @Composable
-private fun HomeScreenPreview() {
+private fun MenuScreenPreview() {
     LazyPizzaThemePreview {
-        HomeScreenContent(
+        MenuScreenContent(
             sections = emptyList(),//HomeSampleData.sampleSections.toDisplayModels(),
             searchQuery = "",
             onProductClick = {},
             onSearchQueryChange = {},
-            filterTags = emptyList(),
+            menuTags = emptyList(),
         )
     }
 }

@@ -2,8 +2,10 @@ package com.example.designsystem.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -15,7 +17,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
@@ -36,8 +37,9 @@ import com.example.designsystem.theme.AppTypography
 import com.example.designsystem.theme.LazyPizzaThemePreview
 
 object DsCardRow {
-    val radius = 12.dp
-    val imageSize = 120.dp
+
+    private val radius = 12.dp
+    private val imageSize = 120.dp
 
     @Composable
     fun MenuItem(
@@ -48,63 +50,38 @@ object DsCardRow {
         modifier: Modifier = Modifier,
         onClick: () -> Unit = {},
     ) {
-        Card(
-            modifier = modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(radius),
-            colors = CardDefaults.cardColors(containerColor = Color.White),
-            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+        BaseCardRow(
+            title = title,
+            image = image,
+            modifier = modifier,
             onClick = onClick,
         ) {
-            Row {
-                Image(
-                    painter = image,
-                    contentDescription = title,
-                    modifier = Modifier
-                        .size(imageSize)
-                        .padding(1.dp)
-                        .background(
-                            color = AppColors.SurfaceHighest,
-                            shape = RoundedCornerShape(
-                                topStart = radius,
-                                topEnd = 0.dp,
-                                bottomEnd = 0.dp,
-                                bottomStart = radius,
-                            ),
-                        ),
-                    contentScale = ContentScale.Fit,
+            Column(
+                modifier = Modifier.fillMaxHeight(),
+                verticalArrangement = Arrangement.SpaceBetween,
+            ) {
+                Text(
+                    text = title,
+                    style = AppTypography.Body1Medium,
+                    color = AppColors.TextPrimary,
                 )
-
-                Column(
-                    modifier = Modifier
-                        .weight(1f)
-                        .requiredHeight(imageSize)
-                        .padding(horizontal = 16.dp, vertical = 12.dp),
-                    verticalArrangement = Arrangement.SpaceBetween,
-                ) {
-                    Text(
-                        text = title,
-                        style = AppTypography.Body1Medium,
-                        color = AppColors.TextPrimary,
-                    )
-                    Text(
-                        text = description,
-                        style = AppTypography.Body3Regular,
-                        color = AppColors.TextSecondary,
-                        maxLines = 2,
-                        overflow = TextOverflow.Ellipsis,
-                    )
-                    Text(
-                        text = price,
-                        style = AppTypography.Title1SemiBold,
-                        color = AppColors.TextPrimary,
-                        modifier = Modifier.padding(top = 4.dp),
-                    )
-                }
+                Text(
+                    text = description,
+                    style = AppTypography.Body3Regular,
+                    color = AppColors.TextSecondary,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis,
+                )
+                Text(
+                    text = price,
+                    style = AppTypography.Title1SemiBold,
+                    color = AppColors.TextPrimary,
+                    modifier = Modifier.padding(top = 4.dp),
+                )
             }
         }
     }
 
-    @OptIn(ExperimentalMaterial3ExpressiveApi::class)
     @Composable
     fun CartItem(
         title: String,
@@ -118,101 +95,78 @@ object DsCardRow {
         val totalPrice by remember(quantity, unitPrice) {
             derivedStateOf { unitPrice * quantity }
         }
-        Card(
-            modifier = modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(radius),
-            colors = CardDefaults.cardColors(containerColor = Color.White),
-            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+
+        BaseCardRow(
+            title = title,
+            image = image,
+            modifier = modifier,
+            onClick = null,
         ) {
-            Row {
-                Image(
-                    painter = image,
-                    contentDescription = title,
-                    modifier = Modifier
-                        .size(imageSize)
-                        .padding(1.dp)
-                        .background(
-                            color = AppColors.SurfaceHighest,
-                            shape = RoundedCornerShape(
-                                topStart = radius,
-                                topEnd = 0.dp,
-                                bottomEnd = 0.dp,
-                                bottomStart = radius,
-                            ),
-                        ),
-                    contentScale = ContentScale.Fit,
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    text = title,
+                    style = AppTypography.Body1Medium,
+                    color = AppColors.TextPrimary,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.weight(1f),
                 )
+                DsButton.IconSmallRounded(
+                    icon = painterResource(R.drawable.ic_remove),
+                    iconTint = AppColors.Primary,
+                    onClick = onRemove,
+                )
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxHeight(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(16.dp),
+                ) {
+                    DsButton.IconSmallRounded(
+                        icon = painterResource(R.drawable.ic_minus),
+                        iconTint = AppColors.TextSecondary,
+                        onClick = {
+                            val newQty = (quantity - 1).coerceAtLeast(0)
+                            if (newQty == 0) onRemove()
+                            onQuantityChange(newQty)
+                        },
+                    )
+                    Text(
+                        text = quantity.toString(),
+                        style = AppTypography.Title2SemiBold,
+                        color = AppColors.TextPrimary,
+                    )
+                    DsButton.IconSmallRounded(
+                        icon = painterResource(R.drawable.ic_plus),
+                        iconTint = AppColors.TextSecondary,
+                        onClick = {
+                            val newQty = quantity + 1
+                            onQuantityChange(newQty)
+                        },
+                    )
+                }
 
                 Column(
-                    modifier = Modifier
-                        .weight(1f)
-                        .requiredHeight(imageSize)
-                        .padding(horizontal = 16.dp, vertical = 12.dp),
+                    horizontalAlignment = Alignment.End,
+                    verticalArrangement = Arrangement.Center,
                 ) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text(
-                            text = title,
-                            style = AppTypography.Body1Medium,
-                            color = AppColors.TextPrimary,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
-                            modifier = Modifier.weight(1f),
-                        )
-                        DsButton.IconSmallRounded(
-                            icon = painterResource(R.drawable.ic_remove),
-                            iconTint = AppColors.Primary,
-                            onClick = onRemove,
-                        )
-                    }
-                    Spacer(modifier = Modifier.height(16.dp))
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                    ) {
-                        Row(
-                            modifier = Modifier.fillMaxHeight(),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(16.dp),
-                        ) {
-                            DsButton.IconSmallRounded(
-                                icon = painterResource(R.drawable.ic_minus),
-                                iconTint = AppColors.TextSecondary,
-                                onClick = {
-                                    val newQty = (quantity - 1).coerceAtLeast(0)
-                                    onQuantityChange(newQty)
-                                },
-                            )
-                            Text(
-                                text = quantity.toString(),
-                                style = AppTypography.Title2SemiBold,
-                                color = AppColors.TextPrimary,
-                            )
-                            DsButton.IconSmallRounded(
-                                icon = painterResource(R.drawable.ic_plus),
-                                iconTint = AppColors.TextSecondary,
-                                onClick = {
-                                    val newQty = quantity + 1
-                                    onQuantityChange(newQty)
-                                },
-                            )
-                        }
-
-                        Column(
-                            horizontalAlignment = Alignment.End,
-                            verticalArrangement = Arrangement.Center,
-                        ) {
-                            Text(
-                                text = "$$totalPrice",
-                                style = AppTypography.Title1SemiBold,
-                                color = AppColors.TextPrimary,
-                            )
-                            Text(
-                                text = "$quantity × $$unitPrice",
-                                style = AppTypography.Body3Regular,
-                                color = AppColors.TextSecondary,
-                            )
-                        }
-                    }
+                    Text(
+                        text = "$$totalPrice",
+                        style = AppTypography.Title1SemiBold,
+                        color = AppColors.TextPrimary,
+                    )
+                    Text(
+                        text = "$quantity × $$unitPrice",
+                        style = AppTypography.Body3Regular,
+                        color = AppColors.TextSecondary,
+                    )
                 }
             }
         }
@@ -223,12 +177,64 @@ object DsCardRow {
         title: String,
         price: String,
         image: Painter,
-        buttonText: String = "Add to Cart",
-        onAddToCart: () -> Unit,
         modifier: Modifier = Modifier,
+        onAddToCart: () -> Unit,
+        buttonText: String = "Add to Cart",
     ) {
+        BaseCardRow(
+            title = title,
+            image = image,
+            modifier = modifier,
+            onClick = null, // click handled by button
+        ) {
+            Column(
+                modifier = Modifier.fillMaxHeight(),
+                verticalArrangement = Arrangement.SpaceBetween,
+            ) {
+                Text(
+                    text = title,
+                    style = AppTypography.Body1Medium,
+                    color = AppColors.TextPrimary,
+                )
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                ) {
+                    Text(
+                        text = price,
+                        style = AppTypography.Title1SemiBold,
+                        color = AppColors.TextPrimary,
+                        modifier = Modifier.padding(top = 4.dp),
+                    )
+                    DsButton.Outlined(
+                        text = buttonText,
+                        onClick = onAddToCart,
+                    )
+                }
+            }
+        }
+    }
+
+    @Composable
+    private fun BaseCardRow(
+        title: String,
+        image: Painter,
+        modifier: Modifier = Modifier,
+        onClick: (() -> Unit)? = null,
+        content: @Composable ColumnScope.() -> Unit,
+    ) {
+        val cardModifier = remember(modifier, onClick) {
+            if (onClick != null) {
+                modifier
+                    .fillMaxWidth()
+                    .clickable(onClick = onClick)
+            } else {
+                modifier.fillMaxWidth()
+            }
+        }
+
         Card(
-            modifier = modifier.fillMaxWidth(),
+            modifier = cardModifier,
             shape = RoundedCornerShape(radius),
             colors = CardDefaults.cardColors(containerColor = Color.White),
             elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
@@ -259,26 +265,7 @@ object DsCardRow {
                         .padding(horizontal = 16.dp, vertical = 12.dp),
                     verticalArrangement = Arrangement.SpaceBetween,
                 ) {
-                    Text(
-                        text = title,
-                        style = AppTypography.Body1Medium,
-                        color = AppColors.TextPrimary,
-                    )
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Text(
-                            text = price,
-                            style = AppTypography.Title1SemiBold,
-                            color = AppColors.TextPrimary,
-                            modifier = Modifier.padding(top = 4.dp),
-                        )
-                        DsButton.Outlined(
-                            text = buttonText,
-                            onClick = onAddToCart,
-                        )
-                    }
+                    content()
                 }
             }
         }

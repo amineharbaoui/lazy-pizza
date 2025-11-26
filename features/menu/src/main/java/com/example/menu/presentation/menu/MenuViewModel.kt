@@ -2,12 +2,11 @@ package com.example.menu.presentation.menu
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.menu.domain.model.ProductCategory
 import com.example.menu.domain.usecase.ObserveMenuUseCase
 import com.example.menu.presentation.model.MenuSectionDisplayModel
 import com.example.menu.presentation.model.toDisplayModel
+import com.example.menu.presentation.model.toMenuTag
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -18,6 +17,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlin.time.Duration.Companion.seconds
 
 @HiltViewModel
 class MenuViewModel @Inject constructor(
@@ -29,12 +29,11 @@ class MenuViewModel @Inject constructor(
         observeMenu()
     }.stateIn(
         scope = viewModelScope,
-        started = SharingStarted.Lazily,
+        started = SharingStarted.WhileSubscribed(5.seconds.inWholeMilliseconds),
         initialValue = MenuUiState.Loading
     )
 
     private var allSections: List<MenuSectionDisplayModel> = emptyList()
-    private var searchJob: Job? = null
 
     private fun observeMenu() {
         viewModelScope.launch {
@@ -46,19 +45,20 @@ class MenuViewModel @Inject constructor(
                     allSections = menuSectionsDisplayModel
 
                     val current = _uiState.value
-                    val filterTags = if (current is MenuUiState.Success) current.filterTags else emptyList()
+                    val tags = menuSectionsDisplayModel
+                        .mapNotNull { it.category.toMenuTag() }
+                        .distinct()
                     val searchQuery = if (current is MenuUiState.Success) current.searchQuery else ""
 
                     val filtered = applyFilters(
                         sections = allSections,
-                        categories = filterTags,
-                        query = searchQuery
+                        query = searchQuery.trim(),
                     )
 
                     _uiState.value = MenuUiState.Success(
                         originalMenu = allSections,
                         filteredMenu = filtered,
-                        filterTags = filterTags,
+                        menuTags = tags,
                         searchQuery = searchQuery
                     )
                 }
@@ -66,34 +66,15 @@ class MenuViewModel @Inject constructor(
     }
 
     fun onSearchQueryChange(query: String) {
+        val normalized = query.trim()
         updateSuccessState { current ->
+            if (current.searchQuery == normalized) return@updateSuccessState current
             val newFiltered = applyFilters(
                 sections = allSections,
-                categories = current.filterTags,
-                query = query
+                query = normalized
             )
-
             current.copy(
-                searchQuery = query,
-                filteredMenu = newFiltered
-            )
-        }
-    }
-
-    fun onToggleCategory(category: ProductCategory) {
-        updateSuccessState { current ->
-            val newFilterTags = current.filterTags.toMutableList().apply {
-                if (contains(category)) remove(category) else add(category)
-            }
-
-            val newFiltered = applyFilters(
-                sections = allSections,
-                categories = newFilterTags,
-                query = current.searchQuery
-            )
-
-            current.copy(
-                filterTags = newFilterTags,
+                searchQuery = normalized,
                 filteredMenu = newFiltered
             )
         }
@@ -101,22 +82,14 @@ class MenuViewModel @Inject constructor(
 
     private fun applyFilters(
         sections: List<MenuSectionDisplayModel>,
-        categories: List<ProductCategory>,
         query: String,
     ): List<MenuSectionDisplayModel> {
-
-        val categoryFiltered =
-            if (categories.isEmpty()) sections else sections.filter { it.category in categories }
-
-        return if (query.isBlank()) {
-            categoryFiltered
-        } else {
-            categoryFiltered.mapNotNull { section ->
-                val filteredItems = section.items.filter { item ->
-                    item.name.contains(query, ignoreCase = true)
-                }
-                if (filteredItems.isEmpty()) null else section.copy(items = filteredItems)
+        if (query.isBlank()) return sections
+        return sections.mapNotNull { section ->
+            val filteredItems = section.items.filter { item ->
+                item.name.contains(query, ignoreCase = true)
             }
+            if (filteredItems.isEmpty()) null else section.copy(items = filteredItems)
         }
     }
 
