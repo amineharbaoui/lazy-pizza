@@ -1,4 +1,4 @@
-package com.example.menu.presentation.model
+package com.example.menu.presentation.menu
 
 import com.example.menu.domain.model.ProductCategory
 

@@ -23,3 +23,4 @@ rootProject.name = "LazyPizza"
 include(":app")
 include(":core:designsystem")
 include(":features:menu")
+include(":core:ui")

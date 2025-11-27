@@ -32,12 +32,10 @@ class MenuRepositoryImpl @Inject constructor(
             )
         }
 
-
     override fun observePizzaById(id: String): Flow<MenuItem.PizzaItem?> =
-        remote.observeProductById(id)
-            .map { dto ->
-                dto?.toMenuItem() as? MenuItem.PizzaItem
-            }
+        remote.observeProductById(id).map { dto ->
+            dto?.toMenuItem() as? MenuItem.PizzaItem
+        }
 
     override fun observeToppings(): Flow<List<Topping>> =
         remote.observeProductsByCategory(ProductCategory.TOPPING)

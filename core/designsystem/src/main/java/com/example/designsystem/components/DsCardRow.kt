@@ -19,8 +19,6 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.derivedStateOf
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -85,17 +83,14 @@ object DsCardRow {
     @Composable
     fun CartItem(
         title: String,
-        unitPrice: Double,
+        unitPriceText: String,
+        totalPriceText: String,
         image: Painter,
         quantity: Int,
         onQuantityChange: (Int) -> Unit,
         onRemove: () -> Unit,
         modifier: Modifier = Modifier,
     ) {
-        val totalPrice by remember(quantity, unitPrice) {
-            derivedStateOf { unitPrice * quantity }
-        }
-
         BaseCardRow(
             title = title,
             image = image,
@@ -134,7 +129,6 @@ object DsCardRow {
                         iconTint = AppColors.TextSecondary,
                         onClick = {
                             val newQty = (quantity - 1).coerceAtLeast(0)
-                            if (newQty == 0) onRemove()
                             onQuantityChange(newQty)
                         },
                     )
@@ -158,12 +152,12 @@ object DsCardRow {
                     verticalArrangement = Arrangement.Center,
                 ) {
                     Text(
-                        text = "$$totalPrice",
+                        text = totalPriceText,
                         style = AppTypography.Title1SemiBold,
                         color = AppColors.TextPrimary,
                     )
                     Text(
-                        text = "$quantity × $$unitPrice",
+                        text = "$quantity × $unitPriceText",
                         style = AppTypography.Body3Regular,
                         color = AppColors.TextSecondary,
                     )
@@ -185,7 +179,7 @@ object DsCardRow {
             title = title,
             image = image,
             modifier = modifier,
-            onClick = null, // click handled by button
+            onClick = null,
         ) {
             Column(
                 modifier = Modifier.fillMaxHeight(),
@@ -289,7 +283,8 @@ private fun PizzaCardPreview() {
             Spacer(Modifier.height(8.dp))
             DsCardRow.CartItem(
                 title = "Margherita",
-                unitPrice = 8.99,
+                unitPriceText = "$8.00",
+                totalPriceText = "$16.00",
                 image = painterResource(R.drawable.img_pizza),
                 quantity = 0,
                 onQuantityChange = {},

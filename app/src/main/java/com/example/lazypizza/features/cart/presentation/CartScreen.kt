@@ -152,7 +152,8 @@ private fun CartItemsSection(
         items.forEach { item ->
             DsCardRow.CartItem(
                 title = item.title,
-                unitPrice = item.unitPrice,
+                unitPriceText = "ABC",
+                totalPriceText = "ABCDE",
                 image = painterResource(id = item.imageRes),
                 quantity = item.quantity,
                 onQuantityChange = { },

@@ -1,12 +1,9 @@
-package com.example.menu.presentation.model
+package com.example.menu.presentation.menu
 
 import com.example.menu.domain.model.MenuItem
 import com.example.menu.domain.model.MenuSection
 import com.example.menu.domain.model.ProductCategory
-import java.text.NumberFormat
-import java.util.Locale
-
-private val currencyFormat: NumberFormat = NumberFormat.getCurrencyInstance(Locale.US)
+import com.example.ui.utils.formatting.toFormattedCurrency
 
 fun MenuSection.toDisplayModel(): MenuSectionDisplayModel =
     MenuSectionDisplayModel(
@@ -21,7 +18,7 @@ fun MenuItem.toDisplayModel(): MenuItemDisplayModel =
             name = name,
             imageUrl = imageUrl,
             price = price,
-            formattedPrice = currencyFormat.format(price),
+            formattedPrice = price.toFormattedCurrency(),
             description = description,
         )
 
@@ -30,7 +27,7 @@ fun MenuItem.toDisplayModel(): MenuItemDisplayModel =
             name = name,
             imageUrl = imageUrl,
             price = price,
-            formattedPrice = currencyFormat.format(price),
+            formattedPrice = price.toFormattedCurrency(),
             category = category,
         )
     }

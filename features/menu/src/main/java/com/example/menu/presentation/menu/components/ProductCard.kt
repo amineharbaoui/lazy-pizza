@@ -9,12 +9,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import coil3.compose.rememberAsyncImagePainter
 import com.example.designsystem.components.DsCardRow
-import com.example.menu.presentation.model.MenuItemDisplayModel
+import com.example.menu.presentation.menu.MenuItemDisplayModel
+import com.example.ui.utils.formatting.toFormattedCurrency
 
 @Composable
 fun ProductCard(
@@ -36,7 +38,10 @@ fun ProductCard(
 
         else -> {
             var shouldAddToCart by rememberSaveable(product.id) { mutableStateOf(false) }
-            var quantity by rememberSaveable { mutableIntStateOf(0) }
+            var quantity by rememberSaveable(product.id) { mutableIntStateOf(0) }
+            val totalPriceText by remember(product.price, quantity) {
+                mutableStateOf((product.price * quantity).toFormattedCurrency())
+            }
 
             AnimatedContent(
                 targetState = shouldAddToCart,
@@ -60,11 +65,17 @@ fun ProductCard(
                     DsCardRow.CartItem(
                         modifier = modifier,
                         title = product.name,
-                        unitPrice = product.price,
-                        image = rememberAsyncImagePainter(product.imageUrl),
                         quantity = quantity,
-                        onQuantityChange = { quantity = it },
-                        onRemove = { shouldAddToCart = false },
+                        unitPriceText = product.formattedPrice,
+                        totalPriceText = totalPriceText,
+                        image = rememberAsyncImagePainter(product.imageUrl),
+                        onQuantityChange = { newQty ->
+                            quantity = newQty
+                        },
+                        onRemove = {
+                            shouldAddToCart = false
+                            quantity = 0
+                        },
                     )
                 }
             }

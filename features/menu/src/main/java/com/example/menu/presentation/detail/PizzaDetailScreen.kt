@@ -1,4 +1,4 @@
-package com.example.lazypizza.features.detail.presentation
+package com.example.menu.presentation.detail
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -20,8 +20,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateMapOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -40,18 +38,15 @@ import com.example.designsystem.theme.AppTypography
 import com.example.designsystem.theme.LazyPizzaThemePreview
 import com.example.designsystem.utils.PreviewPhoneTablet
 import com.example.designsystem.utils.isWideLayout
-import com.example.lazypizza.features.home.domain.models.Product
-import com.example.menu.domain.model.ProductCategory
-import java.text.NumberFormat
 
 @Composable
-fun DetailScreen(
+fun PizzaDetailScreen(
     innerPadding: PaddingValues,
     onBackClick: () -> Unit,
-    viewModel: DetailScreenViewModel = hiltViewModel(),
+    onAddToCartClick: (PizzaDetailUiState.Success) -> Unit = {},
+    viewModel: PizzaDetailViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -59,52 +54,43 @@ fun DetailScreen(
     ) {
         DsTopBar.Secondary(onBackClick = onBackClick)
         when (val state = uiState) {
-            is DetailUiState.Loading -> DetailLoadingState()
-            is DetailUiState.Success -> DetailContent(uiState = state)
-            is DetailUiState.Error -> DetailErrorState()
+            is PizzaDetailUiState.Loading -> DetailLoadingState()
+            is PizzaDetailUiState.Error -> DetailErrorState()
+            is PizzaDetailUiState.Success -> DetailContent(
+                uiState = state,
+                onToppingQuantityChange = viewModel::onToppingQuantityChange,
+                onAddToCartClick = { onAddToCartClick(state) },
+            )
         }
     }
 }
 
 @Composable
 private fun DetailContent(
-    uiState: DetailUiState.Success,
+    uiState: PizzaDetailUiState.Success,
+    onToppingQuantityChange: (toppingId: String, newQuantity: Int) -> Unit,
+    onAddToCartClick: () -> Unit,
 ) {
-    val isWide = isWideLayout()
-
-    // Keep selection state at screen level so both phone and wide layouts share it
-    val selectedQuantities = remember { mutableStateMapOf<String, Int>() }
-    val onQuantityChange: (String, Int) -> Unit = { id, qty ->
-        if (qty <= 0) selectedQuantities.remove(id) else selectedQuantities[id] = qty
-    }
-    val totalPrice: Double = uiState.product.basePrice + uiState.toppings.fold(0.0) { acc, topping ->
-        val qty = selectedQuantities[topping.id] ?: 0
-        acc + (qty.toDouble() * topping.basePrice)
-    }
-
-    if (isWide) {
+    if (isWideLayout()) {
         WideDetailLayout(
             uiState = uiState,
-            selectedQuantities = selectedQuantities,
-            onQuantityChange = onQuantityChange,
-            totalPrice = totalPrice,
+            onToppingQuantityChange = onToppingQuantityChange,
+            onAddToCartClick = onAddToCartClick,
         )
     } else {
         PhoneDetailLayout(
             uiState = uiState,
-            selectedQuantities = selectedQuantities,
-            onQuantityChange = onQuantityChange,
-            totalPrice = totalPrice,
+            onToppingQuantityChange = onToppingQuantityChange,
+            onAddToCartClick = onAddToCartClick,
         )
     }
 }
 
 @Composable
 private fun PhoneDetailLayout(
-    uiState: DetailUiState.Success,
-    selectedQuantities: Map<String, Int>,
-    onQuantityChange: (String, Int) -> Unit,
-    totalPrice: Double,
+    uiState: PizzaDetailUiState.Success,
+    onToppingQuantityChange: (toppingId: String, newQuantity: Int) -> Unit,
+    onAddToCartClick: () -> Unit,
 ) {
     val ctaVerticalPadding = 16.dp
     val ctaHeight = 56.dp
@@ -120,7 +106,9 @@ private fun PhoneDetailLayout(
                 contentDescription = null,
                 contentScale = ContentScale.Fit
             )
+
             Spacer(Modifier.height(16.dp))
+
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -131,60 +119,35 @@ private fun PhoneDetailLayout(
                     .padding(horizontal = 16.dp)
             ) {
                 ProductHeaderSection(
-                    modifier = Modifier
-                        .background(
-                            color = AppColors.SurfaceHigher,
-                            shape = RoundedCornerShape(16.dp)
-                        ),
-                    name = uiState.product.name,
-                    description = uiState.product.description,
+                    name = uiState.pizza.name,
+                    description = uiState.pizza.description,
                 )
                 Spacer(Modifier.height(8.dp))
                 ExtraToppingsContent(
                     toppings = uiState.toppings,
-                    selectedQuantities = selectedQuantities,
-                    onQuantityChange = onQuantityChange,
+                    toppingQuantities = uiState.toppingQuantities,
+                    onQuantityChange = onToppingQuantityChange,
                     modifier = Modifier
                         .fillMaxWidth()
                         .weight(1f, fill = true),
-                    contentPadding = PaddingValues(bottom = ctaHeight + ctaVerticalPadding * 2)
+                    contentPadding = PaddingValues(bottom = ctaHeight + ctaVerticalPadding * 2),
                 )
             }
         }
+
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .align(Alignment.BottomCenter)
                 .padding(horizontal = 16.dp, vertical = ctaVerticalPadding)
         ) {
-            AddToCartButton(totalPrice = totalPrice)
+            AddToCartButton(
+                totalPriceText = uiState.totalPriceFormatted,
+                onClick = onAddToCartClick,
+            )
         }
     }
 }
-
-@Composable
-fun ProductHeaderSection(
-    name: String,
-    description: String,
-    modifier: Modifier = Modifier,
-) {
-    Column(modifier = modifier) {
-        Spacer(Modifier.height(20.dp))
-        Text(
-            text = name,
-            style = AppTypography.Title1SemiBold,
-            color = AppColors.TextPrimary
-        )
-        Text(
-            text = description,
-            style = AppTypography.Body3Regular,
-            color = AppColors.TextSecondary
-        )
-        Spacer(Modifier.height(16.dp))
-    }
-}
-
-private fun Double.asMoney(): String = NumberFormat.getCurrencyInstance().format(this)
 
 @Composable
 private fun DetailLoadingState() {
@@ -212,10 +175,9 @@ private fun DetailErrorState() {
 
 @Composable
 private fun WideDetailLayout(
-    uiState: DetailUiState.Success,
-    selectedQuantities: Map<String, Int>,
-    onQuantityChange: (String, Int) -> Unit,
-    totalPrice: Double,
+    uiState: PizzaDetailUiState.Success,
+    onToppingQuantityChange: (toppingId: String, newQuantity: Int) -> Unit,
+    onAddToCartClick: () -> Unit,
 ) {
     Row(
         modifier = Modifier
@@ -238,8 +200,8 @@ private fun WideDetailLayout(
             )
             Spacer(Modifier.height(24.dp))
             ProductHeaderSection(
-                name = uiState.product.name,
-                description = uiState.product.description,
+                name = uiState.pizza.name,
+                description = uiState.pizza.description,
             )
         }
 
@@ -254,29 +216,55 @@ private fun WideDetailLayout(
         ) {
             ExtraToppingsContent(
                 toppings = uiState.toppings,
-                selectedQuantities = selectedQuantities,
-                onQuantityChange = onQuantityChange,
+                toppingQuantities = uiState.toppingQuantities,
+                onQuantityChange = onToppingQuantityChange,
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f, fill = true)
             )
             Spacer(Modifier.height(12.dp))
-            AddToCartButton(totalPrice = totalPrice)
+            AddToCartButton(
+                totalPriceText = uiState.totalPriceFormatted,
+                onClick = onAddToCartClick,
+            )
         }
     }
 }
 
 @Composable
-fun AddToCartButton(
-    totalPrice: Double,
+private fun ProductHeaderSection(
+    name: String,
+    description: String,
+    modifier: Modifier = Modifier,
+) {
+    Column(modifier = modifier) {
+        Spacer(Modifier.height(20.dp))
+        Text(
+            text = name,
+            style = AppTypography.Title1SemiBold,
+            color = AppColors.TextPrimary
+        )
+        Text(
+            text = description,
+            style = AppTypography.Body3Regular,
+            color = AppColors.TextSecondary
+        )
+        Spacer(Modifier.height(16.dp))
+    }
+}
+
+@Composable
+private fun AddToCartButton(
+    totalPriceText: String,
+    onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
         modifier = modifier.fillMaxWidth()
     ) {
         DsButton.Filled(
-            text = "Add to Cart for ${totalPrice.asMoney()}",
-            onClick = {},
+            text = "Add to Cart for $totalPriceText",
+            onClick = onClick,
             modifier = Modifier.fillMaxWidth()
         )
         Spacer(Modifier.height(16.dp))
@@ -284,10 +272,10 @@ fun AddToCartButton(
 }
 
 @Composable
-fun ExtraToppingsContent(
-    toppings: List<Product>,
-    selectedQuantities: Map<String, Int>,
-    onQuantityChange: (String, Int) -> Unit,
+private fun ExtraToppingsContent(
+    toppings: List<ToppingDisplayModel>,
+    toppingQuantities: Map<String, Int>,
+    onQuantityChange: (toppingId: String, newQuantity: Int) -> Unit,
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(0.dp),
 ) {
@@ -306,6 +294,7 @@ fun ExtraToppingsContent(
             color = AppColors.TextSecondary
         )
         Spacer(Modifier.height(8.dp))
+
         LazyVerticalGrid(
             columns = GridCells.Fixed(3),
             contentPadding = contentPadding,
@@ -315,14 +304,16 @@ fun ExtraToppingsContent(
                 .fillMaxWidth()
                 .weight(1f, fill = true)
         ) {
-            items(toppings) { item ->
-                val qty = selectedQuantities[item.id] ?: 0
+            items(toppings, key = { it.id }) { item ->
+                val qty = toppingQuantities[item.id] ?: 0
                 DsCardItem.AddonCard(
                     title = item.name,
-                    priceText = item.basePrice.asMoney(),
+                    priceText = item.priceFormatted,
                     image = rememberAsyncImagePainter(item.imageUrl),
                     quantity = qty,
-                    onQuantityChange = { newQty -> onQuantityChange(item.id, newQty) },
+                    onQuantityChange = { newQty ->
+                        onQuantityChange(item.id, newQty)
+                    },
                 )
             }
         }
@@ -332,25 +323,34 @@ fun ExtraToppingsContent(
 @PreviewPhoneTablet
 @Composable
 private fun DetailContentPreview() {
+    val pizza = PizzaDetailDisplayModel(
+        id = "1",
+        name = "Margherita",
+        description = "Tomato sauce, mozzarella, fresh basil, olive oil",
+        imageUrl = "",
+        price = 8.99,
+        priceFormatted = "$8.99",
+    )
+
+    val toppings = listOf(
+        ToppingDisplayModel("t1", "Extra Cheese", 1.0, "$1.00", ""),
+        ToppingDisplayModel("t2", "Pepperoni", 1.5, "$1.50", ""),
+        ToppingDisplayModel("t3", "Olives", 0.5, "$0.50", ""),
+    )
+
+    val state = PizzaDetailUiState.Success(
+        pizza = pizza,
+        toppings = toppings,
+        toppingQuantities = mapOf("t1" to 1, "t2" to 1),
+        totalPriceFormatted = "$12.99",
+        quantity = 1,
+    )
+
     LazyPizzaThemePreview {
         DetailContent(
-            uiState = DetailUiState.Success(
-                product = Product(
-                    id = "1",
-                    category = ProductCategory.PIZZA,
-                    name = "Margherita",
-                    description = "Classic pizza with tomato, mozzarella, and basil.",
-                    basePrice = 9.99,
-                    imageUrl = ""
-                ),
-                toppings = listOf(
-//                    Product("t1", ProductCategory.TOPPINGS, "Olives", "", 1.0, ""),
-//                    Product("t2", ProductCategory.TOPPINGS, "Mushrooms", "", 1.0, ""),
-//                    Product("t3", ProductCategory.TOPPINGS, "Extra Cheese", "", 1.5, ""),
-//                    Product("t4", ProductCategory.TOPPINGS, "Pepperoni", "", 2.0, ""),
-//                    Product("t5", ProductCategory.TOPPINGS, "Onions", "", 0.5, ""),
-                )
-            )
+            uiState = state,
+            onToppingQuantityChange = { _, _ -> },
+            onAddToCartClick = {},
         )
     }
 }

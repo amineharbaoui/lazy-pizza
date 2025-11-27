@@ -3,10 +3,8 @@ package com.example.lazypizza.features.detail.presentation
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.navigation.toRoute
 import com.example.lazypizza.features.detail.domain.usecase.GetProductByIdUseCase
 import com.example.lazypizza.features.detail.domain.usecase.GetToppingsUseCase
-import com.example.lazypizza.navigation.Route
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -24,7 +22,7 @@ class DetailScreenViewModel @Inject constructor(
     getToppingsUseCase: GetToppingsUseCase,
 ) : ViewModel() {
 
-    private val productId = savedStateHandle.toRoute<Route.Detail>().productId
+    private val productId = "" //savedStateHandle.toRoute<Route.Detail>().productId
 
     val uiState: StateFlow<DetailUiState> = combine(
         flow = getProductByIdUseCase(productId),

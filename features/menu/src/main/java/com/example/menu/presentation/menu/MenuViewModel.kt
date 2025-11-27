@@ -3,9 +3,6 @@ package com.example.menu.presentation.menu
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.menu.domain.usecase.ObserveMenuUseCase
-import com.example.menu.presentation.model.MenuSectionDisplayModel
-import com.example.menu.presentation.model.toDisplayModel
-import com.example.menu.presentation.model.toMenuTag
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted

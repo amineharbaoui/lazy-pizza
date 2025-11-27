@@ -52,8 +52,6 @@ import com.example.designsystem.utils.PreviewPhoneTablet
 import com.example.designsystem.utils.isWideLayout
 import com.example.menu.R
 import com.example.menu.presentation.menu.components.ProductCard
-import com.example.menu.presentation.model.MenuSectionDisplayModel
-import com.example.menu.presentation.model.MenuTag
 import kotlinx.coroutines.launch
 
 @Composable
