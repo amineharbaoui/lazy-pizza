@@ -131,12 +131,13 @@ object DsButton {
         enabled: Boolean = true,
         onClick: () -> Unit,
     ) {
+        val bgColor = if (enabled) AppColors.SurfaceHigher else AppColors.Outline_50
         Surface(
             modifier = modifier.size(22.dp),
             enabled = enabled,
             onClick = onClick,
             shape = RoundedCornerShape(8.dp),
-            color = AppColors.SurfaceHigher,
+            color = bgColor,
             border = BorderStroke(
                 1.dp,
                 AppColors.Outline,
@@ -248,6 +249,13 @@ private fun FilledPreview() {
                 Spacer(Modifier.width(8.dp))
                 DsButton.IconSmallRounded(
                     icon = painterResource(R.drawable.ic_plus),
+                    iconTint = AppColors.TextSecondary,
+                    onClick = {}
+                )
+                Spacer(Modifier.width(8.dp))
+                DsButton.IconSmallRounded(
+                    icon = painterResource(R.drawable.ic_plus),
+                    enabled = false,
                     iconTint = AppColors.TextSecondary,
                     onClick = {}
                 )

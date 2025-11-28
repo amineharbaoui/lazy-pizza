@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -60,6 +61,7 @@ fun PizzaDetailScreen(
                 uiState = state,
                 onToppingQuantityChange = viewModel::onToppingQuantityChange,
                 onAddToCartClick = { onAddToCartClick(state) },
+                onQuantityChange = viewModel::onQuantityChange,
             )
         }
     }
@@ -70,18 +72,21 @@ private fun DetailContent(
     uiState: PizzaDetailUiState.Success,
     onToppingQuantityChange: (toppingId: String, newQuantity: Int) -> Unit,
     onAddToCartClick: () -> Unit,
+    onQuantityChange: (Int) -> Unit,
 ) {
     if (isWideLayout()) {
         WideDetailLayout(
             uiState = uiState,
             onToppingQuantityChange = onToppingQuantityChange,
             onAddToCartClick = onAddToCartClick,
+            onQuantityChange = onQuantityChange,
         )
     } else {
         PhoneDetailLayout(
             uiState = uiState,
             onToppingQuantityChange = onToppingQuantityChange,
             onAddToCartClick = onAddToCartClick,
+            onQuantityChange = onQuantityChange,
         )
     }
 }
@@ -91,6 +96,7 @@ private fun PhoneDetailLayout(
     uiState: PizzaDetailUiState.Success,
     onToppingQuantityChange: (toppingId: String, newQuantity: Int) -> Unit,
     onAddToCartClick: () -> Unit,
+    onQuantityChange: (Int) -> Unit,
 ) {
     val ctaVerticalPadding = 16.dp
     val ctaHeight = 56.dp
@@ -126,7 +132,9 @@ private fun PhoneDetailLayout(
                 ExtraToppingsContent(
                     toppings = uiState.toppings,
                     toppingQuantities = uiState.toppingQuantities,
-                    onQuantityChange = onToppingQuantityChange,
+                    onToppingQuantityChange = onToppingQuantityChange,
+                    quantity = uiState.quantity,
+                    onQuantityChange = onQuantityChange,
                     modifier = Modifier
                         .fillMaxWidth()
                         .weight(1f, fill = true),
@@ -177,6 +185,7 @@ private fun DetailErrorState() {
 private fun WideDetailLayout(
     uiState: PizzaDetailUiState.Success,
     onToppingQuantityChange: (toppingId: String, newQuantity: Int) -> Unit,
+    onQuantityChange: (Int) -> Unit,
     onAddToCartClick: () -> Unit,
 ) {
     Row(
@@ -217,7 +226,9 @@ private fun WideDetailLayout(
             ExtraToppingsContent(
                 toppings = uiState.toppings,
                 toppingQuantities = uiState.toppingQuantities,
-                onQuantityChange = onToppingQuantityChange,
+                onToppingQuantityChange = onToppingQuantityChange,
+                quantity = uiState.quantity,
+                onQuantityChange = onQuantityChange,
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f, fill = true)
@@ -267,7 +278,6 @@ private fun AddToCartButton(
             onClick = onClick,
             modifier = Modifier.fillMaxWidth()
         )
-        Spacer(Modifier.height(16.dp))
     }
 }
 
@@ -275,7 +285,9 @@ private fun AddToCartButton(
 private fun ExtraToppingsContent(
     toppings: List<ToppingDisplayModel>,
     toppingQuantities: Map<String, Int>,
-    onQuantityChange: (toppingId: String, newQuantity: Int) -> Unit,
+    onToppingQuantityChange: (toppingId: String, newQuantity: Int) -> Unit,
+    quantity: Int,
+    onQuantityChange: (Int) -> Unit,
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(0.dp),
 ) {
@@ -312,10 +324,63 @@ private fun ExtraToppingsContent(
                     image = rememberAsyncImagePainter(item.imageUrl),
                     quantity = qty,
                     onQuantityChange = { newQty ->
-                        onQuantityChange(item.id, newQty)
+                        onToppingQuantityChange(item.id, newQty)
                     },
                 )
             }
+            item(span = { GridItemSpan(maxLineSpan) }) {
+                QuantitySelector(
+                    quantity = quantity,
+                    onQuantityChange = onQuantityChange,
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun QuantitySelector(
+    quantity: Int,
+    onQuantityChange: (Int) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        modifier = modifier,
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Text(
+            text = "Quantity",
+            style = AppTypography.Title3SemiBold,
+            color = AppColors.TextSecondary,
+        )
+        Spacer(Modifier.weight(1f))
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(16.dp),
+        ) {
+            DsButton.IconSmallRounded(
+                icon = painterResource(R.drawable.ic_minus),
+                iconTint = AppColors.TextSecondary,
+                enabled = quantity != 1,
+                onClick = {
+                    val newQty = (quantity - 1).coerceAtLeast(0)
+                    onQuantityChange(newQty)
+                },
+            )
+            Text(
+                text = quantity.toString(),
+                style = AppTypography.Title2SemiBold,
+                color = AppColors.TextPrimary,
+            )
+            DsButton.IconSmallRounded(
+                icon = painterResource(R.drawable.ic_plus),
+                iconTint = AppColors.TextSecondary,
+                onClick = {
+                    val newQty = quantity + 1
+                    onQuantityChange(newQty)
+                },
+            )
         }
     }
 }
@@ -351,6 +416,7 @@ private fun DetailContentPreview() {
             uiState = state,
             onToppingQuantityChange = { _, _ -> },
             onAddToCartClick = {},
+            onQuantityChange = {},
         )
     }
 }
