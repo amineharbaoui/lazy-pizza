@@ -7,10 +7,10 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.ui.NavDisplay
-import com.example.lazypizza.features.cart.presentation.CartScreen
-import com.example.lazypizza.features.history.presentation.HistoryScreen
-import com.example.menu.presentation.CartRoute
-import com.example.menu.presentation.HistoryRoute
+import com.example.cart.presentation.CartRoute
+import com.example.cart.presentation.CartScreen
+import com.example.history.presentation.HistoryRoute
+import com.example.history.presentation.HistoryScreen
 import com.example.menu.presentation.MenuRoute
 import com.example.menu.presentation.PizzaDetailRoute
 import com.example.menu.presentation.detail.PizzaDetailScreen

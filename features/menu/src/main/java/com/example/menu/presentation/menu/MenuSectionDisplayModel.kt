@@ -1,6 +1,6 @@
 package com.example.menu.presentation.menu
 
-import com.example.menu.domain.model.ProductCategory
+import com.example.domain.model.ProductCategory
 
 data class MenuSectionDisplayModel(
     val category: ProductCategory,

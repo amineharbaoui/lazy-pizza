@@ -47,6 +47,8 @@ dependencies {
 
     implementation(project(":core:designsystem"))
     implementation(project(":features:menu"))
+    implementation(project(":features:cart"))
+    implementation(project(":features:history"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)

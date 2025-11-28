@@ -1,7 +1,7 @@
 package com.example.menu.presentation.detail
 
+import com.example.domain.model.Topping
 import com.example.menu.domain.model.PizzaDetail
-import com.example.menu.domain.model.Topping
 import com.example.ui.utils.formatting.toFormattedCurrency
 
 fun PizzaDetail.toDisplayModels(): Pair<PizzaDetailDisplayModel, List<ToppingDisplayModel>> {

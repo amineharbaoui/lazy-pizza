@@ -1,8 +1,8 @@
 package com.example.menu.presentation.menu
 
-import com.example.menu.domain.model.MenuItem
-import com.example.menu.domain.model.MenuSection
-import com.example.menu.domain.model.ProductCategory
+import com.example.domain.model.MenuItem
+import com.example.domain.model.MenuSection
+import com.example.domain.model.ProductCategory
 import com.example.ui.utils.formatting.toFormattedCurrency
 
 fun MenuSection.toDisplayModel(): MenuSectionDisplayModel =

@@ -10,7 +10,3 @@ data object MenuRoute : NavKey
 data class PizzaDetailRoute(
     val productId: String,
 ) : NavKey
-
-// TODO: to remove after refactoring
-@Serializable data object CartRoute : NavKey
-@Serializable data object HistoryRoute : NavKey
