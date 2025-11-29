@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -58,13 +57,13 @@ object DsButton {
                         Modifier.background(brush = AppColors.PrimaryGradientBrush, shape = Shape)
                     } else {
                         Modifier.background(color = AppColors.TextSecondary_8, shape = Shape)
-                    }
+                    },
                 )
                 .clickable(
                     interactionSource = interactionSource,
                     indication = ripple(color = Color.DarkGray),
                     enabled = enabled,
-                    onClick = onClick
+                    onClick = onClick,
                 ),
             color = Color.Transparent,
             shape = Shape,
@@ -77,7 +76,7 @@ object DsButton {
                     text = text,
                     style = AppTypography.Title3SemiBold,
                     color = if (enabled) AppColors.OnPrimary else AppColors.TextSecondary,
-                    textAlign = TextAlign.Center
+                    textAlign = TextAlign.Center,
                 )
             }
         }
@@ -100,14 +99,14 @@ object DsButton {
                     interactionSource = interactionSource,
                     indication = ripple(color = AppColors.Primary),
                     enabled = enabled,
-                    onClick = onClick
+                    onClick = onClick,
                 ),
             color = Color.Transparent,
             shape = Shape,
             border = BorderStroke(
                 1.dp,
-                if (enabled) AppColors.Primary_8 else AppColors.Outline
-            )
+                if (enabled) AppColors.Primary_8 else AppColors.Outline,
+            ),
         ) {
             Box(
                 contentAlignment = Alignment.Center,
@@ -117,7 +116,43 @@ object DsButton {
                     text = text,
                     style = AppTypography.Title3SemiBold,
                     color = if (enabled) AppColors.Primary else AppColors.TextSecondary,
-                    textAlign = TextAlign.Center
+                    textAlign = TextAlign.Center,
+                )
+            }
+        }
+    }
+
+    @Composable
+    fun Text(
+        text: String,
+        onClick: () -> Unit,
+        modifier: Modifier = Modifier,
+        enabled: Boolean = true,
+    ) {
+        val interactionSource = remember { MutableInteractionSource() }
+
+        Surface(
+            modifier = modifier
+                .height(Height)
+                .clip(Shape)
+                .clickable(
+                    interactionSource = interactionSource,
+                    indication = ripple(color = AppColors.Primary),
+                    enabled = enabled,
+                    onClick = onClick,
+                ),
+            color = Color.Transparent,
+            shape = Shape,
+        ) {
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier.padding(horizontal = 24.dp, vertical = 8.dp),
+            ) {
+                Text(
+                    text = text,
+                    style = AppTypography.Title3SemiBold,
+                    color = if (enabled) AppColors.Primary else AppColors.TextSecondary,
+                    textAlign = TextAlign.Center,
                 )
             }
         }
@@ -173,7 +208,7 @@ object DsButton {
                     interactionSource = interactionSource,
                     indication = ripple(color = AppColors.Primary),
                     enabled = enabled,
-                    onClick = onClick
+                    onClick = onClick,
                 ),
             color = Color.Transparent,
             shape = Shape,
@@ -186,7 +221,7 @@ object DsButton {
                     text = text,
                     style = AppTypography.Title3SemiBold,
                     color = AppColors.TextPrimary,
-                    textAlign = TextAlign.Center
+                    textAlign = TextAlign.Center,
                 )
             }
         }
@@ -198,77 +233,80 @@ object DsButton {
 private fun FilledPreview() {
     LazyPizzaTheme {
         Column(
-            verticalArrangement = Arrangement.Center,
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.fillMaxSize()
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 DsButton.Filled(
                     text = "Filled Enabled",
-                    onClick = {}
+                    onClick = {},
                 )
                 Spacer(Modifier.width(8.dp))
                 DsButton.Filled(
                     text = "Filled Disabled",
                     enabled = false,
-                    onClick = {}
+                    onClick = {},
                 )
             }
-            Spacer(Modifier.height(8.dp))
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 DsButton.Outlined(
                     text = "Outlined Enabled",
-                    onClick = {}
+                    onClick = {},
                 )
                 Spacer(Modifier.width(8.dp))
                 DsButton.Outlined(
                     text = "Outlined Disabled",
                     enabled = false,
-                    onClick = {}
+                    onClick = {},
                 )
             }
-            Spacer(Modifier.height(8.dp))
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                DsButton.Text(
+                    text = "Text Enabled",
+                    onClick = {},
+                )
+                Spacer(Modifier.width(8.dp))
+                DsButton.Text(
+                    text = "Text Disabled",
+                    enabled = false,
+                    onClick = {},
+                )
+            }
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 DsButton.IconSmallRounded(
-                    icon = painterResource(R.drawable.ic_remove),
+                    icon = painterResource(R.drawable.remove),
                     iconTint = AppColors.Primary,
-                    onClick = {}
+                    onClick = {},
                 )
                 Spacer(Modifier.width(8.dp))
                 DsButton.IconSmallRounded(
-                    icon = painterResource(R.drawable.ic_plus),
+                    icon = painterResource(R.drawable.plus),
                     iconTint = AppColors.TextSecondary,
-                    onClick = {}
+                    onClick = {},
                 )
                 Spacer(Modifier.width(8.dp))
                 DsButton.IconSmallRounded(
-                    icon = painterResource(R.drawable.ic_plus),
+                    icon = painterResource(R.drawable.plus),
                     enabled = false,
                     iconTint = AppColors.TextSecondary,
-                    onClick = {}
-                )
-            }
-            Spacer(Modifier.height(8.dp))
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                DsButton.Rounded(
-                    text = "Button",
-                    onClick = { }
+                    onClick = {},
                 )
             }
         }

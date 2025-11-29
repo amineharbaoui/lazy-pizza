@@ -36,26 +36,28 @@ object DsTopBar {
         phoneNumber: String,
         onPhoneClick: (phoneNumber: String) -> Unit,
         modifier: Modifier = Modifier,
+        isLoggedIn: Boolean = false,
+        onAccountClick: () -> Unit = {},
     ) {
         Row(
             modifier = modifier
                 .fillMaxWidth()
-                .height(64.dp)
-                .padding(horizontal = 16.dp, vertical = 10.dp),
+                .padding(horizontal = 16.dp, vertical = 10.dp)
+                .height(64.dp),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
+            horizontalArrangement = Arrangement.SpaceBetween,
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Image(
-                    painter = painterResource(R.drawable.ic_logo),
+                    painter = painterResource(R.drawable.app_logo),
                     contentDescription = "App Logo",
-                    modifier = Modifier.size(20.dp)
+                    modifier = Modifier.size(20.dp),
                 )
                 Spacer(Modifier.width(8.dp))
                 Text(
                     text = "LazzyPizza",
                     style = AppTypography.Body3Bold,
-                    color = AppColors.TextPrimary
+                    color = AppColors.TextPrimary,
                 )
             }
             Spacer(Modifier.weight(1f))
@@ -66,20 +68,38 @@ object DsTopBar {
                         onPhoneClick(phoneNumber)
                     })
                     .padding(horizontal = 8.dp, vertical = 6.dp),
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 Icon(
                     modifier = Modifier.size(15.dp),
-                    painter = painterResource(R.drawable.ic_phone),
+                    painter = painterResource(R.drawable.phone),
                     contentDescription = "Phone Number Icon",
-                    tint = AppColors.TextSecondary
+                    tint = AppColors.TextSecondary,
                 )
                 Spacer(Modifier.width(6.dp))
                 Text(
                     text = phoneNumber,
                     style = AppTypography.Body1Regular,
-                    color = AppColors.TextPrimary
+                    color = AppColors.TextPrimary,
                 )
+                Spacer(Modifier.width(6.dp))
+                IconButton(
+                    modifier = Modifier
+                        .clip(CircleShape)
+                        .background(
+                            color = if (isLoggedIn) AppColors.Primary_8 else AppColors.TextSecondary_8,
+                            shape = CircleShape,
+                        )
+                        .size(32.dp),
+                    onClick = onAccountClick,
+                ) {
+                    Icon(
+                        modifier = Modifier.size(16.dp),
+                        painter = if (isLoggedIn) painterResource(R.drawable.logout) else painterResource(R.drawable.user),
+                        contentDescription = "Phone Number Icon",
+                        tint = if (isLoggedIn) AppColors.Primary else AppColors.TextSecondary,
+                    )
+                }
             }
         }
     }
@@ -103,15 +123,15 @@ object DsTopBar {
                         .size(44.dp)
                         .background(
                             color = AppColors.TextSecondary_8,
-                            shape = CircleShape
+                            shape = CircleShape,
                         ),
                     onClick = it,
                 ) {
                     Icon(
                         modifier = Modifier.size(16.dp),
-                        painter = painterResource(R.drawable.ic_left_arrow),
+                        painter = painterResource(R.drawable.arrow_left),
                         contentDescription = "Phone Number Icon",
-                        tint = AppColors.TextSecondary
+                        tint = AppColors.TextSecondary,
                     )
                 }
             }
@@ -132,17 +152,19 @@ object DsTopBar {
 private fun MainPreview() {
     LazyPizzaThemePreview {
         Column(
-            verticalArrangement = Arrangement.Top,
+            verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             DsTopBar.Primary(
                 phoneNumber = "+1 (555) 321-7890",
-                onPhoneClick = { }
+                onPhoneClick = { },
             )
-            Spacer(Modifier.height(16.dp))
+            DsTopBar.Primary(
+                phoneNumber = "+1 (555) 321-7890",
+                onPhoneClick = { },
+                isLoggedIn = true,
+            )
             DsTopBar.Secondary(onBackClick = { })
-            Spacer(Modifier.height(16.dp))
             DsTopBar.Secondary(onBackClick = { }, title = "History")
-            Spacer(Modifier.height(16.dp))
             DsTopBar.Secondary(title = "History")
         }
     }

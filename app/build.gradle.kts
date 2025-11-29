@@ -27,7 +27,7 @@ android {
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
+                "proguard-rules.pro",
             )
         }
     }
@@ -45,10 +45,19 @@ android {
 
 dependencies {
 
-    implementation(project(":core:designsystem"))
-    implementation(project(":features:menu"))
-    implementation(project(":features:cart"))
-    implementation(project(":features:history"))
+    implementation(projects.core.designsystem)
+
+    implementation(projects.features.menu.uiHome)
+    implementation(projects.features.menu.uiPizzaDetail)
+    implementation(projects.features.menu.di)
+
+    implementation(projects.features.cart.uiCart)
+    implementation(projects.features.cart.di)
+
+    implementation(projects.features.history)
+
+    implementation(projects.features.auth.ui)
+    implementation(projects.features.auth.di)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
@@ -75,7 +84,7 @@ dependencies {
 
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.firestore)
-
+    implementation(libs.firebase.auth)
 
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)

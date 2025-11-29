@@ -4,16 +4,19 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -83,6 +86,7 @@ object DsCardRow {
     @Composable
     fun CartItem(
         title: String,
+        subtitleLines: List<String> = emptyList(),
         unitPriceText: String,
         totalPriceText: String,
         image: Painter,
@@ -97,7 +101,10 @@ object DsCardRow {
             modifier = modifier,
             onClick = null,
         ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
                 Text(
                     text = title,
                     style = AppTypography.Body1Medium,
@@ -107,9 +114,16 @@ object DsCardRow {
                     modifier = Modifier.weight(1f),
                 )
                 DsButton.IconSmallRounded(
-                    icon = painterResource(R.drawable.ic_remove),
+                    icon = painterResource(R.drawable.remove),
                     iconTint = AppColors.Primary,
                     onClick = onRemove,
+                )
+            }
+            subtitleLines.forEach { subtitleLine ->
+                Text(
+                    text = subtitleLine,
+                    style = AppTypography.Body3Regular,
+                    color = AppColors.TextSecondary,
                 )
             }
 
@@ -118,14 +132,17 @@ object DsCardRow {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.Bottom,
             ) {
                 Row(
-                    modifier = Modifier.fillMaxHeight(),
-                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .padding(bottom = 8.dp)
+                        .fillMaxHeight(),
+                    verticalAlignment = Alignment.Bottom,
                     horizontalArrangement = Arrangement.spacedBy(16.dp),
                 ) {
                     DsButton.IconSmallRounded(
-                        icon = painterResource(R.drawable.ic_minus),
+                        icon = painterResource(R.drawable.minus),
                         iconTint = AppColors.TextSecondary,
                         onClick = {
                             val newQty = (quantity - 1).coerceAtLeast(0)
@@ -138,7 +155,7 @@ object DsCardRow {
                         color = AppColors.TextPrimary,
                     )
                     DsButton.IconSmallRounded(
-                        icon = painterResource(R.drawable.ic_plus),
+                        icon = painterResource(R.drawable.plus),
                         iconTint = AppColors.TextSecondary,
                         onClick = {
                             val newQty = quantity + 1
@@ -233,29 +250,36 @@ object DsCardRow {
             colors = CardDefaults.cardColors(containerColor = Color.White),
             elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
         ) {
-            Row {
-                Image(
-                    painter = image,
-                    contentDescription = title,
+            Row(modifier = Modifier.height(IntrinsicSize.Min)) {
+                Box(
                     modifier = Modifier
-                        .size(imageSize)
+                        .width(imageSize)
+                        .fillMaxHeight()
                         .padding(1.dp)
                         .background(
                             color = AppColors.SurfaceHighest,
                             shape = RoundedCornerShape(
                                 topStart = radius,
+                                bottomStart = radius,
                                 topEnd = 0.dp,
                                 bottomEnd = 0.dp,
-                                bottomStart = radius,
                             ),
                         ),
-                    contentScale = ContentScale.Fit,
-                )
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Image(
+                        painter = image,
+                        contentDescription = title,
+                        modifier = Modifier.size(96.dp),
+                        contentScale = ContentScale.Fit,
+                    )
+                }
 
                 Column(
                     modifier = Modifier
                         .weight(1f)
-                        .requiredHeight(imageSize)
+                        .heightIn(min = imageSize)
+//                        .requiredHeight(imageSize)
                         .padding(horizontal = 16.dp, vertical = 12.dp),
                     verticalArrangement = Arrangement.SpaceBetween,
                 ) {
@@ -271,8 +295,8 @@ object DsCardRow {
 private fun PizzaCardPreview() {
     LazyPizzaThemePreview {
         Column(
-            verticalArrangement = Arrangement.Top,
-            modifier = Modifier
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = Modifier.padding(8.dp),
         ) {
             DsCardRow.MenuItem(
                 title = "Margherita",
@@ -280,9 +304,14 @@ private fun PizzaCardPreview() {
                 price = "$8.99",
                 image = painterResource(R.drawable.img_pizza),
             )
-            Spacer(Modifier.height(8.dp))
             DsCardRow.CartItem(
                 title = "Margherita",
+                subtitleLines = listOf(
+                    "1 x Extra Cheese",
+                    "1 x Extra Cheese",
+                    "1 x Extra Cheese",
+                    "1 x Extra Cheese",
+                ),
                 unitPriceText = "$8.00",
                 totalPriceText = "$16.00",
                 image = painterResource(R.drawable.img_pizza),
@@ -290,7 +319,28 @@ private fun PizzaCardPreview() {
                 onQuantityChange = {},
                 onRemove = {},
             )
-            Spacer(Modifier.height(8.dp))
+            DsCardRow.CartItem(
+                title = "Margherita",
+                subtitleLines = listOf(
+                    "1 x Extra Cheese",
+                ),
+                unitPriceText = "$8.00",
+                totalPriceText = "$16.00",
+                image = painterResource(R.drawable.img_pizza),
+                quantity = 0,
+                onQuantityChange = {},
+                onRemove = {},
+            )
+            DsCardRow.CartItem(
+                title = "Margherita",
+                subtitleLines = listOf(),
+                unitPriceText = "$8.00",
+                totalPriceText = "$16.00",
+                image = painterResource(R.drawable.img_pizza),
+                quantity = 0,
+                onQuantityChange = {},
+                onRemove = {},
+            )
             DsCardRow.AddToCartItem(
                 title = "Margherita",
                 price = "$8.99",

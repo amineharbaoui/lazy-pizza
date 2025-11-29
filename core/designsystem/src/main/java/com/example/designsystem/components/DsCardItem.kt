@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -43,6 +44,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.designsystem.R
@@ -108,17 +110,18 @@ object DsCardItem {
         Card(
             modifier = modifier
                 .width(160.dp)
-                .padding(12.dp),
+                .height(260.dp),
             shape = RoundedCornerShape(radius),
             colors = CardDefaults.cardColors(containerColor = Color.White),
             elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
         ) {
-            Column(modifier = Modifier.fillMaxWidth()) {
+            Column(modifier = Modifier.fillMaxSize()) {
                 Image(
                     painter = image,
                     contentDescription = title,
                     modifier = Modifier
                         .padding(1.dp)
+                        .fillMaxWidth()
                         .background(
                             color = AppColors.SurfaceHighest,
                             shape = RoundedCornerShape(
@@ -138,11 +141,13 @@ object DsCardItem {
                         text = title,
                         style = AppTypography.Body1Regular,
                         color = AppColors.TextSecondary,
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis,
                     )
                     Row(
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier.fillMaxSize(),
                         horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically,
+                        verticalAlignment = Alignment.Bottom,
                     ) {
                         Text(
                             text = price,
@@ -150,7 +155,7 @@ object DsCardItem {
                             color = AppColors.TextPrimary,
                         )
                         DsButton.IconSmallRounded(
-                            icon = painterResource(R.drawable.ic_plus),
+                            icon = painterResource(R.drawable.plus),
                             iconTint = AppColors.Primary,
                             onClick = onAdd,
                         )
@@ -266,7 +271,7 @@ object DsCardItem {
             horizontalArrangement = Arrangement.spacedBy(12.dp),
         ) {
             DsButton.IconSmallRounded(
-                icon = painterResource(R.drawable.ic_minus),
+                icon = painterResource(R.drawable.minus),
                 iconTint = AppColors.TextSecondary,
                 onClick = onMinus,
             )
@@ -275,7 +280,7 @@ object DsCardItem {
                 style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.SemiBold),
             )
             DsButton.IconSmallRounded(
-                icon = painterResource(R.drawable.ic_plus),
+                icon = painterResource(R.drawable.plus),
                 iconTint = AppColors.TextSecondary,
                 onClick = onPlus,
                 enabled = plusEnabled,
@@ -288,20 +293,18 @@ object DsCardItem {
 @Composable
 private fun AddonCardPreview() {
     LazyPizzaThemePreview {
-        Row(
-            Modifier
-                .padding(16.dp)
-                .fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(16.dp),
+        Column(
+            verticalArrangement = Arrangement.Top,
+            modifier = Modifier,
         ) {
             val painter = painterResource(R.drawable.img_bacon)
-            DsCardItem.AddonCard(title = "Bacon", priceText = "$1", image = painter)
+            DsCardItem.AddonCard(title = "This is a long Bacon", priceText = "$1", image = painter)
+            Spacer(Modifier.height(8.dp))
+            DsCardItem.ExtraItem(
+                title = "Bacon",
+                price = "$0.59",
+                image = painterResource(R.drawable.img_bacon),
+            )
         }
-        Spacer(Modifier.height(8.dp))
-        DsCardItem.ExtraItem(
-            title = "Bacon",
-            price = "$0.59",
-            image = painterResource(R.drawable.img_bacon),
-        )
     }
 }

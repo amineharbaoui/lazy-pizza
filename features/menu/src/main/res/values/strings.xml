@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <string name="app_name">LazyPizza</string>
-    <string name="phone_number">+1 (555) 321-7890</string>
-    <string name="no_products_found">No products found</string>
-    <string name="cart">Cart</string>
-    <string name="recommended_title">RECOMMENDED TO ADD TO YOUR ORDER</string>
-</resources>

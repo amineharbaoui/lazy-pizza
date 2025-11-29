@@ -3,13 +3,13 @@ package com.example.lazypizza.navigation
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.painterResource
 import androidx.navigation3.runtime.NavKey
-import com.example.cart.presentation.CartRoute
 import com.example.designsystem.R
 import com.example.designsystem.components.DsNavigationBar
 import com.example.designsystem.theme.LazyPizzaThemePreview
 import com.example.designsystem.utils.PreviewPhoneTablet
 import com.example.history.presentation.HistoryRoute
-import com.example.menu.presentation.MenuRoute
+import com.example.ui.cart.screen.CartRoute
+import com.example.ui.pizzadetail.MenuRoute
 
 private val TOP_LEVEL_ROUTES: List<NavKey> = listOf(MenuRoute, CartRoute, HistoryRoute)
 
@@ -17,29 +17,18 @@ private val TOP_LEVEL_ROUTES: List<NavKey> = listOf(MenuRoute, CartRoute, Histor
 fun BottomBar(
     currentRoute: NavKey,
     onRouteSelect: (NavKey) -> Unit,
+    badgeCount: Int,
 ) {
     DsNavigationBar.Bottom(
         menuItems = TOP_LEVEL_ROUTES.map { destination ->
             DsNavigationBar.NavItem(
-                icon = painterResource(
-                    when (destination) {
-                        MenuRoute -> R.drawable.ic_menu
-                        CartRoute -> R.drawable.ic_cart
-                        HistoryRoute -> R.drawable.ic_history
-                        else -> R.drawable.ic_menu
-                    }
-                ),
-                badgeCount = if (destination == CartRoute) 3 else 0,
-                label = when (destination) {
-                    MenuRoute -> "Menu"
-                    CartRoute -> "Cart"
-                    HistoryRoute -> "History"
-                    else -> ""
-                },
+                icon = painterResource(destination.toIcon()),
+                badgeCount = if (destination == CartRoute) badgeCount else 0,
+                label = destination.toLabel(),
                 isSelected = (destination == currentRoute),
-                onClick = { onRouteSelect(destination) }
+                onClick = { onRouteSelect(destination) },
             )
-        }
+        },
     )
 }
 
@@ -47,37 +36,44 @@ fun BottomBar(
 fun NavigationRail(
     currentRoute: NavKey,
     onRouteSelect: (NavKey) -> Unit,
+    badgeCount: Int,
 ) {
     DsNavigationBar.Rail(
         menuItems = TOP_LEVEL_ROUTES.map { destination ->
             DsNavigationBar.NavItem(
-                icon = painterResource(
-                    when (destination) {
-                        MenuRoute -> R.drawable.ic_menu
-                        CartRoute -> R.drawable.ic_cart
-                        HistoryRoute -> R.drawable.ic_history
-                        else -> R.drawable.ic_menu
-                    }
-                ),
-                badgeCount = if (destination == CartRoute) 3 else 0,
-                label = when (destination) {
-                    MenuRoute -> "Menu"
-                    CartRoute -> "Cart"
-                    HistoryRoute -> "History"
-                    else -> ""
-                },
+                icon = painterResource(destination.toIcon()),
+                badgeCount = if (destination == CartRoute) badgeCount else 0,
+                label = destination.toLabel(),
                 isSelected = (currentRoute::class == destination::class),
-                onClick = { onRouteSelect(destination) }
+                onClick = { onRouteSelect(destination) },
             )
-        }
+        },
     )
+}
+
+private fun NavKey.toIcon(): Int = when (this) {
+    MenuRoute -> R.drawable.menu
+    CartRoute -> R.drawable.shopping_cart
+    HistoryRoute -> R.drawable.history
+    else -> R.drawable.menu
+}
+
+private fun NavKey.toLabel(): String = when (this) {
+    MenuRoute -> "Menu"
+    CartRoute -> "Cart"
+    HistoryRoute -> "History"
+    else -> ""
 }
 
 @PreviewPhoneTablet
 @Composable
 private fun BottomBarPreview() {
     LazyPizzaThemePreview {
-        BottomBar(currentRoute = MenuRoute, onRouteSelect = {})
+        BottomBar(
+            currentRoute = MenuRoute,
+            onRouteSelect = {},
+            badgeCount = 3,
+        )
     }
 }
 
@@ -85,6 +81,10 @@ private fun BottomBarPreview() {
 @Composable
 private fun NavigationRailPreview() {
     LazyPizzaThemePreview {
-        NavigationRail(currentRoute = CartRoute, onRouteSelect = {})
+        NavigationRail(
+            currentRoute = CartRoute,
+            onRouteSelect = {},
+            badgeCount = 0,
+        )
     }
 }

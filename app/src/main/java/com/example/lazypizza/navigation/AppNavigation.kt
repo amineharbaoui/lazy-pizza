@@ -1,21 +1,29 @@
 package com.example.lazypizza.navigation
 
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateList
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.ui.NavDisplay
-import com.example.cart.presentation.CartRoute
-import com.example.cart.presentation.CartScreen
 import com.example.history.presentation.HistoryRoute
 import com.example.history.presentation.HistoryScreen
-import com.example.menu.presentation.MenuRoute
-import com.example.menu.presentation.PizzaDetailRoute
-import com.example.menu.presentation.detail.PizzaDetailScreen
-import com.example.menu.presentation.detail.PizzaDetailViewModel
-import com.example.menu.presentation.menu.MenuScreen
+import com.example.ui.AuthRoute
+import com.example.ui.PhoneAuthScreen
+import com.example.ui.cart.screen.CartRoute
+import com.example.ui.cart.screen.CartScreen
+import com.example.ui.pizzadetail.MenuRoute
+import com.example.ui.pizzadetail.MenuScreen
+import com.example.ui.pizzadetail.PizzaDetailRoute
+import com.example.ui.pizzadetail.PizzaDetailScreen
+import com.google.firebase.auth.FirebaseAuth
 
 @Composable
 fun RootNavGraph(
@@ -23,6 +31,13 @@ fun RootNavGraph(
     onBack: () -> Unit,
     innerPadding: PaddingValues,
 ) {
+    var isLoggedIn by remember { mutableStateOf(FirebaseAuth.getInstance().currentUser != null) }
+    val listState = rememberSaveable(saver = LazyListState.Saver) {
+        LazyListState()
+    }
+    val gridState = rememberSaveable(saver = LazyGridState.Saver) {
+        LazyGridState()
+    }
     NavDisplay(
         backStack = backStack,
         onBack = onBack,
@@ -32,20 +47,25 @@ fun RootNavGraph(
                     innerPadding = innerPadding,
                     onProductClick = { productId ->
                         backStack.add(PizzaDetailRoute(productId = productId))
-                    }
+                    },
+                    listState = listState,
+                    gridState = gridState,
+                    isLoggedIn = isLoggedIn,
+                    onNavigateToAuth = {
+                        backStack.add(AuthRoute)
+                    },
+                    onLogout = {
+                        FirebaseAuth.getInstance().signOut()
+                        isLoggedIn = false
+                    },
                 )
             }
             entry<PizzaDetailRoute> {
-                val viewModel = hiltViewModel<PizzaDetailViewModel, PizzaDetailViewModel.Factory>(
-                    creationCallback = { factory ->
-                        factory.create(productId = it.productId)
-                    }
-                )
                 PizzaDetailScreen(
                     innerPadding = innerPadding,
                     onBackClick = onBack,
-                    onAddToCartClick = { /* TODO hook cart later */ },
-                    viewModel = viewModel,
+                    onNavigateToMenu = { backStack.removeAt(backStack.lastIndex) },
+                    productId = requireNotNull(it.productId),
                 )
             }
             entry<CartRoute> {
@@ -54,6 +74,15 @@ fun RootNavGraph(
             entry<HistoryRoute> {
                 HistoryScreen(innerPadding = innerPadding)
             }
-        }
+            entry<AuthRoute> {
+                PhoneAuthScreen(
+                    innerPadding = innerPadding,
+                    onAuthSuccess = {
+                        isLoggedIn = true
+                        onBack()
+                    },
+                )
+            }
+        },
     )
 }

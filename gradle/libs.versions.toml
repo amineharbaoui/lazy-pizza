@@ -3,6 +3,7 @@ agp = "8.13.0"
 coilCompose = "3.3.0"
 kotlin = "2.2.20"
 hilt = "2.57.2"
+kotlinxCoroutinesCore = "1.10.2"
 ksp = "2.2.20-2.0.3"
 coreKtx = "1.17.0"
 junit = "4.13.2"
@@ -25,6 +26,8 @@ material = "1.10.0"
 nav3Core = "1.0.0"
 lifecycleViewmodelNav3 = "2.10.0"
 jetbrainsKotlinJvm = "2.2.20"
+playServicesAuth = "21.4.0"
+room = "2.8.4"
 
 
 [libraries]
@@ -57,10 +60,17 @@ coil-network-okhttp = { module = "io.coil-kt.coil3:coil-network-okhttp", version
 
 firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" }
 firebase-firestore = { module = "com.google.firebase:firebase-firestore" }
+firebase-auth = { module = "com.google.firebase:firebase-auth" }
+
 androidx-compose-material3-adaptive-navigation-suite = { group = "androidx.compose.material3", name = "material3-adaptive-navigation-suite", version.ref = "material3AdaptiveNavigationSuite" }
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
+kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinxCoroutinesCore" }
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 
+play-services-auth = { module = "com.google.android.gms:play-services-auth", version.ref = "playServicesAuth" }
+room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
+room-ktx = { module = "androidx.room:room-ktx", version.ref = "room" }
+room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

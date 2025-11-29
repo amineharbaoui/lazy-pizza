@@ -1,6 +1,10 @@
 package com.example.designsystem.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
@@ -24,6 +28,55 @@ import com.example.designsystem.theme.LazyPizzaThemePreview
 object DsTextField {
 
     @Composable
+    fun Primary(
+        value: String,
+        onValueChange: (String) -> Unit,
+        label: String,
+        modifier: Modifier = Modifier,
+        isError: Boolean = false,
+        enabled: Boolean = true,
+    ) {
+        val containerColor = if (value.isEmpty()) AppColors.SurfaceHighest else AppColors.SurfaceHigher
+        val focusedBorder = if (isError) AppColors.Error else AppColors.Outline
+        val unfocusedBorder = if (isError) AppColors.Error else Color.Transparent
+        val errorBorder = AppColors.Error
+
+        OutlinedTextField(
+            modifier = modifier,
+            value = value,
+            onValueChange = onValueChange,
+            enabled = enabled,
+            singleLine = true,
+            textStyle = AppTypography.Body1Regular,
+            placeholder = {
+                Text(
+                    text = label,
+                    style = AppTypography.Body1Regular,
+                    color = AppColors.TextSecondary,
+                )
+            },
+            isError = isError,
+            shape = RoundedCornerShape(28.dp),
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedBorderColor = focusedBorder,
+                unfocusedBorderColor = unfocusedBorder,
+                disabledBorderColor = Color.Transparent,
+                errorBorderColor = errorBorder,
+
+                focusedContainerColor = containerColor,
+                unfocusedContainerColor = containerColor,
+                disabledContainerColor = AppColors.SurfaceHighest,
+                errorContainerColor = containerColor,
+
+                cursorColor = AppColors.TextPrimary,
+                focusedTextColor = AppColors.TextPrimary,
+                unfocusedTextColor = AppColors.TextPrimary,
+                errorTextColor = AppColors.TextPrimary,
+            ),
+        )
+    }
+
+    @Composable
     fun Search(
         value: String,
         onValueChange: (String) -> Unit,
@@ -39,14 +92,14 @@ object DsTextField {
                 Text(
                     text = placeholder,
                     style = AppTypography.Body1Regular,
-                    color = AppColors.TextSecondary
+                    color = AppColors.TextSecondary,
                 )
             },
             leadingIcon = {
                 Icon(
-                    painter = painterResource(R.drawable.ic_search),
+                    painter = painterResource(R.drawable.search),
                     contentDescription = null,
-                    tint = AppColors.Primary
+                    tint = AppColors.Primary,
                 )
             },
             shape = RoundedCornerShape(28.dp),
@@ -61,6 +114,49 @@ object DsTextField {
             ),
             singleLine = true,
         )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun PrimaryStatesPreview() {
+    LazyPizzaThemePreview {
+        var empty by remember { mutableStateOf("") }
+        var focusedDemo by remember { mutableStateOf(" ") }
+        var filled by remember { mutableStateOf("Some text") }
+        var error by remember { mutableStateOf("Invalid") }
+
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+        ) {
+            DsTextField.Primary(
+                value = empty,
+                onValueChange = { empty = it },
+                label = "Label",
+            )
+
+            DsTextField.Primary(
+                value = focusedDemo.trim(),
+                onValueChange = { focusedDemo = it },
+                label = "Label",
+            )
+
+            DsTextField.Primary(
+                value = filled,
+                onValueChange = { filled = it },
+                label = "Label",
+            )
+
+            DsTextField.Primary(
+                value = error,
+                onValueChange = { error = it },
+                label = "Label",
+                isError = true,
+            )
+        }
     }
 }
 

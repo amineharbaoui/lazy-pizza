@@ -43,11 +43,11 @@ object DsNavigationBar {
         Surface(
             shadowElevation = 12.dp,
             shape = RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp),
-            modifier = modifier.fillMaxWidth()
+            modifier = modifier.fillMaxWidth(),
         ) {
             NavigationBar(
                 containerColor = MaterialTheme.colorScheme.surface,
-                tonalElevation = 0.dp
+                tonalElevation = 0.dp,
             ) {
                 menuItems.forEach { item ->
                     NavigationBarItem(
@@ -62,8 +62,8 @@ object DsNavigationBar {
                             unselectedIconColor = AppColors.TextSecondary,
                             unselectedTextColor = AppColors.TextSecondary,
                             disabledIconColor = AppColors.TextSecondary,
-                            disabledTextColor = AppColors.TextSecondary
-                        )
+                            disabledTextColor = AppColors.TextSecondary,
+                        ),
                     )
                 }
             }
@@ -77,12 +77,12 @@ object DsNavigationBar {
     ) {
         NavigationRail(
             containerColor = Color.Transparent,
-            modifier = modifier.statusBarsPadding()
+            modifier = modifier.statusBarsPadding(),
         ) {
             Column(
                 modifier = Modifier.fillMaxHeight(),
                 verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
+                horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 menuItems.forEach { item ->
                     NavigationRailItem(
@@ -97,8 +97,8 @@ object DsNavigationBar {
                             unselectedIconColor = AppColors.TextSecondary,
                             unselectedTextColor = AppColors.TextSecondary,
                             disabledIconColor = AppColors.TextSecondary,
-                            disabledTextColor = AppColors.TextSecondary
-                        )
+                            disabledTextColor = AppColors.TextSecondary,
+                        ),
                     )
                 }
             }
@@ -121,11 +121,11 @@ object DsNavigationBar {
                     Badge(
                         containerColor = AppColors.Primary,
                         contentColor = AppColors.OnPrimary,
-                        modifier = Modifier.offset(x = 10.dp, y = (-8).dp)
+                        modifier = Modifier.offset(x = 10.dp, y = (-8).dp),
                     ) {
                         Text(text = badgeCount.toString())
                     }
-                }
+                },
             ) {
                 iconBase()
             }
@@ -149,32 +149,32 @@ private fun DsNavigationBarPreview() {
     LazyPizzaThemePreview {
         Column(
             verticalArrangement = Arrangement.Top,
-            modifier = Modifier
+            modifier = Modifier,
         ) {
             DsNavigationBar.Bottom(
                 menuItems = listOf(
                     DsNavigationBar.NavItem(
-                        icon = painterResource(R.drawable.ic_menu),
+                        icon = painterResource(R.drawable.menu),
                         badgeCount = 0,
                         label = "Menu",
                         isSelected = true,
-                        onClick = {}
+                        onClick = {},
                     ),
                     DsNavigationBar.NavItem(
-                        icon = painterResource(R.drawable.ic_cart),
+                        icon = painterResource(R.drawable.shopping_cart),
                         badgeCount = 3,
                         label = "Cart",
                         isSelected = false,
-                        onClick = {}
+                        onClick = {},
                     ),
                     DsNavigationBar.NavItem(
-                        icon = painterResource(R.drawable.ic_history),
+                        icon = painterResource(R.drawable.history),
                         badgeCount = 0,
                         label = "History",
                         isSelected = false,
-                        onClick = {}
-                    )
-                )
+                        onClick = {},
+                    ),
+                ),
             )
 
             Spacer(Modifier.height(16.dp))
@@ -182,27 +182,27 @@ private fun DsNavigationBarPreview() {
             DsNavigationBar.Rail(
                 menuItems = listOf(
                     DsNavigationBar.NavItem(
-                        icon = painterResource(R.drawable.ic_menu),
+                        icon = painterResource(R.drawable.menu),
                         badgeCount = 0,
                         label = "Menu",
                         isSelected = true,
-                        onClick = {}
+                        onClick = {},
                     ),
                     DsNavigationBar.NavItem(
-                        icon = painterResource(R.drawable.ic_cart),
+                        icon = painterResource(R.drawable.shopping_cart),
                         badgeCount = 3,
                         label = "Cart",
                         isSelected = false,
-                        onClick = {}
+                        onClick = {},
                     ),
                     DsNavigationBar.NavItem(
-                        icon = painterResource(R.drawable.ic_history),
+                        icon = painterResource(R.drawable.history),
                         badgeCount = 0,
                         label = "History",
                         isSelected = false,
-                        onClick = {}
-                    )
-                )
+                        onClick = {},
+                    ),
+                ),
             )
         }
     }

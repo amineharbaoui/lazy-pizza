@@ -19,12 +19,26 @@ dependencyResolutionManagement {
     }
 }
 
+enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
+
 rootProject.name = "LazyPizza"
 include(":app")
 include(":core:designsystem")
-include(":features:menu")
 include(":core:ui")
 include(":features:cart")
-include(":core:data")
-include(":core:domain")
 include(":features:history")
+
+include(":features:menu:domain")
+include(":features:menu:data")
+include(":features:menu:ui-home")
+include(":features:menu:ui-pizza-detail")
+include(":features:cart:data")
+include(":features:cart:domain")
+include(":features:cart:ui-cart")
+include(":features:cart:di")
+include(":features:menu:di")
+include(":features:auth")
+include(":features:auth:data")
+include(":features:auth:domain")
+include(":features:auth:ui")
+include(":features:auth:di")

@@ -14,7 +14,7 @@ import androidx.compose.ui.graphics.Color
 
 val LightColorScheme: ColorScheme = lightColorScheme(
     primary = AppColors.Primary,
-    onPrimary = AppColors.OnPrimary,
+    onPrimary = AppColors.TextOnPrimary,
 
     background = AppColors.Bg,
     onBackground = AppColors.TextPrimary,
@@ -48,20 +48,16 @@ val Typography = Typography(
 )
 
 @Composable
-fun LazyPizzaTheme(
-    content: @Composable () -> Unit
-) {
+fun LazyPizzaTheme(content: @Composable () -> Unit) {
     MaterialTheme(
         colorScheme = LightColorScheme,
         typography = Typography,
-        content = content
+        content = content,
     )
 }
 
 @Composable
-fun LazyPizzaThemePreview(
-    content: @Composable () -> Unit
-) {
+fun LazyPizzaThemePreview(content: @Composable () -> Unit) {
     MaterialTheme(
         colorScheme = LightColorScheme,
         typography = Typography,
@@ -70,7 +66,7 @@ fun LazyPizzaThemePreview(
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(top = innerPadding.calculateTopPadding())
+                    .padding(top = innerPadding.calculateTopPadding()),
             ) {
                 content()
             }
