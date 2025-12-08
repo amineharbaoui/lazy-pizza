@@ -24,8 +24,8 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.designsystem.R
 import com.example.designsystem.components.DsButton
-import com.example.designsystem.components.DsTextField
 import com.example.designsystem.components.DsTopBar
+import com.example.designsystem.components.textfield.DsTextField
 import com.example.designsystem.theme.AppColors
 import com.example.designsystem.theme.AppTypography
 import com.example.designsystem.theme.LazyPizzaThemePreview

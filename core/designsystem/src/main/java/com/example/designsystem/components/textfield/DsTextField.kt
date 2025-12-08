@@ -1,4 +1,4 @@
-package com.example.designsystem.components
+package com.example.designsystem.components.textfield
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -101,7 +101,6 @@ object DsTextField {
         modifier: Modifier = Modifier,
         placeholder: String = "Search for delicious food…",
     ) {
-        val containerColor = if (value.isEmpty()) AppColors.SurfaceHighest else AppColors.SurfaceHigher
         OutlinedTextField(
             modifier = modifier
                 .background(AppColors.SurfaceHigher, RoundedCornerShape(28.dp)),
@@ -123,11 +122,6 @@ object DsTextField {
             },
             shape = RoundedCornerShape(28.dp),
             colors = OutlinedTextFieldDefaults.colors(
-//                focusedContainerColor = containerColor,
-//                unfocusedContainerColor = containerColor,
-//                disabledContainerColor = AppColors.SurfaceHighest,
-//                errorContainerColor = containerColor,
-
                 focusedBorderColor = Color.Transparent,
                 unfocusedBorderColor = Color.Transparent,
                 disabledBorderColor = Color.Transparent,
@@ -145,6 +139,7 @@ object DsTextField {
         val name: String,
         val dialCode: String,
         val flagResId: Int,
+        val phoneMask: String,
     )
 
     @Composable
@@ -152,7 +147,7 @@ object DsTextField {
         phoneNumber: String,
         onPhoneNumberChange: (String) -> Unit,
         modifier: Modifier = Modifier,
-        placeholder: String = "(201) 555-0123",
+        placeholder: String? = null,
         isError: Boolean = false,
         enabled: Boolean = true,
         onFullPhoneNumberChange: (String) -> Unit = {},
@@ -184,18 +179,24 @@ object DsTextField {
             onFullPhoneNumberChange(full)
         }
 
-        val containerColor =
-            if (phoneNumber.isEmpty()) AppColors.SurfaceHighest else AppColors.SurfaceHigher
+        val containerColor = if (phoneNumber.isEmpty()) AppColors.SurfaceHighest else AppColors.SurfaceHigher
         val focusedBorder = if (isError) AppColors.Error else AppColors.Outline
         val unfocusedBorder = if (isError) AppColors.Error else Color.Transparent
         val errorBorder = AppColors.Error
+        val visualTransformation = remember(selectedCountry) {
+            PhoneNumberVisualTransformation(selectedCountry.phoneMask)
+        }
+        val maxDigitsForMask = remember(selectedCountry) {
+            selectedCountry.phoneMask.count { it == 'X' }.coerceAtLeast(0)
+        }
 
         Box(modifier = modifier) {
             OutlinedTextField(
                 value = phoneNumber,
-                onValueChange = {
-                    onPhoneNumberChange(it)
-                    updateFullNumber(local = it)
+                onValueChange = { raw ->
+                    val sanitized = raw.filter { it.isDigit() }.take(maxDigitsForMask)
+                    onPhoneNumberChange(sanitized)
+                    updateFullNumber(local = sanitized)
                 },
                 enabled = enabled,
                 singleLine = true,
@@ -203,12 +204,15 @@ object DsTextField {
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
                 isError = isError,
                 placeholder = {
-                    Text(
-                        text = placeholder,
-                        style = AppTypography.Body1Regular,
-                        color = AppColors.TextSecondary,
-                    )
+                    placeholder?.let {
+                        Text(
+                            text = it,
+                            style = AppTypography.Body1Regular,
+                            color = AppColors.TextSecondary,
+                        )
+                    }
                 },
+                visualTransformation = visualTransformation,
                 leadingIcon = {
                     Row(
                         modifier = Modifier
@@ -292,10 +296,18 @@ object DsTextField {
                                     .fillMaxWidth()
                                     .clip(RoundedCornerShape(12.dp))
                                     .clickable {
+                                        // When the country changes, clamp current number to new mask length
+                                        val newMax = country.phoneMask.count { it == 'X' }.coerceAtLeast(0)
+                                        val newLocal = phoneNumber.filter { it.isDigit() }.take(newMax)
+
                                         selectedCountry = country
                                         isMenuOpen = false
                                         searchQuery = ""
-                                        updateFullNumber(country = country)
+
+                                        if (newLocal != phoneNumber) {
+                                            onPhoneNumberChange(newLocal)
+                                        }
+                                        updateFullNumber(local = newLocal, country = country)
                                     }
                                     .padding(horizontal = 12.dp, vertical = 8.dp),
                                 verticalAlignment = Alignment.CenterVertically,
