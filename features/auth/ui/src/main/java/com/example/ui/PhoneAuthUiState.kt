@@ -6,6 +6,7 @@ sealed interface PhoneAuthUiState {
 
     data class EnterPhone(
         val phoneNumber: String,
+        val fullPhoneNumber: String,
         val isPhoneValid: Boolean,
         val errorMessage: String? = null,
         val isLoading: Boolean,

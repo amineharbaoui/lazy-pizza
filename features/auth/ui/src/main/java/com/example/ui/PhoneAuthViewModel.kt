@@ -19,6 +19,7 @@ class PhoneAuthViewModel @Inject constructor(
     private val _uiState = MutableStateFlow<PhoneAuthUiState>(
         PhoneAuthUiState.EnterPhone(
             phoneNumber = "",
+            fullPhoneNumber = "",
             isPhoneValid = false,
             isLoading = false,
             errorMessage = null,
@@ -35,11 +36,29 @@ class PhoneAuthViewModel @Inject constructor(
         val normalized = phone.trim()
         val current = _uiState.value
         if (current is PhoneAuthUiState.EnterPhone) {
-            _uiState.value = PhoneAuthUiState.EnterPhone(
+            _uiState.value = current.copy(
                 phoneNumber = normalized,
-                isPhoneValid = validatePhone(normalized),
                 errorMessage = null,
-                isLoading = false,
+            )
+        }
+    }
+
+    fun onFullPhoneChanged(fullPhone: String) {
+        val current = _uiState.value
+        if (current is PhoneAuthUiState.EnterPhone) {
+            _uiState.value = current.copy(
+                fullPhoneNumber = fullPhone,
+                errorMessage = null,
+            )
+        }
+    }
+
+    fun onPhoneValidityChanged(isValid: Boolean) {
+        val current = _uiState.value
+        if (current is PhoneAuthUiState.EnterPhone) {
+            _uiState.value = current.copy(
+                isPhoneValid = isValid,
+                errorMessage = null,
             )
         }
     }
@@ -48,7 +67,7 @@ class PhoneAuthViewModel @Inject constructor(
         val current = _uiState.value as? PhoneAuthUiState.EnterPhone ?: return
         _uiState.value = current.copy(isLoading = true, errorMessage = null)
         viewModelScope.launch {
-            _events.emit(PhoneAuthEvent.StartPhoneVerification(current.phoneNumber))
+            _events.emit(PhoneAuthEvent.StartPhoneVerification(current.fullPhoneNumber))
         }
     }
 
@@ -58,7 +77,7 @@ class PhoneAuthViewModel @Inject constructor(
 
     fun onCodeSent(verificationId: String) {
         currentVerificationId = verificationId
-        val phone = (uiState.value as? PhoneAuthUiState.EnterPhone)?.phoneNumber ?: return
+        val phone = (uiState.value as? PhoneAuthUiState.EnterPhone)?.fullPhoneNumber ?: return
 
         _uiState.value = PhoneAuthUiState.EnterCode(
             phone = phone,
@@ -122,6 +141,7 @@ class PhoneAuthViewModel @Inject constructor(
         currentVerificationId = null
         _uiState.value = PhoneAuthUiState.EnterPhone(
             phoneNumber = "",
+            fullPhoneNumber = "",
             isPhoneValid = false,
             isLoading = false,
             errorMessage = null,

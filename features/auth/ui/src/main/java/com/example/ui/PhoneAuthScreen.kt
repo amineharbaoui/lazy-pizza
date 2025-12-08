@@ -24,8 +24,8 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.designsystem.R
 import com.example.designsystem.components.DsButton
+import com.example.designsystem.components.DsTextField
 import com.example.designsystem.components.DsTopBar
-import com.example.designsystem.components.textfield.DsTextField
 import com.example.designsystem.theme.AppColors
 import com.example.designsystem.theme.AppTypography
 import com.example.designsystem.theme.LazyPizzaThemePreview
@@ -51,6 +51,8 @@ fun PhoneAuthScreen(
             is PhoneAuthUiState.EnterPhone -> PhoneStep(
                 state = state,
                 onPhoneChange = viewModel::onPhoneChanged,
+                onFullPhoneNumberChange = viewModel::onFullPhoneChanged,
+                onValidityChange = viewModel::onPhoneValidityChanged,
                 onContinue = viewModel::onContinueWithPhoneClick,
                 onSkip = viewModel::onSkipClick,
             )
@@ -101,6 +103,8 @@ fun PhoneAuthScreen(
 private fun PhoneStep(
     state: PhoneAuthUiState.EnterPhone,
     onPhoneChange: (String) -> Unit,
+    onFullPhoneNumberChange: (String) -> Unit,
+    onValidityChange: (Boolean) -> Unit,
     onContinue: () -> Unit,
     onSkip: () -> Unit,
 ) {
@@ -125,16 +129,15 @@ private fun PhoneStep(
             textAlign = TextAlign.Center,
         )
         Spacer(Modifier.height(24.dp))
-
-        DsTextField.Primary(
-            value = state.phoneNumber,
-            onValueChange = onPhoneChange,
-            label = "Phone number",
-            isError = state.errorMessage != null,
+        DsTextField.PhoneNumber(
             modifier = Modifier.fillMaxWidth(),
+            phoneNumber = state.phoneNumber,
+            onPhoneNumberChange = onPhoneChange,
+            onFullPhoneNumberChange = onFullPhoneNumberChange,
+            onValidityChange = onValidityChange,
+            isError = state.errorMessage != null,
             enabled = !state.isLoading,
         )
-
         state.errorMessage?.let {
             Spacer(Modifier.height(8.dp))
             Text(text = it, color = AppColors.Error, style = AppTypography.Body4Regular)
@@ -192,7 +195,6 @@ private fun CodeStep(
         )
         Spacer(Modifier.height(24.dp))
 
-        // Simple single field limiting to 6 digits. Could be replaced with fancy OTP later.
         DsTextField.Primary(
             value = state.code,
             onValueChange = onCodeChange,
@@ -237,11 +239,14 @@ private fun PhoneStepPreview() {
         PhoneStep(
             state = PhoneAuthUiState.EnterPhone(
                 phoneNumber = "",
+                fullPhoneNumber = "",
                 isPhoneValid = false,
                 isLoading = false,
                 errorMessage = null,
             ),
             onPhoneChange = {},
+            onFullPhoneNumberChange = {},
+            onValidityChange = {},
             onContinue = {},
             onSkip = {},
         )

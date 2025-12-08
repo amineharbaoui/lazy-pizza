@@ -8,6 +8,7 @@ import com.example.designsystem.R
 
 object PhoneCountryProvider {
 
+    private const val DEFAULT_MASK = "XXXXXXXXXXXX"
     private val PHONE_MASKS_BY_ISO: Map<String, String> = mapOf(
         // NANP countries
         "US" to "(XXX) XXX-XXXX",
@@ -75,33 +76,29 @@ object PhoneCountryProvider {
         "CI" to "XX XX XX XX",
     )
 
-    fun load(context: Context): List<DsTextField.PhoneCountryUi> {
+    fun load(context: Context): List<PhoneCountryUi> {
         val res = context.resources
 
-        val iso2 = res.getStringArray(R.array.country_codes_a_z)
-        val names = res.getStringArray(R.array.country_names_by_code)
-        val extensions = res.getStringArray(R.array.country_extensions_by_country_code)
+        val countryIsoCodes = res.getStringArray(R.array.country_codes_a_z)
+        val countryNames = res.getStringArray(R.array.country_names_by_code)
+        val countryDialingCodes = res.getStringArray(R.array.country_extensions_by_country_code)
 
-        val count = minOf(iso2.size, names.size, extensions.size)
-
-        val pkg = context.packageName
+        val count = minOf(countryIsoCodes.size, countryNames.size, countryDialingCodes.size)
 
         return buildList(count) {
             for (i in 0 until count) {
-                val iso = iso2[i].trim().uppercase()
-                val name = names[i].trim()
-                val extRaw = extensions[i].trim()
-                val dial = "+$extRaw"
+                val iso = countryIsoCodes[i].trim().uppercase()
+                val name = countryNames[i].trim()
+                val dialingCode = countryDialingCodes[i].trim()
+                val dial = "+$dialingCode"
 
-                val flagName = "flag_${iso.lowercase()}"
-                val flagId = res.getIdentifier(flagName, "drawable", pkg)
-
+                val flagId = resolveFlagResId(context, iso)
                 if (flagId == 0) continue
 
-                val phoneMask = PHONE_MASKS_BY_ISO[iso] ?: "XXXXXXXXXXXX"
+                val phoneMask = PHONE_MASKS_BY_ISO[iso] ?: DEFAULT_MASK
 
                 add(
-                    DsTextField.PhoneCountryUi(
+                    PhoneCountryUi(
                         isoCode = iso,
                         name = name,
                         dialCode = dial,
@@ -113,9 +110,30 @@ object PhoneCountryProvider {
         }
     }
 
+    fun defaultCountry(
+        context: Context,
+        countries: List<PhoneCountryUi>,
+    ): PhoneCountryUi {
+        val config = context.resources.configuration
+        val iso = config.locales[0]?.country?.uppercase()
+        return countries.firstOrNull { it.isoCode == iso }
+            ?: countries.firstOrNull { it.isoCode == "US" }
+            ?: countries.first()
+    }
+
     @Composable
-    fun rememberPhoneCountries(): List<DsTextField.PhoneCountryUi> {
+    fun rememberPhoneCountriesWithDefault(): Pair<List<PhoneCountryUi>, PhoneCountryUi> {
         val context = LocalContext.current
-        return remember(context) { load(context) }
+        val countries = remember(context) { load(context) }
+        val default = remember(context, countries) { defaultCountry(context, countries) }
+        return countries to default
+    }
+
+    private fun resolveFlagResId(
+        context: Context,
+        iso: String,
+    ): Int {
+        val flagName = "flag_${iso.lowercase()}"
+        return context.resources.getIdentifier(flagName, "drawable", context.packageName)
     }
 }

@@ -10,6 +10,10 @@ class PhoneNumberVisualTransformation(
 ) : VisualTransformation {
 
     override fun filter(text: AnnotatedString): TransformedText {
+        if (mask.isEmpty()) {
+            return TransformedText(text, OffsetMapping.Identity)
+        }
+
         val digits = text.text.filter { it.isDigit() }
 
         val out = StringBuilder()
@@ -28,36 +32,37 @@ class PhoneNumberVisualTransformation(
         }
 
         val formatted = out.toString()
+        val maxDigits = mask.count { it == 'X' }
 
         val offsetMapping = object : OffsetMapping {
             override fun originalToTransformed(offset: Int): Int {
                 if (offset <= 0) return 0
 
+                val targetDigits = offset.coerceAtMost(maxDigits)
+
                 var xSeen = 0
                 var pos = 0
 
-                while (pos < mask.length && pos < formatted.length && xSeen < offset) {
-                    if (mask[pos] == 'X') {
-                        xSeen++
-                    }
+                while (pos < mask.length && xSeen < targetDigits) {
+                    if (mask[pos] == 'X') xSeen++
                     pos++
                 }
-                return pos
+                return pos.coerceAtMost(formatted.length)
             }
 
             override fun transformedToOriginal(offset: Int): Int {
                 if (offset <= 0) return 0
 
+                val safeOffset = offset.coerceAtMost(formatted.length)
+
                 var xSeen = 0
                 var pos = 0
 
-                while (pos < mask.length && pos < offset && pos < formatted.length) {
-                    if (mask[pos] == 'X') {
-                        xSeen++
-                    }
+                while (pos < safeOffset && pos < mask.length) {
+                    if (mask[pos] == 'X') xSeen++
                     pos++
                 }
-                return xSeen
+                return xSeen.coerceAtMost(maxDigits)
             }
         }
 
