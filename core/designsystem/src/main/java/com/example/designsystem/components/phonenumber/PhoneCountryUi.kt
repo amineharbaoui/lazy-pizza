@@ -1,4 +1,4 @@
-package com.example.designsystem.components.textfield
+package com.example.designsystem.components.phonenumber
 
 import androidx.annotation.DrawableRes
 

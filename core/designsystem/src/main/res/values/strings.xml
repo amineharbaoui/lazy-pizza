@@ -5,10 +5,11 @@
     <string name="cart">Cart</string>
     <string name="recommended_title">RECOMMENDED TO ADD TO YOUR ORDER</string>
     <string name="continue_text">Continue</string>
-    <string name="skip">Skip</string>
+    <string name="skip">Continue without signing in</string>
     <string name="confirm">Confirm</string>
     <string name="resend_code">Resend code</string>
     <string name="logout">Log out</string>
     <string name="cancel">Cancel</string>
     <string name="logout_confirm_title">Are you sure you want to log out?</string>
+    <string name="change_number">Change mobile number?</string>
 </resources>

@@ -7,6 +7,7 @@ import com.example.domain.usecase.AddCartItemUseCase
 import com.example.domain.usecase.ObserveCartUseCase
 import com.example.domain.usecase.ObserveMenuUseCase
 import com.example.domain.usecase.RemoveCartItemUseCase
+import com.example.domain.usecase.SignOutUseCase
 import com.example.domain.usecase.UpdateCartItemQuantityUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -27,6 +28,7 @@ class MenuViewModel @Inject constructor(
     private val addCartItemUseCase: AddCartItemUseCase,
     private val updateCartItemQuantityUseCase: UpdateCartItemQuantityUseCase,
     private val removeCartItemUseCase: RemoveCartItemUseCase,
+    private val signOutUseCase: SignOutUseCase,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<MenuUiState>(MenuUiState.Loading)
@@ -145,5 +147,9 @@ class MenuViewModel @Inject constructor(
         if (current is MenuUiState.Success) {
             _uiState.update { block(current) }
         }
+    }
+
+    fun onSignOutClick() {
+        viewModelScope.launch { signOutUseCase() }
     }
 }

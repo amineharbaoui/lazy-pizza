@@ -11,7 +11,9 @@ import com.example.history.presentation.HistoryRoute
 import com.example.ui.cart.screen.CartRoute
 import com.example.ui.pizzadetail.MenuRoute
 
-private val TOP_LEVEL_ROUTES: List<NavKey> = listOf(MenuRoute, CartRoute, HistoryRoute)
+val TopLevelRoutes: Set<NavKey> = setOf(MenuRoute, CartRoute, HistoryRoute)
+
+fun NavKey.isTopLevel(): Boolean = this in TopLevelRoutes
 
 @Composable
 fun BottomBar(
@@ -20,7 +22,7 @@ fun BottomBar(
     badgeCount: Int,
 ) {
     DsNavigationBar.Bottom(
-        menuItems = TOP_LEVEL_ROUTES.map { destination ->
+        menuItems = TopLevelRoutes.map { destination ->
             DsNavigationBar.NavItem(
                 icon = painterResource(destination.toIcon()),
                 badgeCount = if (destination == CartRoute) badgeCount else 0,
@@ -39,7 +41,7 @@ fun NavigationRail(
     badgeCount: Int,
 ) {
     DsNavigationBar.Rail(
-        menuItems = TOP_LEVEL_ROUTES.map { destination ->
+        menuItems = TopLevelRoutes.map { destination ->
             DsNavigationBar.NavItem(
                 icon = painterResource(destination.toIcon()),
                 badgeCount = if (destination == CartRoute) badgeCount else 0,

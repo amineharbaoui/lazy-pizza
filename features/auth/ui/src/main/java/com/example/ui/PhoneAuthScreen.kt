@@ -18,7 +18,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -28,7 +27,6 @@ import com.example.designsystem.components.DsTextField
 import com.example.designsystem.components.DsTopBar
 import com.example.designsystem.theme.AppColors
 import com.example.designsystem.theme.AppTypography
-import com.example.designsystem.theme.LazyPizzaThemePreview
 import com.google.firebase.auth.FirebaseAuth
 
 @Composable
@@ -39,36 +37,24 @@ fun PhoneAuthScreen(
     onAuthSuccess: () -> Unit = {},
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .padding(innerPadding),
-        verticalArrangement = Arrangement.Top,
-    ) {
-        DsTopBar.Secondary(title = null)
-        when (val state = uiState) {
-            is PhoneAuthUiState.EnterPhone -> PhoneStep(
-                state = state,
-                onPhoneChange = viewModel::onPhoneChanged,
-                onFullPhoneNumberChange = viewModel::onFullPhoneChanged,
-                onValidityChange = viewModel::onPhoneValidityChanged,
-                onContinue = viewModel::onContinueWithPhoneClick,
-                onSkip = viewModel::onSkipClick,
-            )
-
-            is PhoneAuthUiState.EnterCode -> CodeStep(
-                state = state,
-                onCodeChange = viewModel::onCodeChanged,
-                onConfirm = viewModel::onConfirmClick,
-                onResend = viewModel::onResendCodeClick,
-            )
-
-            PhoneAuthUiState.Idle -> Unit
-        }
-    }
-
     val activity = LocalActivity.current ?: return
+    PhoneAuthScreenContent(
+        innerPadding = innerPadding,
+        uiState = uiState,
+        modifier = modifier,
+        actions = PhoneAuthActions(
+            onPhoneChange = viewModel::onPhoneChanged,
+            onFullPhoneNumberChange = viewModel::onFullPhoneChanged,
+            onValidityChange = viewModel::onPhoneValidityChanged,
+            onCountryIsoChanged = viewModel::onCountryIsoChanged,
+            onContinue = viewModel::onContinueWithPhoneClick,
+            onCodeChange = viewModel::onCodeChanged,
+            onConfirm = viewModel::onConfirmClick,
+            onResend = viewModel::onResendCodeClick,
+            onSkip = viewModel::onSkipClick,
+            onEditPhone = viewModel::onEditPhoneClick,
+        ),
+    )
     LaunchedEffect(Unit) {
         viewModel.events.collect { event ->
             when (event) {
@@ -76,9 +62,9 @@ fun PhoneAuthScreen(
                     PhoneVerificationManager(FirebaseAuth.getInstance())
                         .startVerification(
                             activity = activity,
-                            phoneNumber = event.phone,
+                            phoneNumber = event.phoneNumber,
                             onCodeSent = viewModel::onCodeSent,
-                            onVerificationFailed = { e -> viewModel.onVerificationFailed(e.message) },
+                            onVerificationFailed = viewModel::onVerificationFailed,
                         )
                 }
 
@@ -86,9 +72,9 @@ fun PhoneAuthScreen(
                     PhoneVerificationManager(FirebaseAuth.getInstance())
                         .startVerification(
                             activity = activity,
-                            phoneNumber = event.phone,
+                            phoneNumber = event.phoneNumber,
                             onCodeSent = viewModel::onCodeSent,
-                            onVerificationFailed = { e -> viewModel.onVerificationFailed(e.message) },
+                            onVerificationFailed = viewModel::onVerificationFailed,
                         )
                 }
 
@@ -100,13 +86,55 @@ fun PhoneAuthScreen(
 }
 
 @Composable
-private fun PhoneStep(
+fun PhoneAuthScreenContent(
+    innerPadding: PaddingValues,
+    uiState: PhoneAuthUiState,
+    actions: PhoneAuthActions,
+    modifier: Modifier = Modifier,
+) {
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .padding(innerPadding),
+        verticalArrangement = Arrangement.Top,
+    ) {
+        DsTopBar.Secondary(title = null)
+        Spacer(Modifier.height(24.dp))
+        Text(
+            text = stringResource(uiState.titleRes),
+            style = AppTypography.Title2SemiBold,
+            color = AppColors.TextPrimary,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.fillMaxWidth(),
+        )
+        Spacer(Modifier.height(6.dp))
+        Text(
+            text = stringResource(uiState.subtitleRes),
+            style = AppTypography.Body3Regular,
+            color = AppColors.TextSecondary,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.fillMaxWidth(),
+        )
+        Spacer(Modifier.height(24.dp))
+
+        when (uiState) {
+            is PhoneAuthUiState.EnterPhone -> PhoneAuthContent(
+                state = uiState,
+                actions = actions,
+            )
+
+            is PhoneAuthUiState.EnterCode -> CodeAuthContent(
+                state = uiState,
+                actions = actions,
+            )
+        }
+    }
+}
+
+@Composable
+private fun PhoneAuthContent(
     state: PhoneAuthUiState.EnterPhone,
-    onPhoneChange: (String) -> Unit,
-    onFullPhoneNumberChange: (String) -> Unit,
-    onValidityChange: (Boolean) -> Unit,
-    onContinue: () -> Unit,
-    onSkip: () -> Unit,
+    actions: PhoneAuthActions,
 ) {
     Column(
         modifier = Modifier
@@ -114,48 +142,43 @@ private fun PhoneStep(
             .padding(horizontal = 16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Spacer(Modifier.height(24.dp))
-        Text(
-            text = "Welcome to LazyPizza",
-            style = AppTypography.Title2SemiBold,
-            color = AppColors.TextPrimary,
-            textAlign = TextAlign.Center,
-        )
-        Spacer(Modifier.height(6.dp))
-        Text(
-            text = "Let’s begin your order",
-            style = AppTypography.Body3Regular,
-            color = AppColors.TextSecondary,
-            textAlign = TextAlign.Center,
-        )
-        Spacer(Modifier.height(24.dp))
         DsTextField.PhoneNumber(
             modifier = Modifier.fillMaxWidth(),
             phoneNumber = state.phoneNumber,
-            onPhoneNumberChange = onPhoneChange,
-            onFullPhoneNumberChange = onFullPhoneNumberChange,
-            onValidityChange = onValidityChange,
-            isError = state.errorMessage != null,
+            onPhoneNumberChange = actions.onPhoneChange,
+            onFullPhoneNumberChange = actions.onFullPhoneNumberChange,
+            onValidityChange = actions.onValidityChange,
+            initialCountryIso = state.selectedCountryIso,
+            onCountryIsoChanged = actions.onCountryIsoChanged,
+            isError = state.showError,
             enabled = !state.isLoading,
         )
-        state.errorMessage?.let {
+
+        if (state.showError) {
             Spacer(Modifier.height(8.dp))
-            Text(text = it, color = AppColors.Error, style = AppTypography.Body4Regular)
+            Text(
+                text = state.errorMessage.orEmpty(),
+                color = AppColors.Error,
+                style = AppTypography.Body4Regular,
+                modifier = Modifier.fillMaxWidth(),
+            )
         }
 
         Spacer(Modifier.height(12.dp))
+
         DsButton.Filled(
             text = stringResource(id = R.string.continue_text),
-            enabled = state.isPhoneValid && !state.isLoading,
-            onClick = onContinue,
+            enabled = state.continueEnabled,
+            onClick = actions.onContinue,
             modifier = Modifier.fillMaxWidth(),
         )
 
         Spacer(Modifier.height(6.dp))
+
         DsButton.Text(
             text = stringResource(id = R.string.skip),
-            onClick = onSkip,
-            enabled = !state.isLoading,
+            onClick = actions.onSkip,
+            enabled = state.skipEnabled,
             modifier = Modifier.fillMaxWidth(),
         )
 
@@ -167,11 +190,9 @@ private fun PhoneStep(
 }
 
 @Composable
-private fun CodeStep(
+private fun CodeAuthContent(
     state: PhoneAuthUiState.EnterCode,
-    onCodeChange: (String) -> Unit,
-    onConfirm: () -> Unit,
-    onResend: () -> Unit,
+    actions: PhoneAuthActions,
 ) {
     Column(
         modifier = Modifier
@@ -179,95 +200,82 @@ private fun CodeStep(
             .padding(horizontal = 16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Spacer(Modifier.height(24.dp))
-        Text(
-            text = "Welcome to LazyPizza",
-            style = AppTypography.Title2SemiBold,
-            color = AppColors.TextPrimary,
-            textAlign = TextAlign.Center,
-        )
-        Spacer(Modifier.height(6.dp))
-        Text(
-            text = "Enter SMS code",
-            style = AppTypography.Body3Regular,
-            color = AppColors.TextSecondary,
-            textAlign = TextAlign.Center,
-        )
-        Spacer(Modifier.height(24.dp))
-
-        DsTextField.Primary(
-            value = state.code,
-            onValueChange = onCodeChange,
-            label = "6-digit code",
-            isError = state.errorMessage != null,
+        DsTextField.PhoneNumber(
             modifier = Modifier.fillMaxWidth(),
+            phoneNumber = state.phoneLocal,
+            onPhoneNumberChange = {},
+            onFullPhoneNumberChange = {},
+            onValidityChange = {},
+            initialCountryIso = state.countryIso,
+            isError = false,
+            enabled = false,
+        )
+        DsButton.Text(
+            text = stringResource(id = R.string.change_number),
+            onClick = actions.onEditPhone,
+            modifier = Modifier.fillMaxWidth(),
+        )
+        Spacer(Modifier.height(16.dp))
+
+        DsTextField.OtpCode(
+            value = state.code,
+            onValueChange = actions.onCodeChange,
+            length = 6,
+            isError = state.showError,
             enabled = !state.isLoading,
+            modifier = Modifier.fillMaxWidth(),
         )
 
-        state.errorMessage?.let {
+        if (state.showError) {
             Spacer(Modifier.height(8.dp))
-            Text(text = it, color = AppColors.Error, style = AppTypography.Body4Regular)
+            Text(
+                text = state.errorMessage.orEmpty(),
+                color = AppColors.Error,
+                style = AppTypography.Body4Regular,
+                modifier = Modifier.fillMaxWidth(),
+            )
         }
 
         Spacer(Modifier.height(12.dp))
+
         DsButton.Filled(
             text = stringResource(id = R.string.confirm),
-            enabled = state.code.length == 6 && !state.isLoading,
-            onClick = onConfirm,
+            enabled = state.confirmEnabled,
+            onClick = actions.onConfirm,
             modifier = Modifier.fillMaxWidth(),
         )
 
         Spacer(Modifier.height(6.dp))
+
         DsButton.Text(
-            text = stringResource(id = R.string.resend_code),
-            onClick = onResend,
-            enabled = !state.isLoading,
+            text = stringResource(id = R.string.skip),
+            onClick = actions.onSkip,
+            enabled = state.skipEnabled,
             modifier = Modifier.fillMaxWidth(),
         )
+
+        Spacer(Modifier.height(8.dp))
+
+        if (state.resendEnabled) {
+            DsButton.Text(
+                text = stringResource(id = R.string.resend_code),
+                onClick = actions.onResend,
+                enabled = state.resendEnabled,
+                modifier = Modifier.fillMaxWidth(),
+            )
+        } else {
+            Text(
+                text = state.resendTimerText.orEmpty(),
+                style = AppTypography.Body4Regular,
+                color = AppColors.TextSecondary,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth(),
+            )
+        }
 
         if (state.isLoading) {
             Spacer(Modifier.height(12.dp))
             CircularProgressIndicator()
         }
-    }
-}
-
-@Preview
-@Composable
-private fun PhoneStepPreview() {
-    LazyPizzaThemePreview {
-        PhoneStep(
-            state = PhoneAuthUiState.EnterPhone(
-                phoneNumber = "",
-                fullPhoneNumber = "",
-                isPhoneValid = false,
-                isLoading = false,
-                errorMessage = null,
-            ),
-            onPhoneChange = {},
-            onFullPhoneNumberChange = {},
-            onValidityChange = {},
-            onContinue = {},
-            onSkip = {},
-        )
-    }
-}
-
-@Preview
-@Composable
-private fun CodeStepPreview() {
-    LazyPizzaThemePreview {
-        CodeStep(
-            state = PhoneAuthUiState.EnterCode(
-                phone = "+1 555 000 000",
-                code = "123",
-                isLoading = false,
-                errorMessage = "Invalid code",
-                canResend = true,
-            ),
-            onCodeChange = {},
-            onConfirm = {},
-            onResend = {},
-        )
     }
 }

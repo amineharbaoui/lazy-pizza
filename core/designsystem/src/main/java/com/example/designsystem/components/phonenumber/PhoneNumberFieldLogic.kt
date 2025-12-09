@@ -1,4 +1,4 @@
-package com.example.designsystem.components.textfield
+package com.example.designsystem.components.phonenumber
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -8,13 +8,12 @@ internal fun filterCountries(
     all: List<PhoneCountryUi>,
     queryRaw: String,
 ): List<PhoneCountryUi> {
-    val q = queryRaw.trim()
-    if (q.isBlank()) return all
-
+    val searchQuery = queryRaw.trim()
+    if (searchQuery.isBlank()) return all
     return all.filter { country ->
-        country.name.contains(q, ignoreCase = true) ||
-            country.dialCode.contains(q) ||
-            country.isoCode.contains(q, ignoreCase = true)
+        country.name.contains(searchQuery, ignoreCase = true) ||
+            country.dialCode.contains(searchQuery) ||
+            country.isoCode.contains(searchQuery, ignoreCase = true)
     }
 }
 
@@ -51,5 +50,5 @@ internal fun rememberMaskInfo(country: PhoneCountryUi): MaskInfo = remember(coun
 }
 
 internal fun buildPlaceholderFromMask(mask: String): String = mask.map { ch ->
-    if (ch == 'X') ('0'..'9').random() else ch
+    if (ch == 'X') '0' else ch
 }.joinToString("")

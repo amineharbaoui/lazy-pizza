@@ -20,6 +20,7 @@ import com.example.designsystem.utils.isWideLayout
 import com.example.lazypizza.navigation.BottomBar
 import com.example.lazypizza.navigation.NavigationRail
 import com.example.lazypizza.navigation.RootNavGraph
+import com.example.lazypizza.navigation.isTopLevel
 import com.example.ui.cart.shared.CartBadgeViewModel
 import com.example.ui.pizzadetail.MenuRoute
 
@@ -35,7 +36,7 @@ fun MainScreen() {
     Scaffold(
         contentWindowInsets = WindowInsets.safeDrawing,
         bottomBar = {
-            if (!isWide) {
+            if (!isWide && currentRoute.isTopLevel()) {
                 BottomBar(
                     currentRoute = currentRoute,
                     onRouteSelect = { newRoute ->
@@ -48,7 +49,7 @@ fun MainScreen() {
         },
     ) { innerPadding ->
         Row(Modifier.padding(innerPadding)) {
-            if (isWide) {
+            if (isWide && currentRoute.isTopLevel()) {
                 NavigationRail(
                     currentRoute = currentRoute,
                     onRouteSelect = { newRoute ->

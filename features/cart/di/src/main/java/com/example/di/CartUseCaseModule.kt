@@ -16,7 +16,7 @@ import dagger.hilt.components.SingletonComponent
 
 @Module
 @InstallIn(SingletonComponent::class)
-object CartDomainModule {
+object CartUseCaseModule {
 
     @Provides
     fun provideAddCartItemUseCase(repository: CartRepository) = AddCartItemUseCase(repository)

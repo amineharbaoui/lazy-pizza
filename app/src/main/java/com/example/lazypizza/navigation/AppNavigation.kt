@@ -54,10 +54,7 @@ fun RootNavGraph(
                     onNavigateToAuth = {
                         backStack.add(AuthRoute)
                     },
-                    onLogout = {
-                        FirebaseAuth.getInstance().signOut()
-                        isLoggedIn = false
-                    },
+                    onLogout = { isLoggedIn = false },
                 )
             }
             entry<PizzaDetailRoute> {

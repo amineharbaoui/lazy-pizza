@@ -1,4 +1,4 @@
-package com.example.designsystem.components.textfield
+package com.example.designsystem.components.phonenumber
 
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.input.OffsetMapping
@@ -21,12 +21,12 @@ class PhoneNumberVisualTransformation(
         var maskIndex = 0
 
         while (maskIndex < mask.length && digitIndex < digits.length) {
-            val c = mask[maskIndex]
-            if (c == 'X') {
+            val maskChar = mask[maskIndex]
+            if (maskChar == 'X') {
                 out.append(digits[digitIndex])
                 digitIndex++
             } else {
-                out.append(c)
+                out.append(maskChar)
             }
             maskIndex++
         }
@@ -41,13 +41,13 @@ class PhoneNumberVisualTransformation(
                 val targetDigits = offset.coerceAtMost(maxDigits)
 
                 var xSeen = 0
-                var pos = 0
+                var currentIndex = 0
 
-                while (pos < mask.length && xSeen < targetDigits) {
-                    if (mask[pos] == 'X') xSeen++
-                    pos++
+                while (currentIndex < mask.length && xSeen < targetDigits) {
+                    if (mask[currentIndex] == 'X') xSeen++
+                    currentIndex++
                 }
-                return pos.coerceAtMost(formatted.length)
+                return currentIndex.coerceAtMost(formatted.length)
             }
 
             override fun transformedToOriginal(offset: Int): Int {
@@ -56,11 +56,11 @@ class PhoneNumberVisualTransformation(
                 val safeOffset = offset.coerceAtMost(formatted.length)
 
                 var xSeen = 0
-                var pos = 0
+                var currentIndex = 0
 
-                while (pos < safeOffset && pos < mask.length) {
-                    if (mask[pos] == 'X') xSeen++
-                    pos++
+                while (currentIndex < safeOffset && currentIndex < mask.length) {
+                    if (mask[currentIndex] == 'X') xSeen++
+                    currentIndex++
                 }
                 return xSeen.coerceAtMost(maxDigits)
             }

@@ -34,5 +34,5 @@ object AppColors {
 
     val Success = Color(0xFF29A55A)
     val Warning = Color(0xFFF5A623)
-    val Error = Color(0xffff5252)
+    val Error = Color(0xffff0000)
 }

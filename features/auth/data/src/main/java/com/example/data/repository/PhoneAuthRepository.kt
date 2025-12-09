@@ -6,14 +6,14 @@ import com.example.domain.repository.PhoneAuthRepository
 import javax.inject.Inject
 
 class FirebasePhoneAuthRepository @Inject constructor(
-    private val remoteDataSource: PhoneAuthDataSource,
+    private val phoneAuthDataSource: PhoneAuthDataSource,
 ) : PhoneAuthRepository {
 
     override suspend fun signInWithCode(
         verificationId: String,
         smsCode: String,
     ): Result<AuthUser> = try {
-        val remoteUser = remoteDataSource.signInWithCode(verificationId, smsCode)
+        val remoteUser = phoneAuthDataSource.signInWithCode(verificationId, smsCode)
         Result.success(
             AuthUser(
                 uid = remoteUser.uid,
@@ -25,7 +25,7 @@ class FirebasePhoneAuthRepository @Inject constructor(
     }
 
     override fun currentUser(): AuthUser? {
-        val remoteUser = remoteDataSource.getCurrentUser() ?: return null
+        val remoteUser = phoneAuthDataSource.getCurrentUser() ?: return null
         return AuthUser(
             uid = remoteUser.uid,
             phoneNumber = remoteUser.phoneNumber,
@@ -33,6 +33,6 @@ class FirebasePhoneAuthRepository @Inject constructor(
     }
 
     override suspend fun signOut() {
-        remoteDataSource.signOut()
+        phoneAuthDataSource.signOut()
     }
 }

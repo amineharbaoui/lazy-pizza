@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="auth_screen_title">Welcome to LazyPizza</string>
+    <string name="auth_screen_subtitle_enter_phone_number">Enter your phone number</string>
+    <string name="auth_screen_subtitle_enter_code">Enter code</string>
+</resources>

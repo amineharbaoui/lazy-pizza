@@ -21,7 +21,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.designsystem.R
-import com.example.designsystem.components.textfield.PhoneNumberField
+import com.example.designsystem.components.otp.OtpCodeInput
+import com.example.designsystem.components.phonenumber.PhoneNumberField
 import com.example.designsystem.theme.AppColors
 import com.example.designsystem.theme.AppTypography
 import com.example.designsystem.theme.LazyPizzaThemePreview
@@ -126,6 +127,8 @@ object DsTextField {
         enabled: Boolean = true,
         onFullPhoneNumberChange: (String) -> Unit = {},
         onValidityChange: (Boolean) -> Unit = {},
+        initialCountryIso: String? = null,
+        onCountryIsoChanged: (String) -> Unit = {},
     ) {
         PhoneNumberField(
             phoneNumber = phoneNumber,
@@ -135,6 +138,27 @@ object DsTextField {
             enabled = enabled,
             onFullPhoneNumberChange = onFullPhoneNumberChange,
             onValidityChange = onValidityChange,
+            initialCountryIso = initialCountryIso,
+            onCountryIsoChanged = onCountryIsoChanged,
+        )
+    }
+
+    @Composable
+    fun OtpCode(
+        value: String,
+        onValueChange: (String) -> Unit,
+        modifier: Modifier = Modifier,
+        length: Int = 6,
+        isError: Boolean = false,
+        enabled: Boolean = true,
+    ) {
+        OtpCodeInput(
+            value = value,
+            onValueChange = onValueChange,
+            length = length,
+            isError = isError,
+            enabled = enabled,
+            modifier = modifier,
         )
     }
 }
@@ -195,7 +219,7 @@ private fun SearchPreview() {
 @Composable
 private fun PhoneNumberPreview() {
     LazyPizzaThemePreview {
-        var phone by remember { mutableStateOf("") }
+        var phone by remember { mutableStateOf("6 20 83 81 63") }
 
         Column(
             modifier = Modifier
@@ -206,15 +230,62 @@ private fun PhoneNumberPreview() {
             DsTextField.PhoneNumber(
                 phoneNumber = phone,
                 onPhoneNumberChange = { phone = it },
-                onFullPhoneNumberChange = { full ->
-
-                    println("Full phone: $full")
-                },
+                onFullPhoneNumberChange = { },
+                initialCountryIso = "FR",
             )
-
             DsTextField.PhoneNumber(
                 phoneNumber = phone,
                 onPhoneNumberChange = { phone = it },
+                onFullPhoneNumberChange = { },
+                initialCountryIso = "FR",
+                enabled = false,
+            )
+            DsTextField.PhoneNumber(
+                phoneNumber = phone,
+                onPhoneNumberChange = { phone = it },
+                isError = true,
+            )
+        }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun OtpPreview() {
+    LazyPizzaThemePreview {
+        var otp1 by remember { mutableStateOf("") }
+        var otp2 by remember { mutableStateOf("12") }
+        var otp3 by remember { mutableStateOf("123456") }
+        var otpError by remember { mutableStateOf("12") }
+
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(24.dp),
+        ) {
+            DsTextField.OtpCode(
+                value = otp1,
+                onValueChange = { otp1 = it },
+                length = 6,
+            )
+
+            DsTextField.OtpCode(
+                value = otp2,
+                onValueChange = { otp2 = it },
+                length = 6,
+            )
+
+            DsTextField.OtpCode(
+                value = otp3,
+                onValueChange = { otp3 = it },
+                length = 6,
+            )
+
+            DsTextField.OtpCode(
+                value = otpError,
+                onValueChange = { otpError = it },
+                length = 6,
                 isError = true,
             )
         }

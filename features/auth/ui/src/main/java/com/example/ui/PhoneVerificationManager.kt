@@ -8,11 +8,15 @@ import com.google.firebase.auth.PhoneAuthCredential
 import com.google.firebase.auth.PhoneAuthOptions
 import com.google.firebase.auth.PhoneAuthProvider
 import java.util.concurrent.TimeUnit
+import java.util.concurrent.TimeoutException
 import javax.inject.Inject
 
 class PhoneVerificationManager @Inject constructor(
     private val firebaseAuth: FirebaseAuth,
 ) {
+    companion object {
+        const val RESEND_TIMEOUT_SECONDS: Long = 60L
+    }
 
     fun startVerification(
         activity: Activity,
@@ -33,6 +37,10 @@ class PhoneVerificationManager @Inject constructor(
                 onVerificationFailed(e)
             }
 
+            override fun onCodeAutoRetrievalTimeOut(p0: String) {
+                onVerificationFailed(TimeoutException("Code auto retrieval timed out"))
+            }
+
             override fun onCodeSent(
                 verificationId: String,
                 token: PhoneAuthProvider.ForceResendingToken,
@@ -43,7 +51,7 @@ class PhoneVerificationManager @Inject constructor(
 
         val options = PhoneAuthOptions.newBuilder(firebaseAuth)
             .setPhoneNumber(phoneNumber)
-            .setTimeout(60L, TimeUnit.SECONDS)
+            .setTimeout(RESEND_TIMEOUT_SECONDS, TimeUnit.SECONDS)
             .setActivity(activity)
             .setCallbacks(callbacks)
             .build()

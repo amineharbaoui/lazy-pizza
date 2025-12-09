@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.di"
+    namespace = "com.example.auth.di"
     compileSdk {
         version = release(36)
     }

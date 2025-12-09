@@ -1,4 +1,4 @@
-package com.example.designsystem.components.textfield
+package com.example.designsystem.components.phonenumber
 
 import android.content.Context
 import androidx.compose.runtime.Composable

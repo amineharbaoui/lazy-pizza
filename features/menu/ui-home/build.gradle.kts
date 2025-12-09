@@ -42,6 +42,8 @@ dependencies {
     implementation(projects.features.menu.domain)
     implementation(projects.features.cart.domain)
 
+    implementation(projects.features.auth.domain)
+
     implementation(libs.androidx.navigation3.runtime)
 
     implementation(platform(libs.androidx.compose.bom))

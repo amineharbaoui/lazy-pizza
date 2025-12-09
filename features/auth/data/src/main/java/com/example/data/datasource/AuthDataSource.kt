@@ -32,7 +32,7 @@ class PhoneAuthDataSource @Inject constructor(
         )
     }
 
-    suspend fun signOut() {
+    fun signOut() {
         firebaseAuth.signOut()
     }
 

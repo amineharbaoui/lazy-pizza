@@ -8,7 +8,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.ui"
+    namespace = "com.example.auth.ui"
     compileSdk {
         version = release(36)
     }

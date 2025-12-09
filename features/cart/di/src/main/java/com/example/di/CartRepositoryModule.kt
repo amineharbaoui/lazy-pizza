@@ -12,7 +12,7 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-abstract class CartDataModule {
+abstract class CartRepositoryModule {
 
     @Binds
     @Singleton

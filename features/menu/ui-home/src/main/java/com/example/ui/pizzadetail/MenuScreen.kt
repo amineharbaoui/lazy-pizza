@@ -115,6 +115,7 @@ fun MenuScreen(
                 secondaryButtonText = stringResource(id = DsR.string.cancel),
                 onPrimaryClick = {
                     showLogoutConfirm = false
+                    viewModel.onSignOutClick()
                     onLogout()
                 },
                 onDismissRequest = { showLogoutConfirm = false },
