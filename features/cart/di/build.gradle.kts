@@ -24,13 +24,15 @@ android {
 
     buildTypes {
         debug {
-            buildConfigField("int", "CART_TTL_MINUTES", "1")
+            buildConfigField("long", "CART_TTL_SECONDS", "60")
+            buildConfigField("long", "CART_TOUCH_THROTTLE_SECONDS", "60")
         }
         release {
             isMinifyEnabled = false
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
 
-            buildConfigField("int", "CART_TTL_MINUTES", "30")
+            buildConfigField("long", "CART_TTL_SECONDS", "1800")
+            buildConfigField("long", "CART_TOUCH_THROTTLE_SECONDS", "60")
         }
     }
     compileOptions {

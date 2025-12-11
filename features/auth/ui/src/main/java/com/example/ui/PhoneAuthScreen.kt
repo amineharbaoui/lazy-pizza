@@ -32,9 +32,10 @@ import com.google.firebase.auth.FirebaseAuth
 @Composable
 fun PhoneAuthScreen(
     innerPadding: PaddingValues,
+    onAuthSuccess: () -> Unit,
+    onNavigateToMenuScreen: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: PhoneAuthViewModel = hiltViewModel(),
-    onAuthSuccess: () -> Unit = {},
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val activity = LocalActivity.current ?: return
@@ -78,7 +79,7 @@ fun PhoneAuthScreen(
                         )
                 }
 
-                PhoneAuthEvent.SkipAuth -> Unit
+                PhoneAuthEvent.SkipAuth -> onNavigateToMenuScreen()
                 PhoneAuthEvent.AuthCompleted -> onAuthSuccess()
             }
         }

@@ -9,20 +9,28 @@ import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 import javax.inject.Inject
 import kotlin.time.Duration.Companion.minutes
+import kotlin.time.Duration.Companion.seconds
 
 class CartLocalDataSource @Inject constructor(
     private val cartDao: CartDao,
     private val cartMetadataDao: CartMetadataDao,
-    @param:CartTtl private val cartTtl: Int,
+    @param:CartTtl private val cartTtlSeconds: Long,
+    @param:CartTouchThrottle private val cartTouchThrottleSeconds: Long,
 ) {
+    private val touchThrottleMillis: Long get() = cartTouchThrottleSeconds.seconds.inWholeMilliseconds
+    private var lastTouchWriteAt: Long = 0L
 
     fun observeCart(): Flow<Cart> = flow {
         expireIfNeeded()
 
         emitAll(
             cartDao.observeCartLines()
+                .onEach { lines ->
+                    if (lines.isNotEmpty()) touchCartIfStale()
+                }
                 .map { lines ->
                     val items: List<CartItem> = lines.map { it.toDomain() }
                     Cart(items)
@@ -32,12 +40,10 @@ class CartLocalDataSource @Inject constructor(
 
     suspend fun addItem(item: CartItem) {
         expireIfNeeded()
-
         when (item) {
             is OtherCartItem -> insertSimple(item)
             is PizzaCartItem -> insertPizza(item)
         }
-
         touchCart()
     }
 
@@ -46,7 +52,6 @@ class CartLocalDataSource @Inject constructor(
         quantity: Int,
     ) {
         expireIfNeeded()
-
         val currentLine = cartDao.observeCartLines()
             .map { lines -> lines.firstOrNull { it.item.lineId == lineId } }
             .firstOrNull()
@@ -56,20 +61,15 @@ class CartLocalDataSource @Inject constructor(
             cartDao.deleteToppingsForLine(lineId)
             cartDao.deleteItem(lineId)
         } else {
-            cartDao.updateItem(
-                currentLine.item.copy(quantity = quantity),
-            )
+            cartDao.updateItem(currentLine.item.copy(quantity = quantity))
         }
-
         touchCart()
     }
 
     suspend fun removeItem(lineId: String) {
         expireIfNeeded()
-
         cartDao.deleteToppingsForLine(lineId)
         cartDao.deleteItem(lineId)
-
         touchCart()
     }
 
@@ -100,10 +100,26 @@ class CartLocalDataSource @Inject constructor(
         val now = System.currentTimeMillis()
         val age = now - metadata.lastUpdatedAtMillis
 
-        if (age > cartTtl.minutes.inWholeMilliseconds) {
+        if (age > cartTtlSeconds.minutes.inWholeMilliseconds) {
             cartDao.clearToppings()
             cartDao.clearItems()
             cartMetadataDao.clear()
+        }
+    }
+
+    private suspend fun touchCartIfStale() {
+        val now = System.currentTimeMillis()
+        if (now - lastTouchWriteAt < touchThrottleMillis) return
+
+        val metadata = cartMetadataDao.getMetadata()
+        if (metadata == null || (now - metadata.lastUpdatedAtMillis) >= touchThrottleMillis) {
+            cartMetadataDao.upsert(
+                CartMetadataEntity(
+                    id = 0,
+                    lastUpdatedAtMillis = now,
+                ),
+            )
+            lastTouchWriteAt = now
         }
     }
 
@@ -115,5 +131,6 @@ class CartLocalDataSource @Inject constructor(
                 lastUpdatedAtMillis = now,
             ),
         )
+        lastTouchWriteAt = now
     }
 }

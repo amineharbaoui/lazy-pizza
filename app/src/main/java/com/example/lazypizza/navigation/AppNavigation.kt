@@ -78,6 +78,7 @@ fun RootNavGraph(
                         isLoggedIn = true
                         onBack()
                     },
+                    onNavigateToMenuScreen = { backStack.add(MenuRoute) },
                 )
             }
         },
