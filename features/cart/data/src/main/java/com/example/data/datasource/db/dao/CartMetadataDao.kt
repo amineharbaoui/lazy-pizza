@@ -12,7 +12,7 @@ interface CartMetadataDao {
     @Query("SELECT * FROM cart_metadata WHERE ownerKey = :ownerKey")
     suspend fun getMetadata(ownerKey: String): CartMetadataEntity?
 
-    @Insert(onConflict = OnConflictStrategy.Companion.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun upsert(metadata: CartMetadataEntity)
 
     @Query("DELETE FROM cart_metadata WHERE ownerKey = :ownerKey")

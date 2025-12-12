@@ -230,7 +230,7 @@ private fun CartScreenPreview() {
                 recommendedItems = listOf(
                     RecommendedItemDisplayModel(
                         id = "",
-                        title = "Choclate Ice Cream",
+                        title = "Chocolate Ice Cream",
                         price = 2.44,
                         priceFormatted = "$2.44",
                         imageUrl = "",
@@ -244,7 +244,7 @@ private fun CartScreenPreview() {
                     ),
                     RecommendedItemDisplayModel(
                         id = "",
-                        title = "Choclate Ice Cream",
+                        title = "Chocolate Ice Cream",
                         price = 2.44,
                         priceFormatted = "$2.44",
                         imageUrl = "",

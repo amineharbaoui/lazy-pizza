@@ -1,6 +1,7 @@
 package com.example.ui
 
 import androidx.annotation.StringRes
+import java.util.Locale
 
 sealed interface PhoneAuthUiState {
     @get:StringRes
@@ -46,7 +47,7 @@ sealed interface PhoneAuthUiState {
             get() = if (!canResend) {
                 val mm = secondsRemaining / 60
                 val ss = secondsRemaining % 60
-                String.format("You can request a new code in %02d:%02d", mm, ss)
+                String.format(Locale.getDefault(), "You can request a new code in %02d:%02d", mm, ss)
             } else {
                 null
             }

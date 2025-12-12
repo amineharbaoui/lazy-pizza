@@ -85,6 +85,7 @@ object DsCardRow {
 
     @Composable
     fun CartItem(
+        modifier: Modifier = Modifier,
         title: String,
         subtitleLines: List<String> = emptyList(),
         unitPriceText: String,
@@ -93,7 +94,6 @@ object DsCardRow {
         quantity: Int,
         onQuantityChange: (Int) -> Unit,
         onRemove: () -> Unit,
-        modifier: Modifier = Modifier,
     ) {
         BaseCardRow(
             title = title,
