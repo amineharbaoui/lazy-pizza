@@ -1,7 +1,7 @@
 package com.example.di
 
-import com.example.data.datasource.local.CartTouchThrottle
-import com.example.data.datasource.local.CartTtl
+import com.example.data.datasource.util.CartTouchThrottle
+import com.example.data.datasource.util.CartTtl
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

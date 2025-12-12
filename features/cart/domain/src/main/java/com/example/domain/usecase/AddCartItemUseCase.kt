@@ -5,7 +5,6 @@ import com.example.domain.repository.CartRepository
 
 class AddCartItemUseCase(private val repository: CartRepository) {
     suspend operator fun invoke(item: CartItem) {
-        println(item.lineId)
         repository.addItem(item)
     }
 }

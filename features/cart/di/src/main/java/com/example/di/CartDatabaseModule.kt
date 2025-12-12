@@ -2,9 +2,9 @@ package com.example.di
 
 import android.content.Context
 import androidx.room.Room
-import com.example.data.datasource.local.CartDao
-import com.example.data.datasource.local.CartDatabase
-import com.example.data.datasource.local.CartMetadataDao
+import com.example.data.datasource.db.CartDatabase
+import com.example.data.datasource.db.dao.CartDao
+import com.example.data.datasource.db.dao.CartMetadataDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -22,7 +22,8 @@ object CartDatabaseModule {
         context = context,
         klass = CartDatabase::class.java,
         name = "cart.db",
-    ).build()
+    ).fallbackToDestructiveMigration(dropAllTables = true)
+        .build()
 
     @Provides
     fun provideCartDao(db: CartDatabase): CartDao = db.cartDao()

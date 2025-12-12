@@ -14,4 +14,7 @@ interface CartRepository {
 
     suspend fun removeItem(lineId: String)
     suspend fun clear()
+
+    suspend fun transferGuestCartToUser(userId: String)
+    suspend fun clearUserCart(userId: String)
 }

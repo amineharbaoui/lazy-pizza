@@ -37,6 +37,7 @@ dependencies {
     implementation(projects.features.cart.domain)
     implementation(projects.features.menu.data)
     implementation(projects.features.menu.domain)
+    implementation(projects.features.auth.domain)
 
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)

@@ -1,4 +1,4 @@
-package com.example.data.datasource.local
+package com.example.data.datasource.db.entity
 
 import androidx.room.Embedded
 import androidx.room.Relation

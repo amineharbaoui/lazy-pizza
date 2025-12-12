@@ -8,6 +8,7 @@ import com.example.domain.usecase.ObserveCartItemCountUseCase
 import com.example.domain.usecase.ObserveCartUseCase
 import com.example.domain.usecase.ObserveRecommendedItemsUseCase
 import com.example.domain.usecase.RemoveCartItemUseCase
+import com.example.domain.usecase.TransferGuestCartToUserUseCase
 import com.example.domain.usecase.UpdateCartItemQuantityUseCase
 import dagger.Module
 import dagger.Provides
@@ -38,4 +39,7 @@ object CartUseCaseModule {
 
     @Provides
     fun provideObserveCartItemCountUseCase(repository: CartRepository) = ObserveCartItemCountUseCase(repository)
+
+    @Provides
+    fun provideTransferGuestCartToUserUseCase(repository: CartRepository) = TransferGuestCartToUserUseCase(repository)
 }

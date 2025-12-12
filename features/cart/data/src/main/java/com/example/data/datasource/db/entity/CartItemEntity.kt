@@ -1,4 +1,4 @@
-package com.example.data.datasource.local
+package com.example.data.datasource.db.entity
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
@@ -6,6 +6,7 @@ import androidx.room.PrimaryKey
 @Entity(tableName = "cart_items")
 data class CartItemEntity(
     @PrimaryKey val lineId: String,
+    val ownerKey: String,
     val productId: String,
     val name: String,
     val imageUrl: String,

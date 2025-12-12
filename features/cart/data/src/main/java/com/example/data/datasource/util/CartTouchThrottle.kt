@@ -1,7 +1,7 @@
-package com.example.data.datasource.local
+package com.example.data.datasource.util
 
 import javax.inject.Qualifier
 
 @Qualifier
 @Retention(AnnotationRetention.BINARY)
-annotation class CartTtl
+annotation class CartTouchThrottle

@@ -2,7 +2,7 @@ package com.example.ui.pizzadetail
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.domain.model.OtherCartItem
+import com.example.domain.model.CartItem.Other
 import com.example.domain.usecase.AddCartItemUseCase
 import com.example.domain.usecase.ObserveCartUseCase
 import com.example.domain.usecase.ObserveMenuUseCase
@@ -51,7 +51,7 @@ class MenuViewModel @Inject constructor(
                 val menuSectionsDisplayModel = menuSections.map { it.toDisplayModel() }
 
                 val qtyByProductId = cart.items
-                    .filterIsInstance<OtherCartItem>()
+                    .filterIsInstance<Other>()
                     .associate { it.productId to it.quantity }
 
                 val menuWithQuantities = menuSectionsDisplayModel.map { section ->
@@ -150,6 +150,8 @@ class MenuViewModel @Inject constructor(
     }
 
     fun onSignOutClick() {
-        viewModelScope.launch { signOutUseCase() }
+        viewModelScope.launch {
+            signOutUseCase()
+        }
     }
 }

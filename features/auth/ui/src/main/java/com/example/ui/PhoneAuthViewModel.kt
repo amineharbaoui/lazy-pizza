@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.auth.ui.R
 import com.example.domain.usecase.SignInWithSmsCodeUseCase
+import com.example.domain.usecase.TransferGuestCartToUserUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -19,6 +20,7 @@ import kotlin.time.Duration.Companion.seconds
 @HiltViewModel
 class PhoneAuthViewModel @Inject constructor(
     private val signInWithSmsCode: SignInWithSmsCodeUseCase,
+    private val transferGuestCartToUserUseCase: TransferGuestCartToUserUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<PhoneAuthUiState>(
@@ -163,7 +165,8 @@ class PhoneAuthViewModel @Inject constructor(
         viewModelScope.launch {
             val result = signInWithSmsCode(verificationId, current.code)
             result
-                .onSuccess {
+                .onSuccess { user ->
+                    transferGuestCartToUserUseCase(user.uid)
                     resetState()
                     _events.emit(PhoneAuthEvent.AuthCompleted)
                 }
@@ -184,7 +187,6 @@ class PhoneAuthViewModel @Inject constructor(
             _events.emit(PhoneAuthEvent.ResendCode(current.phoneNumber))
         }
 
-        // Reset timer & disable resend again
         _uiState.value = current.copy(
             canResend = false,
             secondsRemaining = PhoneVerificationManager.RESEND_TIMEOUT_SECONDS.toInt(),

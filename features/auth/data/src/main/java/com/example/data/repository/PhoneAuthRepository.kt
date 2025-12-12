@@ -5,7 +5,7 @@ import com.example.domain.model.AuthUser
 import com.example.domain.repository.PhoneAuthRepository
 import javax.inject.Inject
 
-class FirebasePhoneAuthRepository @Inject constructor(
+class PhoneAuthRepositoryImpl @Inject constructor(
     private val phoneAuthDataSource: PhoneAuthDataSource,
 ) : PhoneAuthRepository {
 

@@ -36,6 +36,7 @@ android {
 dependencies {
     implementation(projects.features.auth.data)
     implementation(projects.features.auth.domain)
+    implementation(projects.features.cart.domain)
 
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)

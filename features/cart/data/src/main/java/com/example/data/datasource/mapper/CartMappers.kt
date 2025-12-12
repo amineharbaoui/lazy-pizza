@@ -1,12 +1,16 @@
-package com.example.data.datasource.local
+package com.example.data.datasource.mapper
 
+import com.example.data.datasource.db.entity.CartItemEntity
+import com.example.data.datasource.db.entity.CartItemType
+import com.example.data.datasource.db.entity.CartLineWithToppings
+import com.example.data.datasource.db.entity.CartToppingEntity
 import com.example.domain.model.CartItem
+import com.example.domain.model.CartItem.Other
+import com.example.domain.model.CartItem.Pizza
 import com.example.domain.model.CartTopping
-import com.example.domain.model.OtherCartItem
-import com.example.domain.model.PizzaCartItem
 
 fun CartLineWithToppings.toDomain(): CartItem = when (item.type) {
-    CartItemType.OTHER -> OtherCartItem(
+    CartItemType.OTHER -> Other(
         lineId = item.lineId,
         productId = item.productId,
         name = item.name,
@@ -15,7 +19,7 @@ fun CartLineWithToppings.toDomain(): CartItem = when (item.type) {
         quantity = item.quantity,
     )
 
-    CartItemType.PIZZA -> PizzaCartItem(
+    CartItemType.PIZZA -> Pizza(
         lineId = item.lineId,
         productId = item.productId,
         name = item.name,
@@ -33,7 +37,8 @@ fun CartToppingEntity.toDomain(): CartTopping = CartTopping(
     quantity = quantity,
 )
 
-fun OtherCartItem.toEntity(): CartItemEntity = CartItemEntity(
+fun Other.toEntity(ownerKey: String): CartItemEntity = CartItemEntity(
+    ownerKey = ownerKey,
     lineId = lineId,
     productId = productId,
     name = name,
@@ -44,7 +49,8 @@ fun OtherCartItem.toEntity(): CartItemEntity = CartItemEntity(
     quantity = quantity,
 )
 
-fun PizzaCartItem.toEntity(): CartItemEntity = CartItemEntity(
+fun Pizza.toEntity(ownerKey: String): CartItemEntity = CartItemEntity(
+    ownerKey = ownerKey,
     lineId = lineId,
     productId = productId,
     name = name,
@@ -55,7 +61,11 @@ fun PizzaCartItem.toEntity(): CartItemEntity = CartItemEntity(
     quantity = quantity,
 )
 
-fun CartTopping.toEntity(lineId: String): CartToppingEntity = CartToppingEntity(
+fun CartTopping.toEntity(
+    ownerKey: String,
+    lineId: String,
+): CartToppingEntity = CartToppingEntity(
+    ownerKey = ownerKey,
     lineId = lineId,
     toppingId = toppingId,
     name = name,

@@ -1,8 +1,8 @@
 package com.example.ui.pizzadetail
 
+import com.example.domain.model.CartItem.Other
 import com.example.domain.model.MenuItem
 import com.example.domain.model.MenuSection
-import com.example.domain.model.OtherCartItem
 import com.example.domain.model.ProductCategory
 import com.example.ui.utils.formatting.toFormattedCurrency
 
@@ -40,7 +40,7 @@ fun ProductCategory.toMenuTag(): MenuTag? = when (this) {
     ProductCategory.TOPPING -> null
 }
 
-fun MenuItemDisplayModel.toSimpleCartItem(quantity: Int): OtherCartItem = OtherCartItem(
+fun MenuItemDisplayModel.toSimpleCartItem(quantity: Int): Other = Other(
     lineId = id,
     productId = id,
     name = name,

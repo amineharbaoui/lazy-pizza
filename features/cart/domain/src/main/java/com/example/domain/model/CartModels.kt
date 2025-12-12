@@ -14,35 +14,35 @@ sealed interface CartItem {
     val imageUrl: String
     val quantity: Int
     val lineTotal: Double
-}
 
-data class OtherCartItem(
-    override val lineId: String,
-    override val productId: String,
-    override val name: String,
-    override val imageUrl: String,
-    val price: Double,
-    override val quantity: Int,
-) : CartItem {
-    override val lineTotal: Double
-        get() = price * quantity
-}
+    data class Other(
+        override val lineId: String,
+        override val productId: String,
+        override val name: String,
+        override val imageUrl: String,
+        val price: Double,
+        override val quantity: Int,
+    ) : CartItem {
+        override val lineTotal: Double
+            get() = price * quantity
+    }
 
-data class PizzaCartItem(
-    override val lineId: String,
-    override val productId: String,
-    override val name: String,
-    override val imageUrl: String,
-    val basePrice: Double,
-    val toppings: List<CartTopping>,
-    override val quantity: Int,
-) : CartItem {
+    data class Pizza(
+        override val lineId: String,
+        override val productId: String,
+        override val name: String,
+        override val imageUrl: String,
+        val basePrice: Double,
+        val toppings: List<CartTopping>,
+        override val quantity: Int,
+    ) : CartItem {
 
-    private val toppingsPriceForOne: Double
-        get() = toppings.sumOf { it.price * it.quantity }
+        private val toppingsPriceForOne: Double
+            get() = toppings.sumOf { it.price * it.quantity }
 
-    override val lineTotal: Double
-        get() = (basePrice + toppingsPriceForOne) * quantity
+        override val lineTotal: Double
+            get() = (basePrice + toppingsPriceForOne) * quantity
+    }
 }
 
 data class Cart(

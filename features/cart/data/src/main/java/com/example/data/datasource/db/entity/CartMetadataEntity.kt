@@ -1,10 +1,10 @@
-package com.example.data.datasource.local
+package com.example.data.datasource.db.entity
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 @Entity(tableName = "cart_metadata")
 data class CartMetadataEntity(
-    @PrimaryKey val id: Int = 0,
+    @PrimaryKey val ownerKey: String,
     val lastUpdatedAtMillis: Long,
 )

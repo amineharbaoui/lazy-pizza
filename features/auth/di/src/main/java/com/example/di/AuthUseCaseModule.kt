@@ -1,5 +1,6 @@
 package com.example.di
 
+import com.example.domain.repository.CartRepository
 import com.example.domain.repository.PhoneAuthRepository
 import com.example.domain.usecase.SignInWithSmsCodeUseCase
 import com.example.domain.usecase.SignOutUseCase
@@ -15,5 +16,8 @@ object AuthUseCaseModule {
     fun provideSignInWithSmsCodeUseCase(repository: PhoneAuthRepository): SignInWithSmsCodeUseCase = SignInWithSmsCodeUseCase(repository)
 
     @Provides
-    fun provideSignOutUseCase(repository: PhoneAuthRepository): SignOutUseCase = SignOutUseCase(repository)
+    fun provideSignOutUseCase(
+        phoneAuthRepository: PhoneAuthRepository,
+        cartRepository: CartRepository,
+    ): SignOutUseCase = SignOutUseCase(phoneAuthRepository = phoneAuthRepository, cartRepository = cartRepository)
 }
