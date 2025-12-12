@@ -1,9 +1,11 @@
 package com.example.di
 
 import com.example.domain.repository.MenuRepository
+import com.example.domain.repository.RecommendedItemsRepository
 import com.example.domain.usecase.ObserveMenuUseCase
 import com.example.domain.usecase.ObservePizzaByIdUseCase
 import com.example.domain.usecase.ObservePizzaDetailUseCase
+import com.example.domain.usecase.ObserveRecommendedItemsUseCase
 import com.example.domain.usecase.ObserveToppingsUseCase
 import dagger.Module
 import dagger.Provides
@@ -18,11 +20,14 @@ object MenuDomainModule {
     fun provideObserveMenuUseCase(repository: MenuRepository): ObserveMenuUseCase = ObserveMenuUseCase(repository)
 
     @Provides
-    fun provideObservePizzaDetailUseCase(repository: MenuRepository): ObservePizzaDetailUseCase = ObservePizzaDetailUseCase(repository)
+    fun provideObservePizzaDetailUseCase(repository: MenuRepository) = ObservePizzaDetailUseCase(repository)
 
     @Provides
-    fun provideObservePizzaByIdUseCase(repository: MenuRepository): ObservePizzaByIdUseCase = ObservePizzaByIdUseCase(repository)
+    fun provideObservePizzaByIdUseCase(repository: MenuRepository) = ObservePizzaByIdUseCase(repository)
 
     @Provides
-    fun provideObserveToppingsUseCase(repository: MenuRepository): ObserveToppingsUseCase = ObserveToppingsUseCase(repository)
+    fun provideObserveToppingsUseCase(repository: MenuRepository) = ObserveToppingsUseCase(repository)
+
+    @Provides
+    fun provideObserveRecommendedItemsUseCase(repository: RecommendedItemsRepository) = ObserveRecommendedItemsUseCase(repository)
 }
