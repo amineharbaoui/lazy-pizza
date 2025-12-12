@@ -21,5 +21,4 @@ abstract class MenuDataModule {
     @Binds
     @Singleton
     abstract fun bindRecommendedItemsRepository(impl: RecommendedItemsRepositoryImpl): RecommendedItemsRepository
-
 }
