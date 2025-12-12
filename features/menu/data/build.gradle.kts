@@ -8,7 +8,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.data"
+    namespace = "com.example.menu.data"
     compileSdk {
         version = release(36)
     }

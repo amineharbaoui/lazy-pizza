@@ -1,5 +1,6 @@
 package com.example.di
 
+import com.example.cart.di.BuildConfig
 import com.example.data.datasource.util.CartTouchThrottle
 import com.example.data.datasource.util.CartTtl
 import dagger.Module

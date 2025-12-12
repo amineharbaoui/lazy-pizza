@@ -10,7 +10,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.ui.cart"
+    namespace = "com.example.cart.ui"
     compileSdk {
         version = release(36)
     }

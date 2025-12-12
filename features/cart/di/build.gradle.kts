@@ -8,7 +8,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.di"
+    namespace = "com.example.cart.di"
     compileSdk {
         version = release(36)
     }
