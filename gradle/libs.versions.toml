@@ -27,6 +27,7 @@ lifecycleViewmodelNav3 = "2.10.0"
 jetbrainsKotlinJvm = "2.2.20"
 playServicesAuth = "21.4.0"
 room = "2.8.4"
+dependencyAnalysis = "3.5.1"
 
 
 [libraries]
@@ -81,3 +82,4 @@ google-services = { id = "com.google.gms.google-services", version.ref = "google
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlinSerialization" }
 android-library = { id = "com.android.library", version.ref = "agp" }
 jetbrains-kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "jetbrainsKotlinJvm" }
+dependency-analysis = { id = "com.autonomousapps.dependency-analysis", version.ref = "dependencyAnalysis" }
