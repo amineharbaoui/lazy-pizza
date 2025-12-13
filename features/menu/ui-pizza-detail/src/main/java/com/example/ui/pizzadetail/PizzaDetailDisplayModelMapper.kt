@@ -1,9 +1,9 @@
 package com.example.ui.pizzadetail
 
-import com.example.domain.model.CartItem.Pizza
-import com.example.domain.model.CartTopping
 import com.example.domain.model.PizzaDetail
 import com.example.domain.model.Topping
+import com.example.domaine.model.CartItem
+import com.example.domaine.model.CartTopping
 import com.example.ui.utils.formatting.toFormattedCurrency
 import java.util.UUID
 
@@ -30,7 +30,7 @@ fun Topping.toDisplayModel() = ToppingDisplayModel(
     imageUrl = imageUrl,
 )
 
-fun PizzaDetailUiState.Success.toPizzaCartItem(): Pizza {
+fun PizzaDetailUiState.Success.toPizzaCartItem(): CartItem.Pizza {
     val selectedToppings: List<CartTopping> =
         toppings.mapNotNull { topping ->
             val qty = toppingQuantities[topping.id] ?: 0
@@ -46,7 +46,7 @@ fun PizzaDetailUiState.Success.toPizzaCartItem(): Pizza {
             }
         }
 
-    return Pizza(
+    return CartItem.Pizza(
         lineId = UUID.randomUUID().toString(),
         productId = pizza.id,
         name = pizza.name,

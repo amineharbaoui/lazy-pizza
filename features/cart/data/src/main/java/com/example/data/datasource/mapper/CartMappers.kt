@@ -4,13 +4,11 @@ import com.example.data.datasource.db.entity.CartItemEntity
 import com.example.data.datasource.db.entity.CartItemType
 import com.example.data.datasource.db.entity.CartLineWithToppings
 import com.example.data.datasource.db.entity.CartToppingEntity
-import com.example.domain.model.CartItem
-import com.example.domain.model.CartItem.Other
-import com.example.domain.model.CartItem.Pizza
-import com.example.domain.model.CartTopping
+import com.example.domaine.model.CartItem
+import com.example.domaine.model.CartTopping
 
 fun CartLineWithToppings.toDomain(): CartItem = when (item.type) {
-    CartItemType.OTHER -> Other(
+    CartItemType.OTHER -> CartItem.Other(
         lineId = item.lineId,
         productId = item.productId,
         name = item.name,
@@ -19,7 +17,7 @@ fun CartLineWithToppings.toDomain(): CartItem = when (item.type) {
         quantity = item.quantity,
     )
 
-    CartItemType.PIZZA -> Pizza(
+    CartItemType.PIZZA -> CartItem.Pizza(
         lineId = item.lineId,
         productId = item.productId,
         name = item.name,
@@ -37,7 +35,7 @@ fun CartToppingEntity.toDomain(): CartTopping = CartTopping(
     quantity = quantity,
 )
 
-fun Other.toEntity(ownerKey: String): CartItemEntity = CartItemEntity(
+fun CartItem.Other.toEntity(ownerKey: String): CartItemEntity = CartItemEntity(
     ownerKey = ownerKey,
     lineId = lineId,
     productId = productId,
@@ -49,7 +47,7 @@ fun Other.toEntity(ownerKey: String): CartItemEntity = CartItemEntity(
     quantity = quantity,
 )
 
-fun Pizza.toEntity(ownerKey: String): CartItemEntity = CartItemEntity(
+fun CartItem.Pizza.toEntity(ownerKey: String): CartItemEntity = CartItemEntity(
     ownerKey = ownerKey,
     lineId = lineId,
     productId = productId,

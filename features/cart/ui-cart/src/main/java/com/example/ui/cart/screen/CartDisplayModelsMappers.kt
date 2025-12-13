@@ -1,10 +1,8 @@
 package com.example.ui.cart.screen
 
-import com.example.domain.model.Cart
-import com.example.domain.model.CartItem
-import com.example.domain.model.CartItem.Other
-import com.example.domain.model.CartItem.Pizza
 import com.example.domain.model.MenuItem
+import com.example.domaine.model.Cart
+import com.example.domaine.model.CartItem
 import com.example.ui.utils.formatting.toFormattedCurrency
 
 fun Cart.toDisplayModel(): CartDisplayModel {
@@ -16,7 +14,7 @@ fun Cart.toDisplayModel(): CartDisplayModel {
 }
 
 private fun CartItem.toDisplayModel(): CartLineDisplayModel = when (this) {
-    is Other -> CartLineDisplayModel(
+    is CartItem.Other -> CartLineDisplayModel(
         lineId = lineId,
         title = name,
         subtitleLines = emptyList(),
@@ -26,7 +24,7 @@ private fun CartItem.toDisplayModel(): CartLineDisplayModel = when (this) {
         lineTotalFormatted = lineTotal.toFormattedCurrency(),
     )
 
-    is Pizza -> {
+    is CartItem.Pizza -> {
         val subtitle = toppings
             .filter { it.quantity > 0 }
             .map { "${it.quantity} x ${it.name}" }
@@ -51,7 +49,7 @@ fun MenuItem.toRecommendedItemDisplayModel() = RecommendedItemDisplayModel(
     imageUrl = imageUrl,
 )
 
-fun RecommendedItemDisplayModel.toCartItemDisplayModel() = Other(
+fun RecommendedItemDisplayModel.toCartItemDisplayModel() = CartItem.Other(
     lineId = id,
     productId = id,
     name = title,

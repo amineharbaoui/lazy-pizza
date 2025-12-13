@@ -1,4 +1,4 @@
-package com.example.domain.repository
+package com.example.domaine.repository
 
 sealed interface CartOwner {
     data object Guest : CartOwner

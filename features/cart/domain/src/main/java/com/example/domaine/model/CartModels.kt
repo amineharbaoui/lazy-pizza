@@ -1,4 +1,4 @@
-package com.example.domain.model
+package com.example.domaine.model
 
 data class CartTopping(
     val toppingId: String,

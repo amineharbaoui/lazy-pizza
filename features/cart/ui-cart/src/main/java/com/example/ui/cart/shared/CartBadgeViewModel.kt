@@ -2,7 +2,7 @@ package com.example.ui.cart.shared
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.domain.usecase.ObserveCartItemCountUseCase
+import com.example.domaine.usecase.ObserveCartItemCountUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow

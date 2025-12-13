@@ -42,8 +42,8 @@ android {
 dependencies {
     implementation(projects.core.designsystem)
     implementation(projects.core.ui)
-    implementation(projects.features.cart.domain)
     implementation(projects.features.menu.domain)
+    implementation(projects.features.cart.domain)
 
     implementation(libs.androidx.navigation3.runtime)
 

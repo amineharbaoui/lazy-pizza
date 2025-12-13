@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.auth.ui.R
 import com.example.domain.usecase.SignInWithSmsCodeUseCase
-import com.example.domain.usecase.TransferGuestCartToUserUseCase
+import com.example.domaine.usecase.TransferGuestCartToUserUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay

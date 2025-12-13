@@ -2,8 +2,8 @@ package com.example.ui.pizzadetail
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.domain.usecase.AddCartItemUseCase
 import com.example.domain.usecase.ObservePizzaDetailUseCase
+import com.example.domaine.usecase.AddCartItemUseCase
 import com.example.ui.utils.formatting.toFormattedCurrency
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
