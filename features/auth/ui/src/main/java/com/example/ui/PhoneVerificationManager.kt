@@ -1,7 +1,6 @@
 package com.example.ui
 
 import android.app.Activity
-import android.util.Log
 import com.google.firebase.FirebaseException
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.PhoneAuthCredential
@@ -24,7 +23,6 @@ class PhoneVerificationManager @Inject constructor(
         onCodeSent: (verificationId: String) -> Unit,
         onVerificationFailed: (Throwable) -> Unit,
     ) {
-        Log.d(javaClass.simpleName, "startVerification: ")
         val callbacks = object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
 
             override fun onVerificationCompleted(credential: PhoneAuthCredential) {

@@ -4,8 +4,9 @@ import com.example.domain.model.PizzaDetail
 import com.example.domain.repository.MenuRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
+import javax.inject.Inject
 
-class ObservePizzaDetailUseCase(private val menuRepository: MenuRepository) {
+class ObservePizzaDetailUseCase @Inject constructor(private val menuRepository: MenuRepository) {
     operator fun invoke(id: String): Flow<PizzaDetail> = combine(
         menuRepository.observePizzaById(id),
         menuRepository.observeToppings(),

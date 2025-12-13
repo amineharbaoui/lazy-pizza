@@ -53,7 +53,7 @@ dependencies {
 
     implementation(projects.features.menu.uiHome)
     implementation(projects.features.menu.uiPizzaDetail)
-    implementation(projects.features.menu.di)
+    implementation(projects.features.menu.data)
 
     implementation(projects.features.cart.uiCart)
     implementation(projects.features.cart.data)
