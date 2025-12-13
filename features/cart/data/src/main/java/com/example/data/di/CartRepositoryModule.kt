@@ -1,4 +1,4 @@
-package com.example.di
+package com.example.data.di
 
 import com.example.data.repository.CartRepositoryImpl
 import com.example.domain.repository.CartRepository

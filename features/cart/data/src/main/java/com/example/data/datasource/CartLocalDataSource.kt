@@ -5,8 +5,8 @@ import com.example.data.datasource.db.dao.CartMetadataDao
 import com.example.data.datasource.db.entity.CartMetadataEntity
 import com.example.data.datasource.mapper.toDomain
 import com.example.data.datasource.mapper.toEntity
-import com.example.data.datasource.util.CartTouchThrottle
-import com.example.data.datasource.util.CartTtl
+import com.example.data.di.CartTouchThrottle
+import com.example.data.di.CartTtl
 import com.example.domain.model.Cart
 import com.example.domain.model.CartItem
 import kotlinx.coroutines.flow.Flow

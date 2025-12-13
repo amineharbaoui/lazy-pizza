@@ -1,4 +1,4 @@
-package com.example.data.datasource.util
+package com.example.data.di
 
 import javax.inject.Qualifier
 

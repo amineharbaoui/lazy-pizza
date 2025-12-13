@@ -56,11 +56,12 @@ dependencies {
     implementation(projects.features.menu.di)
 
     implementation(projects.features.cart.uiCart)
-    implementation(projects.features.cart.di)
+    implementation(projects.features.cart.data)
 
     implementation(projects.features.history)
 
     implementation(projects.features.auth.ui)
+    implementation(projects.features.auth.data)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)

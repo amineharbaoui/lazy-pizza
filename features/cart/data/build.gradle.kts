@@ -12,18 +12,24 @@ android {
     compileSdk {
         version = release(36)
     }
-
     defaultConfig {
         minSdk = 26
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
     }
-
+    buildFeatures { buildConfig = true }
     buildTypes {
+        debug {
+            buildConfigField("long", "CART_TTL_SECONDS", "1800")
+            buildConfigField("long", "CART_TOUCH_THROTTLE_SECONDS", "60")
+        }
         release {
             isMinifyEnabled = false
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+
+            buildConfigField("long", "CART_TTL_SECONDS", "60")
+            buildConfigField("long", "CART_TOUCH_THROTTLE_SECONDS", "60")
         }
     }
     compileOptions {
@@ -39,7 +45,6 @@ android {
 
 dependencies {
     implementation(projects.features.cart.domain)
-//    implementation(projects.features.menu.data)
     implementation(projects.features.menu.domain)
     implementation(projects.features.auth.domain)
 
