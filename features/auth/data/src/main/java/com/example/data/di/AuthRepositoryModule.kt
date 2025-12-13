@@ -1,4 +1,4 @@
-package com.example.di
+package com.example.data.di
 
 import com.example.data.repository.PhoneAuthRepositoryImpl
 import com.example.data.repository.SessionRepositoryImpl

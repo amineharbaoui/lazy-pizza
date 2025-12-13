@@ -61,7 +61,6 @@ dependencies {
     implementation(projects.features.history)
 
     implementation(projects.features.auth.ui)
-    implementation(projects.features.auth.di)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
