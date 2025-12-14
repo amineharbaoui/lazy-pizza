@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.ui"
+    namespace = "com.example.uilogin"
     compileSdk {
         version = release(36)
     }

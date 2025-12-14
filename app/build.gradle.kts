@@ -60,7 +60,7 @@ dependencies {
 
     implementation(projects.features.history)
 
-    implementation(projects.features.auth.ui)
+    implementation(projects.features.auth.uiLogin)
     implementation(projects.features.auth.data)
 
     implementation(libs.androidx.core.ktx)

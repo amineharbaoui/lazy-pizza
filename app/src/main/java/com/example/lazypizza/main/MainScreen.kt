@@ -21,8 +21,8 @@ import com.example.lazypizza.navigation.BottomBar
 import com.example.lazypizza.navigation.NavigationRail
 import com.example.lazypizza.navigation.RootNavGraph
 import com.example.lazypizza.navigation.isTopLevel
-import com.example.ui.cart.shared.CartBadgeViewModel
-import com.example.ui.pizzadetail.MenuRoute
+import com.example.uilogin.cart.shared.CartBadgeViewModel
+import com.example.uilogin.pizzadetail.MenuRoute
 
 @Composable
 fun MainScreen() {

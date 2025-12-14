@@ -8,8 +8,8 @@ import com.example.designsystem.components.DsNavigationBar
 import com.example.designsystem.theme.LazyPizzaThemePreview
 import com.example.designsystem.utils.PreviewPhoneTablet
 import com.example.history.presentation.HistoryRoute
-import com.example.ui.cart.screen.CartRoute
-import com.example.ui.pizzadetail.MenuRoute
+import com.example.uilogin.cart.screen.CartRoute
+import com.example.uilogin.pizzadetail.MenuRoute
 
 val TopLevelRoutes: Set<NavKey> = setOf(MenuRoute, CartRoute, HistoryRoute)
 

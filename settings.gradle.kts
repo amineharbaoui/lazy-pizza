@@ -11,6 +11,7 @@ pluginManagement {
         gradlePluginPortal()
     }
 }
+@Suppress("UnstableApiUsage")
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
@@ -27,8 +28,6 @@ include(":core:designsystem")
 include(":core:ui")
 include(":features:cart")
 include(":features:history")
-
-//include(":features:menu:domain")
 include(":features:menu:data")
 include(":features:menu:ui-home")
 include(":features:menu:ui-pizza-detail")
@@ -37,7 +36,6 @@ include(":features:cart:domain")
 include(":features:cart:ui-cart")
 include(":features:auth")
 include(":features:auth:data")
-//include(":features:auth:domain")
-include(":features:auth:ui")
+include(":features:auth:ui-login")
 include(":features:auth:domain")
 include(":features:menu:domain")

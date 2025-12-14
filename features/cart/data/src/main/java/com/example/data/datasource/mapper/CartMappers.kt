@@ -4,8 +4,8 @@ import com.example.data.datasource.db.entity.CartItemEntity
 import com.example.data.datasource.db.entity.CartItemType
 import com.example.data.datasource.db.entity.CartLineWithToppings
 import com.example.data.datasource.db.entity.CartToppingEntity
-import com.example.domaine.model.CartItem
-import com.example.domaine.model.CartTopping
+import com.example.domain.model.CartItem
+import com.example.domain.model.CartTopping
 
 fun CartLineWithToppings.toDomain(): CartItem = when (item.type) {
     CartItemType.OTHER -> CartItem.Other(

@@ -15,14 +15,14 @@ import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.ui.NavDisplay
 import com.example.history.presentation.HistoryRoute
 import com.example.history.presentation.HistoryScreen
-import com.example.ui.AuthRoute
-import com.example.ui.PhoneAuthScreen
-import com.example.ui.cart.screen.CartRoute
-import com.example.ui.cart.screen.CartScreen
-import com.example.ui.pizzadetail.MenuRoute
-import com.example.ui.pizzadetail.MenuScreen
-import com.example.ui.pizzadetail.PizzaDetailRoute
-import com.example.ui.pizzadetail.PizzaDetailScreen
+import com.example.uilogin.AuthRoute
+import com.example.uilogin.PhoneAuthScreen
+import com.example.uilogin.cart.screen.CartRoute
+import com.example.uilogin.cart.screen.CartScreen
+import com.example.uilogin.pizzadetail.MenuRoute
+import com.example.uilogin.pizzadetail.MenuScreen
+import com.example.uilogin.pizzadetail.PizzaDetailRoute
+import com.example.uilogin.pizzadetail.PizzaDetailScreen
 import com.google.firebase.auth.FirebaseAuth
 
 @Composable
