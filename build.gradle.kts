@@ -5,10 +5,11 @@ plugins {
     alias(libs.plugins.kotlin.compose) apply false
     alias(libs.plugins.hilt) apply false
     alias(libs.plugins.ksp) apply false
-    id(libs.plugins.google.services.get().pluginId) version libs.versions.googleServices.get() apply false
+    alias(libs.plugins.google.services) apply false
     alias(libs.plugins.android.library) apply false
     alias(libs.plugins.jetbrains.kotlin.jvm) apply false
     alias(libs.plugins.dependency.analysis)
+    alias(libs.plugins.module.dependency.graph)
 }
 
 subprojects {

@@ -29,6 +29,7 @@ jetbrainsKotlinJvm = "2.2.20"
 playServicesAuth = "21.4.0"
 room = "2.8.4"
 dependencyAnalysis = "3.5.1"
+moduleDependencyGraph = "0.12"
 
 
 [libraries]
@@ -85,3 +86,4 @@ kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", versi
 android-library = { id = "com.android.library", version.ref = "agp" }
 jetbrains-kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "jetbrainsKotlinJvm" }
 dependency-analysis = { id = "com.autonomousapps.dependency-analysis", version.ref = "dependencyAnalysis" }
+module-dependency-graph = { id = "com.savvasdalkitsis.module-dependency-graph", version.ref = "moduleDependencyGraph" }
