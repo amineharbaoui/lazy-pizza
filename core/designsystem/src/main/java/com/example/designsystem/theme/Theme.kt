@@ -2,10 +2,8 @@ package com.example.designsystem.theme
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Typography
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
@@ -57,19 +55,19 @@ fun LazyPizzaTheme(content: @Composable () -> Unit) {
 }
 
 @Composable
-fun LazyPizzaThemePreview(content: @Composable () -> Unit) {
+fun LazyPizzaThemePreview(
+    modifier: Modifier = Modifier,
+    content: @Composable () -> Unit,
+) {
     MaterialTheme(
         colorScheme = LightColorScheme,
         typography = Typography,
     ) {
-        Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(top = innerPadding.calculateTopPadding()),
-            ) {
-                content()
-            }
+        Box(
+            modifier = modifier
+                .fillMaxSize(),
+        ) {
+            content()
         }
     }
 }

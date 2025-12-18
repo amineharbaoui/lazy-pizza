@@ -120,15 +120,11 @@ object DsTopBar {
             onBackClick?.let {
                 IconButton(
                     modifier = Modifier
-                        .size(44.dp)
-                        .background(
-                            color = AppColors.TextSecondary_8,
-                            shape = CircleShape,
-                        ),
+                        .size(44.dp),
                     onClick = it,
                 ) {
                     Icon(
-                        modifier = Modifier.size(16.dp),
+                        modifier = Modifier.size(24.dp),
                         painter = painterResource(R.drawable.arrow_left),
                         contentDescription = "Phone Number Icon",
                         tint = AppColors.TextSecondary,

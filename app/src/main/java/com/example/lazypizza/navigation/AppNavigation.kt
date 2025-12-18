@@ -15,6 +15,8 @@ import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.ui.NavDisplay
 import com.example.history.presentation.HistoryRoute
 import com.example.history.presentation.HistoryScreen
+import com.example.ui.checkout.CheckoutRoute
+import com.example.ui.checkout.CheckoutScreen
 import com.example.uilogin.AuthRoute
 import com.example.uilogin.PhoneAuthScreen
 import com.example.uilogin.cart.screen.CartRoute
@@ -26,7 +28,7 @@ import com.example.uilogin.pizzadetail.PizzaDetailScreen
 import com.google.firebase.auth.FirebaseAuth
 
 @Composable
-fun RootNavGraph(
+fun AppNavigation(
     backStack: SnapshotStateList<NavKey>,
     onBack: () -> Unit,
     innerPadding: PaddingValues,
@@ -66,7 +68,12 @@ fun RootNavGraph(
                 )
             }
             entry<CartRoute> {
-                CartScreen(innerPadding = innerPadding)
+                CartScreen(
+                    innerPadding = innerPadding,
+                    onNavigateToCheckout = {
+                        backStack.add(CheckoutRoute)
+                    },
+                )
             }
             entry<HistoryRoute> {
                 HistoryScreen(innerPadding = innerPadding)
@@ -79,6 +86,21 @@ fun RootNavGraph(
                         onBack()
                     },
                     onNavigateToMenuScreen = { backStack.add(MenuRoute) },
+                )
+            }
+            entry<CheckoutRoute> {
+                CheckoutScreen(
+                    onBackClick = { backStack.removeAt(backStack.lastIndex) },
+                    onNavigateToAuth = { backStack.add(AuthRoute) },
+                    onOrderPlace = { },
+                    onOrderItemClick = { productId ->
+//                        productId?.let {
+//                            backStack.add(PizzaDetailRoute(productId = productId))
+//                        } ?: run {
+//                            backStack.add(MenuRoute)
+//                        }
+                        // FixMe : how
+                    },
                 )
             }
         },

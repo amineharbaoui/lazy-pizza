@@ -22,5 +22,16 @@ class SessionRepositoryImpl @Inject constructor(
         awaitClose { firebaseAuth.removeAuthStateListener(listener) }
     }
 
+    override val isSignedIn: Flow<Boolean> = callbackFlow {
+        trySend(firebaseAuth.currentUser != null)
+
+        val listener = FirebaseAuth.AuthStateListener { firebaseAuth ->
+            trySend(firebaseAuth.currentUser != null)
+        }
+        firebaseAuth.addAuthStateListener(listener)
+
+        awaitClose { firebaseAuth.removeAuthStateListener(listener) }
+    }
+
     override suspend fun currentUserId(): String? = phoneAuthRepository.currentUser()?.uid
 }

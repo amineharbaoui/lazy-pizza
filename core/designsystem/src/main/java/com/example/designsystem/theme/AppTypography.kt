@@ -78,6 +78,13 @@ object AppTypography {
         lineHeight = 16.sp,
     )
 
+    val Label3SemiBold = TextStyle(
+        fontFamily = InstrumentSans,
+        fontWeight = FontWeight.SemiBold,
+        fontSize = 16.sp,
+        lineHeight = 16.sp,
+    )
+
     val Label3Medium = TextStyle(
         fontFamily = InstrumentSans,
         fontWeight = FontWeight.Medium,

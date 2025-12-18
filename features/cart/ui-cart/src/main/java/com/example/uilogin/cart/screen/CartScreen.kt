@@ -27,8 +27,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.rememberAsyncImagePainter
 import com.example.designsystem.R
 import com.example.designsystem.components.DsButton
-import com.example.designsystem.components.DsCardRow
 import com.example.designsystem.components.DsTopBar
+import com.example.designsystem.components.card.DsCardRow
 import com.example.designsystem.theme.AppColors
 import com.example.designsystem.theme.AppTypography
 import com.example.designsystem.theme.LazyPizzaThemePreview
@@ -39,6 +39,7 @@ import com.example.uilogin.cart.screen.components.RecommendationsSection
 @Composable
 fun CartScreen(
     innerPadding: PaddingValues,
+    onNavigateToCheckout: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: CartViewModel = hiltViewModel(),
 ) {
@@ -50,12 +51,12 @@ fun CartScreen(
             .padding(innerPadding),
     ) {
         DsTopBar.Secondary(title = stringResource(R.string.cart))
-
         when (val state = uiState) {
             CartUiState.Empty -> EmptyState()
             CartUiState.Loading -> LoadingState()
             is CartUiState.Success -> CartScreenContent(
                 cartUiState = state,
+                onNavigateToCheckout = onNavigateToCheckout,
                 onAddToCart = viewModel::onAddToCart,
                 onLineQuantityChange = viewModel::onLineQuantityChange,
                 onRemoveLine = viewModel::onRemoveLine,
@@ -67,6 +68,7 @@ fun CartScreen(
 @Composable
 fun CartScreenContent(
     cartUiState: CartUiState.Success,
+    onNavigateToCheckout: () -> Unit,
     onAddToCart: (item: RecommendedItemDisplayModel) -> Unit,
     onLineQuantityChange: (item: CartLineDisplayModel, newQuantity: Int) -> Unit,
     onRemoveLine: (lineId: String) -> Unit,
@@ -128,7 +130,7 @@ fun CartScreenContent(
             }
             DsButton.Filled(
                 text = "Proceed to Checkout  ${cartUiState.cart.totalPriceFormatted}",
-                onClick = {},
+                onClick = onNavigateToCheckout,
                 modifier = Modifier
                     .padding(horizontal = 12.dp)
                     .fillMaxWidth(),
@@ -254,6 +256,7 @@ private fun CartScreenPreview() {
             onLineQuantityChange = { _, _ -> },
             onRemoveLine = {},
             onAddToCart = {},
+            onNavigateToCheckout = {},
         )
     }
 }

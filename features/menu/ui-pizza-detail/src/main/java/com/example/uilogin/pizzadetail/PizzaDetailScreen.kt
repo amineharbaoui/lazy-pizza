@@ -35,8 +35,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.rememberAsyncImagePainter
 import com.example.designsystem.R
 import com.example.designsystem.components.DsButton
-import com.example.designsystem.components.DsCardItem
 import com.example.designsystem.components.DsTopBar
+import com.example.designsystem.components.card.DsCardItem
 import com.example.designsystem.theme.AppColors
 import com.example.designsystem.theme.AppTypography
 import com.example.designsystem.theme.LazyPizzaThemePreview

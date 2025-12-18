@@ -33,10 +33,13 @@ object DsTextField {
     fun Primary(
         value: String,
         onValueChange: (String) -> Unit,
-        label: String,
+        placeholder: String,
         modifier: Modifier = Modifier,
         isError: Boolean = false,
         enabled: Boolean = true,
+        singleLine: Boolean = false,
+        maxLines: Int = if (singleLine) 1 else Int.MAX_VALUE,
+        minLines: Int = 1,
     ) {
         val containerColor = if (value.isEmpty()) AppColors.SurfaceHighest else AppColors.SurfaceHigher
         val focusedBorder = if (isError) AppColors.Error else AppColors.Outline
@@ -48,12 +51,14 @@ object DsTextField {
             value = value,
             onValueChange = onValueChange,
             enabled = enabled,
-            singleLine = true,
+            singleLine = singleLine,
+            minLines = minLines,
+            maxLines = maxLines,
             textStyle = AppTypography.Body1Regular,
             placeholder = {
                 Text(
-                    text = label,
-                    style = AppTypography.Body1Regular,
+                    text = placeholder,
+                    style = AppTypography.Body3Regular,
                     color = AppColors.TextSecondary,
                 )
             },
@@ -181,25 +186,25 @@ private fun PrimaryStatesPreview() {
             DsTextField.Primary(
                 value = empty,
                 onValueChange = { empty = it },
-                label = "Label",
+                placeholder = "Label",
             )
 
             DsTextField.Primary(
                 value = focusedDemo.trim(),
                 onValueChange = { focusedDemo = it },
-                label = "Label",
+                placeholder = "Label",
             )
 
             DsTextField.Primary(
                 value = filled,
                 onValueChange = { filled = it },
-                label = "Label",
+                placeholder = "Label",
             )
 
             DsTextField.Primary(
                 value = error,
                 onValueChange = { error = it },
-                label = "Label",
+                placeholder = "Label",
                 isError = true,
             )
         }

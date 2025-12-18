@@ -1,4 +1,4 @@
-package com.example.designsystem.components
+package com.example.designsystem.components.card
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -33,6 +33,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.designsystem.R
+import com.example.designsystem.components.DsButton
 import com.example.designsystem.theme.AppColors
 import com.example.designsystem.theme.AppTypography
 import com.example.designsystem.theme.LazyPizzaThemePreview
@@ -279,7 +280,6 @@ object DsCardRow {
                     modifier = Modifier
                         .weight(1f)
                         .heightIn(min = imageSize)
-//                        .requiredHeight(imageSize)
                         .padding(horizontal = 16.dp, vertical = 12.dp),
                     verticalArrangement = Arrangement.SpaceBetween,
                 ) {

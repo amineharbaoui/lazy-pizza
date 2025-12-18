@@ -8,7 +8,7 @@ import androidx.compose.animation.togetherWith
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import coil3.compose.rememberAsyncImagePainter
-import com.example.designsystem.components.DsCardRow
+import com.example.designsystem.components.card.DsCardRow
 import com.example.uilogin.pizzadetail.MenuItemDisplayModel
 
 @Composable

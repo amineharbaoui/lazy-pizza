@@ -58,6 +58,9 @@ dependencies {
     implementation(projects.features.cart.uiCart)
     implementation(projects.features.cart.data)
 
+    implementation(projects.features.checkout.uiCheckout)
+    implementation(projects.features.checkout.data)
+
     implementation(projects.features.history)
 
     implementation(projects.features.auth.uiLogin)

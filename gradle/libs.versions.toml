@@ -30,6 +30,7 @@ playServicesAuth = "21.4.0"
 room = "2.8.4"
 dependencyAnalysis = "3.5.1"
 moduleDependencyGraph = "0.12"
+dependencyGraphGenerator = "0.8.0"
 
 
 [libraries]
@@ -87,3 +88,4 @@ android-library = { id = "com.android.library", version.ref = "agp" }
 jetbrains-kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "jetbrainsKotlinJvm" }
 dependency-analysis = { id = "com.autonomousapps.dependency-analysis", version.ref = "dependencyAnalysis" }
 module-dependency-graph = { id = "com.savvasdalkitsis.module-dependency-graph", version.ref = "moduleDependencyGraph" }
+dependencyGraphGenerator = { id = "com.vanniktech.dependency.graph.generator", version.ref = "dependencyGraphGenerator" }

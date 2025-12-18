@@ -17,9 +17,9 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation3.runtime.NavKey
 import com.example.designsystem.utils.isWideLayout
+import com.example.lazypizza.navigation.AppNavigation
 import com.example.lazypizza.navigation.BottomBar
 import com.example.lazypizza.navigation.NavigationRail
-import com.example.lazypizza.navigation.RootNavGraph
 import com.example.lazypizza.navigation.isTopLevel
 import com.example.uilogin.cart.shared.CartBadgeViewModel
 import com.example.uilogin.pizzadetail.MenuRoute
@@ -61,7 +61,7 @@ fun MainScreen() {
             }
 
             Box(Modifier.weight(1f)) {
-                RootNavGraph(
+                AppNavigation(
                     backStack = backStack,
                     onBack = { if (backStack.size > 1) backStack.removeAt(backStack.lastIndex) },
                     innerPadding = PaddingValues(0.dp),

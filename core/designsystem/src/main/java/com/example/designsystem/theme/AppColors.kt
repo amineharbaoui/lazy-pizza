@@ -11,7 +11,8 @@ object AppColors {
     val TextOnPrimary = Color(0xFFFFFFFF)
     val TextOnPrimary_12 = Color(0x1FFFFFFF)
 
-    val Bg = Color(0xFFFAFBFC)
+    //    val Bg = Color(0xFFFAFBFC)
+    val Bg = Color(0xFFFFFFFF)
 
     val SurfaceHigher = Color(0xFFFFFFFF)
     val SurfaceHighest = Color(0xFFF0F3F6)
