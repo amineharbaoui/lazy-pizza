@@ -236,6 +236,7 @@ private fun CartScreenPreview() {
                         price = 2.44,
                         priceFormatted = "$2.44",
                         imageUrl = "",
+                        category = "",
                     ),
                     RecommendedItemDisplayModel(
                         id = "",
@@ -243,6 +244,7 @@ private fun CartScreenPreview() {
                         price = 2.44,
                         priceFormatted = "$2.44",
                         imageUrl = "",
+                        category = "",
                     ),
                     RecommendedItemDisplayModel(
                         id = "",
@@ -250,6 +252,7 @@ private fun CartScreenPreview() {
                         price = 2.44,
                         priceFormatted = "$2.44",
                         imageUrl = "",
+                        category = "",
                     ),
                 ),
             ),

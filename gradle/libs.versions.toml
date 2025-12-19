@@ -4,6 +4,7 @@ coilCompose = "3.3.0"
 javaxInject = "1"
 kotlin = "2.2.20"
 hilt = "2.57.2"
+kotlinxCollectionsImmutable = "0.4.0"
 kotlinxCoroutinesCore = "1.10.2"
 ksp = "2.2.20-2.0.3"
 coreKtx = "1.17.0"
@@ -68,6 +69,7 @@ firebase-auth = { module = "com.google.firebase:firebase-auth" }
 
 androidx-compose-material3-adaptive-navigation-suite = { group = "androidx.compose.material3", name = "material3-adaptive-navigation-suite", version.ref = "material3AdaptiveNavigationSuite" }
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
+kotlinx-collections-immutable = { module = "org.jetbrains.kotlinx:kotlinx-collections-immutable", version.ref = "kotlinxCollectionsImmutable" }
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinxCoroutinesCore" }
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 

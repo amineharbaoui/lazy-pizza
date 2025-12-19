@@ -33,5 +33,5 @@ class SessionRepositoryImpl @Inject constructor(
         awaitClose { firebaseAuth.removeAuthStateListener(listener) }
     }
 
-    override suspend fun currentUserId(): String? = phoneAuthRepository.currentUser()?.uid
+    override suspend fun currentUserUid(): String? = phoneAuthRepository.currentUser()?.uid
 }

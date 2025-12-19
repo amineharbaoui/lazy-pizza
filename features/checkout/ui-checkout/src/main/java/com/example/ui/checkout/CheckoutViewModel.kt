@@ -2,13 +2,16 @@ package com.example.ui.checkout
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.domain.usecase.GetCurrentUserUidUseCase
 import com.example.domain.usecase.ObserveCartUseCase
+import com.example.domain.usecase.PlaceOrderUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -19,6 +22,8 @@ import kotlin.time.Duration.Companion.seconds
 @HiltViewModel
 class CheckoutViewModel @Inject constructor(
     private val observeCartUseCase: ObserveCartUseCase,
+    private val placeOrderUseCase: PlaceOrderUseCase,
+    private val getCurrentUserUidUseCase: GetCurrentUserUidUseCase,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<CheckoutUiState>(CheckoutUiState.Loading)
@@ -111,9 +116,33 @@ class CheckoutViewModel @Inject constructor(
     }
 
     fun submitOrder() {
-        val current = _uiState.value
-        if (current is CheckoutUiState.Ready) {
-            // Logic for placing order
+        viewModelScope.launch {
+            val userId = getCurrentUserUidUseCase()
+            if (userId == null) {
+                viewModelScope.launch { _events.emit(CheckoutEvent.NavigateToAuth) }
+                return@launch
+            }
+            val state = _uiState.value as? CheckoutUiState.Ready ?: return@launch
+            val cart = observeCartUseCase().firstOrNull()
+
+            viewModelScope.launch {
+                _uiState.update { (it as? CheckoutUiState.Ready)?.copy(isPlacingOrder = true) ?: it }
+
+                val order = cart?.toOrder(userId = userId, checkout = state)
+                val result = order?.let { placeOrderUseCase(it) }
+
+                result?.fold(
+                    onSuccess = {
+                        _uiState.update { (it as? CheckoutUiState.Ready)?.copy(isPlacingOrder = false) ?: it }
+                        _events.emit(CheckoutEvent.OrderPlaced)
+                    },
+                    onFailure = { e ->
+                        _uiState.value = CheckoutUiState.Error(
+                            message = e.message ?: "Could not place order",
+                        )
+                    },
+                )
+            }
         }
     }
 

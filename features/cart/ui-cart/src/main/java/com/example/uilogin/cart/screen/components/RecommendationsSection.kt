@@ -69,6 +69,7 @@ private fun RecommendationsSectionPreview() {
             price = 2.50,
             priceFormatted = "$2.50",
             imageUrl = "https://example.com/fries.jpg",
+            category = "",
         ),
         RecommendedItemDisplayModel(
             id = "2",
@@ -76,6 +77,7 @@ private fun RecommendationsSectionPreview() {
             price = 1.50,
             priceFormatted = "$1.50",
             imageUrl = "https://example.com/cola.jpg",
+            category = "",
         ),
     )
     LazyPizzaThemePreview {

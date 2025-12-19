@@ -47,6 +47,7 @@ fun MenuItem.toRecommendedItemDisplayModel() = RecommendedItemDisplayModel(
     price = price,
     priceFormatted = price.toFormattedCurrency(),
     imageUrl = imageUrl,
+    category = (this as MenuItem.OtherMenuItem).category.name,
 )
 
 fun RecommendedItemDisplayModel.toCartItemDisplayModel() = CartItem.Other(
@@ -55,6 +56,7 @@ fun RecommendedItemDisplayModel.toCartItemDisplayModel() = CartItem.Other(
     name = title,
     imageUrl = imageUrl,
     price = price,
+    category = category,
     quantity = 1,
 )
 

@@ -20,8 +20,9 @@ sealed interface CartItem {
         override val productId: String,
         override val name: String,
         override val imageUrl: String,
-        val price: Double,
         override val quantity: Int,
+        val category: String,
+        val price: Double,
     ) : CartItem {
         override val lineTotal: Double
             get() = price * quantity

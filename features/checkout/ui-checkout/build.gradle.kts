@@ -43,6 +43,8 @@ dependencies {
     implementation(projects.core.designsystem)
     implementation(projects.core.ui)
 
+    implementation(projects.features.checkout.domain)
+    implementation(projects.features.auth.domain)
     implementation(projects.features.cart.domain)
 
     implementation(libs.androidx.navigation3.runtime)
@@ -64,4 +66,6 @@ dependencies {
 
     implementation(libs.coil.compose)
     implementation(libs.coil.network.okhttp)
+
+    implementation(libs.kotlinx.collections.immutable)
 }

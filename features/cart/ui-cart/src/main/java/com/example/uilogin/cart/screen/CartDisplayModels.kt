@@ -21,4 +21,5 @@ data class RecommendedItemDisplayModel(
     val price: Double,
     val priceFormatted: String,
     val imageUrl: String,
+    val category: String,
 )

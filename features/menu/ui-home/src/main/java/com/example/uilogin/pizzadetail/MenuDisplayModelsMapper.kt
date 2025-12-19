@@ -47,6 +47,7 @@ fun MenuItemDisplayModel.toSimpleCartItem(quantity: Int): CartItem.Other = CartI
     imageUrl = imageUrl,
     price = price,
     quantity = quantity,
+    category = (this as MenuItemDisplayModel.Other).category.name,
 )
 
 fun mapToMenuUiState(

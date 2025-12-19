@@ -19,7 +19,7 @@ class CartRepositoryImpl @Inject constructor(
     private val sessionRepository: SessionRepository,
 ) : CartRepository {
 
-    private suspend fun currentOwnerKey(): String = sessionRepository.currentUserId()?.let { "user:$it" } ?: "guest"
+    private suspend fun currentOwnerKey(): String = sessionRepository.currentUserUid()?.let { "user:$it" } ?: "guest"
 
     override fun observeCart(): Flow<Cart> = sessionRepository.userIdFlow
         .map { uid -> if (uid == null) "guest" else "user:$uid" }

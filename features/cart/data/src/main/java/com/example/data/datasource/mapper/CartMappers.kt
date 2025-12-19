@@ -8,15 +8,6 @@ import com.example.domain.model.CartItem
 import com.example.domain.model.CartTopping
 
 fun CartLineWithToppings.toDomain(): CartItem = when (item.type) {
-    CartItemType.OTHER -> CartItem.Other(
-        lineId = item.lineId,
-        productId = item.productId,
-        name = item.name,
-        imageUrl = item.imageUrl,
-        price = requireNotNull(item.otherItemPrice) { "unitPrice required for SIMPLE" },
-        quantity = item.quantity,
-    )
-
     CartItemType.PIZZA -> CartItem.Pizza(
         lineId = item.lineId,
         productId = item.productId,
@@ -25,6 +16,15 @@ fun CartLineWithToppings.toDomain(): CartItem = when (item.type) {
         basePrice = requireNotNull(item.pizzaItemPrice) { "basePrice required for PIZZA" },
         toppings = toppings.map { it.toDomain() },
         quantity = item.quantity,
+    )
+    else -> CartItem.Other(
+        lineId = item.lineId,
+        productId = item.productId,
+        name = item.name,
+        imageUrl = item.imageUrl,
+        price = requireNotNull(item.otherItemPrice) { "unitPrice required for SIMPLE" },
+        quantity = item.quantity,
+        category = item.type.name,
     )
 }
 

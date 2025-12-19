@@ -2,7 +2,12 @@ package com.example.ui.checkout
 
 import com.example.domain.model.Cart
 import com.example.domain.model.CartItem
+import com.example.domain.model.Order
+import com.example.domain.model.OrderItem
+import com.example.domain.model.OrderTopping
+import com.example.domain.model.PickupSelection
 import com.example.uilogin.utils.formatting.toFormattedCurrency
+import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
@@ -12,6 +17,61 @@ fun Cart.toOrderSummaryUi(): OrderSummaryUi = OrderSummaryUi(
     lines = items.map { it.toOrderLineUi() },
     totalLabel = subtotal.toFormattedCurrency(),
 )
+
+fun Cart.toOrder(
+    userId: String,
+    checkout: CheckoutUiState.Ready,
+): Order {
+    val pickup = when (checkout.pickup.selectedOption) {
+        PickupOption.ASAP -> PickupSelection.Asap(estimatedMinutes = 15)
+        PickupOption.SCHEDULE -> {
+            val confirmation = checkout.pickup.schedule.confirmation
+                ?: error("Schedule selected but not confirmed")
+            val day = checkout.pickup.schedule.days.first { it.id == confirmation.dayId }
+            val slot = day.availableTimeSlots.first { it.id == confirmation.timeSlotId }
+
+            PickupSelection.Scheduled(
+                dayId = confirmation.dayId,
+                timeSlotId = confirmation.timeSlotId,
+                timeSlotLabel = slot.label,
+            )
+        }
+    }
+
+    return Order(
+        userId = userId,
+        createdAt = Instant.now(),
+        pickup = pickup,
+        comment = checkout.comment,
+        total = subtotal,
+        items = items.map { it.toOrderItem() },
+    )
+}
+
+private fun CartItem.toOrderItem(): OrderItem = when (this) {
+    is CartItem.Pizza -> OrderItem.Pizza(
+        productId = productId,
+        name = name,
+        unitPrice = basePrice,
+        quantity = quantity,
+        toppings = toppings.map {
+            OrderTopping(
+                productId = it.toppingId,
+                name = it.name,
+                unitPrice = it.price,
+                quantity = it.quantity,
+            )
+        },
+    )
+
+    is CartItem.Other -> OrderItem.Other(
+        productId = productId,
+        name = name,
+        unitPrice = price,
+        quantity = quantity,
+        category = category,
+    )
+}
 
 fun CheckoutUiState.Ready.updatePickupSelection(
     dayId: String?,
