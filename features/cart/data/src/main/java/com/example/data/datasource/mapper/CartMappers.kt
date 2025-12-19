@@ -31,7 +31,7 @@ fun CartLineWithToppings.toDomain(): CartItem = when (item.category) {
 }
 
 fun CartToppingEntity.toDomain(): CartTopping = CartTopping(
-    toppingId = toppingId,
+    id = toppingId,
     name = name,
     unitPrice = unitPrice,
     quantity = quantity,
@@ -67,7 +67,7 @@ fun CartTopping.toEntity(
 ): CartToppingEntity = CartToppingEntity(
     ownerKey = ownerKey,
     lineId = lineId,
-    toppingId = toppingId,
+    toppingId = id,
     name = name,
     unitPrice = unitPrice,
     quantity = quantity,

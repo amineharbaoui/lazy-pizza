@@ -24,14 +24,13 @@ fun Order.toDto(): OrderDto = OrderDto(
 
 private fun OrderItem.toDto(): OrderItemDto = when (this) {
     is OrderItem.Pizza -> OrderItemDto(
-        type = "PIZZA",
         productId = productId,
         name = name,
         unitPrice = unitPrice,
         quantity = quantity,
         toppings = toppings.map {
             OrderToppingDto(
-                productId = it.productId,
+                productId = it.id,
                 name = it.name,
                 unitPrice = it.unitPrice,
                 quantity = it.quantity,
@@ -40,7 +39,6 @@ private fun OrderItem.toDto(): OrderItemDto = when (this) {
     )
 
     is OrderItem.Other -> OrderItemDto(
-        type = "OTHER",
         productId = productId,
         name = name,
         unitPrice = unitPrice,

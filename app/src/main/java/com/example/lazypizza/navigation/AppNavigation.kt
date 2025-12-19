@@ -13,18 +13,18 @@ import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.ui.NavDisplay
+import com.example.cart.screen.CartRoute
+import com.example.cart.screen.CartScreen
 import com.example.history.presentation.HistoryRoute
 import com.example.history.presentation.HistoryScreen
+import com.example.menu.AuthRoute
+import com.example.menu.PhoneAuthScreen
+import com.example.menu.detail.PizzaDetailRoute
+import com.example.menu.detail.PizzaDetailScreen
+import com.example.menu.home.MenuRoute
+import com.example.menu.home.MenuScreen
 import com.example.ui.checkout.CheckoutRoute
 import com.example.ui.checkout.CheckoutScreen
-import com.example.uilogin.AuthRoute
-import com.example.uilogin.PhoneAuthScreen
-import com.example.uilogin.cart.screen.CartRoute
-import com.example.uilogin.cart.screen.CartScreen
-import com.example.uilogin.pizzadetail.MenuRoute
-import com.example.uilogin.pizzadetail.MenuScreen
-import com.example.uilogin.pizzadetail.PizzaDetailRoute
-import com.example.uilogin.pizzadetail.PizzaDetailScreen
 import com.google.firebase.auth.FirebaseAuth
 
 @Composable

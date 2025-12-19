@@ -3,7 +3,7 @@ package com.example.domain.model
 import com.example.model.ProductCategory
 
 data class CartTopping(
-    val toppingId: String,
+    val id: String,
     val name: String,
     val unitPrice: Double,
     val quantity: Int,

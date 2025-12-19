@@ -16,13 +16,13 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation3.runtime.NavKey
+import com.example.cart.shared.CartBadgeViewModel
 import com.example.designsystem.utils.isWideLayout
 import com.example.lazypizza.navigation.AppNavigation
 import com.example.lazypizza.navigation.BottomBar
 import com.example.lazypizza.navigation.NavigationRail
 import com.example.lazypizza.navigation.isTopLevel
-import com.example.uilogin.cart.shared.CartBadgeViewModel
-import com.example.uilogin.pizzadetail.MenuRoute
+import com.example.menu.home.MenuRoute
 
 @Composable
 fun MainScreen() {

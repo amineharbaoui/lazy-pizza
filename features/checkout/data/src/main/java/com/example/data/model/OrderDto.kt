@@ -13,7 +13,6 @@ data class OrderDto(
 )
 
 data class OrderItemDto(
-    val type: String = "", // "PIZZA" / "OTHER"
     val productId: String = "",
     val name: String = "",
     val unitPrice: Double = 0.0,

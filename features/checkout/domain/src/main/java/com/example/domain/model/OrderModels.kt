@@ -39,7 +39,7 @@ sealed interface OrderItem {
 }
 
 data class OrderTopping(
-    val productId: String,
+    val id: String,
     val name: String,
     val unitPrice: Double,
     val quantity: Int,

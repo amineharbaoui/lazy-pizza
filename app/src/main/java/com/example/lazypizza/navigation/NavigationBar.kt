@@ -3,13 +3,13 @@ package com.example.lazypizza.navigation
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.painterResource
 import androidx.navigation3.runtime.NavKey
+import com.example.cart.screen.CartRoute
 import com.example.designsystem.R
 import com.example.designsystem.components.DsNavigationBar
 import com.example.designsystem.theme.LazyPizzaThemePreview
 import com.example.designsystem.utils.PreviewPhoneTablet
 import com.example.history.presentation.HistoryRoute
-import com.example.uilogin.cart.screen.CartRoute
-import com.example.uilogin.pizzadetail.MenuRoute
+import com.example.menu.home.MenuRoute
 
 val TopLevelRoutes: Set<NavKey> = setOf(MenuRoute, CartRoute, HistoryRoute)
 

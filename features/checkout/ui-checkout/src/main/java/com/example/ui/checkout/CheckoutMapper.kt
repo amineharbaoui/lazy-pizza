@@ -6,7 +6,7 @@ import com.example.domain.model.Order
 import com.example.domain.model.OrderItem
 import com.example.domain.model.OrderTopping
 import com.example.domain.model.PickupSelection
-import com.example.uilogin.utils.formatting.toFormattedCurrency
+import com.example.menu.utils.formatting.toFormattedCurrency
 import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalTime
@@ -56,7 +56,7 @@ private fun CartItem.toOrderItem(): OrderItem = when (this) {
         quantity = quantity,
         toppings = toppings.map {
             OrderTopping(
-                productId = it.toppingId,
+                id = it.id,
                 name = it.name,
                 unitPrice = it.unitPrice,
                 quantity = it.quantity,
