@@ -2,7 +2,6 @@ package com.example.uilogin.pizzadetail
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.domain.model.CartItem
 import com.example.domain.usecase.AddCartItemUseCase
 import com.example.domain.usecase.ClearCartUseCase
 import com.example.domain.usecase.ObserveCartUseCase
@@ -50,52 +49,19 @@ class MenuViewModel @Inject constructor(
                 observeMenuUseCase(),
                 observeCartUseCase(),
             ) { menuSections, cart ->
-                val menuSectionsDisplayModel = menuSections.map { it.toDisplayModel() }
-
-                val qtyByProductId = cart.items
-                    .filterIsInstance<CartItem.Other>()
-                    .associate { it.productId to it.quantity }
-
-                val menuWithQuantities = menuSectionsDisplayModel.map { section ->
-                    section.copy(
-                        items = section.items.map { item ->
-                            if (item is MenuItemDisplayModel.Other) {
-                                val qty = qtyByProductId[item.id] ?: 0
-                                item.copy(quantity = qty)
-                            } else {
-                                item
-                            }
-                        },
-                    )
-                }
-
-                allSections = menuWithQuantities
-
                 val current = _uiState.value
                 val searchQuery = if (current is MenuUiState.Success) current.searchQuery else ""
 
-                val tags = menuWithQuantities
-                    .mapNotNull { it.category.toMenuTag() }
-                    .distinct()
-
-                val filtered = applyFilters(
-                    sections = menuWithQuantities,
-                    query = searchQuery.trim(),
-                )
-
-                MenuUiState.Success(
-                    originalMenu = menuWithQuantities,
-                    filteredMenu = filtered,
-                    menuTags = tags,
-                    searchQuery = searchQuery,
-                )
+                val nextState = mapToMenuUiState(menuSections, cart, searchQuery)
+                allSections = (nextState as? MenuUiState.Success)?.originalMenu ?: emptyList()
+                nextState
             }.collect { uiState ->
                 _uiState.value = uiState
             }
         }
     }
 
-    fun onSearchQueryChange(query: String) {
+    fun updateSearchQuery(query: String) {
         val normalized = query.trim()
         updateSuccessState { current ->
             if (current.searchQuery == normalized) return@updateSuccessState current
@@ -110,13 +76,13 @@ class MenuViewModel @Inject constructor(
         }
     }
 
-    fun onOtherItemAddClick(menuItem: MenuItemDisplayModel.Other) {
+    fun addOtherItemToCart(menuItem: MenuItemDisplayModel.Other) {
         viewModelScope.launch {
             addCartItemUseCase(menuItem.toSimpleCartItem(quantity = menuItem.quantity + 1))
         }
     }
 
-    fun onOtherItemQuantityChange(
+    fun updateOtherItemQuantity(
         menuItem: MenuItemDisplayModel.Other,
         newQuantity: Int,
     ) {
@@ -151,7 +117,7 @@ class MenuViewModel @Inject constructor(
         }
     }
 
-    fun onSignOutClick() {
+    fun signOut() {
         viewModelScope.launch {
             clearCartUseCase()
             signOutUseCase()

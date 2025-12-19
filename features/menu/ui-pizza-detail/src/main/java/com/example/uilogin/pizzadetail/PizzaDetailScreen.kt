@@ -67,13 +67,13 @@ fun PizzaDetailScreen(
             is PizzaDetailUiState.Error -> DetailErrorState()
             is PizzaDetailUiState.Success -> DetailContent(
                 uiState = state,
-                onToppingQuantityChange = viewModel::onToppingQuantityChange,
+                onToppingQuantityChange = viewModel::updateToppingQuantity,
                 onAddToCartClick = {
-                    viewModel.onAddToCartClick(state)
+                    viewModel.addItemToCart(state)
                     onNavigateToMenu()
                     Toast.makeText(context, "Added to cart!", Toast.LENGTH_SHORT).show()
                 },
-                onQuantityChange = viewModel::onQuantityChange,
+                onQuantityChange = viewModel::updateQuantity,
             )
         }
     }

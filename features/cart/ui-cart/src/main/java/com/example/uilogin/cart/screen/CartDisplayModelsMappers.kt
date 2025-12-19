@@ -57,3 +57,15 @@ fun RecommendedItemDisplayModel.toCartItemDisplayModel() = CartItem.Other(
     price = price,
     quantity = 1,
 )
+
+fun mapToCartUiState(
+    cart: Cart,
+    recommendedItems: List<MenuItem>,
+): CartUiState = if (cart.items.isEmpty()) {
+    CartUiState.Empty
+} else {
+    CartUiState.Success(
+        cart = cart.toDisplayModel(),
+        recommendedItems = recommendedItems.map { it.toRecommendedItemDisplayModel() },
+    )
+}

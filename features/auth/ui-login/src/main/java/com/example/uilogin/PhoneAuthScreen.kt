@@ -44,16 +44,16 @@ fun PhoneAuthScreen(
         uiState = uiState,
         modifier = modifier,
         actions = PhoneAuthActions(
-            onPhoneChange = viewModel::onPhoneChanged,
-            onFullPhoneNumberChange = viewModel::onFullPhoneChanged,
-            onValidityChange = viewModel::onPhoneValidityChanged,
-            onCountryIsoChanged = viewModel::onCountryIsoChanged,
-            onContinue = viewModel::onContinueWithPhoneClick,
-            onCodeChange = viewModel::onCodeChanged,
-            onConfirm = viewModel::onConfirmClick,
-            onResend = viewModel::onResendCodeClick,
-            onSkip = viewModel::onSkipClick,
-            onEditPhone = viewModel::onEditPhoneClick,
+            onPhoneChange = viewModel::updatePhone,
+            onFullPhoneNumberChange = viewModel::updateFullPhone,
+            onValidityChange = viewModel::updatePhoneValidity,
+            onCountryIsoChanged = viewModel::updateCountryIso,
+            onContinue = viewModel::verifyPhone,
+            onCodeChange = viewModel::updateCode,
+            onConfirm = viewModel::confirmCode,
+            onResend = viewModel::resendCode,
+            onSkip = viewModel::skipAuth,
+            onEditPhone = viewModel::editPhone,
         ),
     )
     LaunchedEffect(Unit) {
@@ -64,8 +64,8 @@ fun PhoneAuthScreen(
                         .startVerification(
                             activity = activity,
                             phoneNumber = event.phoneNumber,
-                            onCodeSent = viewModel::onCodeSent,
-                            onVerificationFailed = viewModel::onVerificationFailed,
+                            onCodeSent = viewModel::handleCodeSent,
+                            onVerificationFailed = viewModel::handleVerificationFailure,
                         )
                 }
 
@@ -74,8 +74,8 @@ fun PhoneAuthScreen(
                         .startVerification(
                             activity = activity,
                             phoneNumber = event.phoneNumber,
-                            onCodeSent = viewModel::onCodeSent,
-                            onVerificationFailed = viewModel::onVerificationFailed,
+                            onCodeSent = viewModel::handleCodeSent,
+                            onVerificationFailed = viewModel::handleVerificationFailure,
                         )
                 }
 

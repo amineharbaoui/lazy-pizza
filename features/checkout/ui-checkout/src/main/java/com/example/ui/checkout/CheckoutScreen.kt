@@ -82,9 +82,9 @@ fun CheckoutScreen(
             is CheckoutUiState.Ready -> {
                 CheckoutScreenContent(
                     state = state,
-                    onPickupOptionSelect = viewModel::onPickupOptionSelected,
-                    onCommentChange = viewModel::onCommentChanged,
-                    onPlaceOrderClick = viewModel::onPlaceOrderClicked,
+                    onPickupOptionSelect = viewModel::selectPickupOption,
+                    onCommentChange = viewModel::updateComment,
+                    onPlaceOrderClick = viewModel::submitOrder,
                     onOrderItemClick = onOrderItemClick,
                     modifier = Modifier.weight(1f),
                 )
@@ -101,15 +101,15 @@ fun CheckoutScreen(
             containerColor = AppColors.Bg,
             content = {
                 SchedulePickUpContent(
-                    schedulePickUpDisplayModel = (uiState as CheckoutUiState.Ready).schedulePickUp,
+                    schedulePickUpDisplayModel = (uiState as CheckoutUiState.Ready).pickup.schedule,
                     onSelectDay = { dayId ->
-                        viewModel.onScheduleDaySelected(dayId)
+                        viewModel.selectScheduleDay(dayId)
                     },
                     onTimeSlotSelect = { slotId ->
-                        viewModel.onScheduleSlotSelected(slotId)
+                        viewModel.selectScheduleTimeSlot(slotId)
                     },
                     onScheduleClick = {
-                        viewModel.onScheduleConfirmed()
+                        viewModel.confirmSchedule()
                         shouldShowBottomSheet = false
                     },
                 )
@@ -145,9 +145,9 @@ private fun CheckoutScreenContent(
             )
 
             SchedulePickUpButtons(
-                selectedOption = state.pickupOptionId,
-                asapOption = state.asapOption,
-                scheduleOption = state.scheduleOption,
+                selectedOption = state.pickup.selectedOption,
+                asapOption = state.pickup.asapOption,
+                scheduleOption = state.pickup.scheduleOption,
                 onOptionSelect = onPickupOptionSelect,
             )
 
@@ -156,15 +156,21 @@ private fun CheckoutScreenContent(
             DsExpandableCard(
                 title = "Order Summary",
                 content = {
-                    state.orderSummary.forEachIndexed { index, line ->
+                    state.orderSummary.lines.forEachIndexed { index, line ->
                         OrderSummaryContent(
                             title = line.title,
                             priceLabel = line.basePriceLabel,
                             subtitleLines = line.subtitleLines,
                             totalPriceLabel = line.totalPriceLabel,
-                            onOrderItemClick = { onOrderItemClick(line.productId) },
+                            onOrderItemClick = {
+                                if (line is OrderLineUi.MainProduct) {
+                                    onOrderItemClick(line.productId)
+                                } else {
+                                    onOrderItemClick(null)
+                                }
+                            },
                         )
-                        if (index < state.orderSummary.lastIndex) {
+                        if (index < state.orderSummary.lines.lastIndex) {
                             HorizontalDivider()
                         }
                     }
@@ -206,7 +212,7 @@ private fun CheckoutScreenContent(
             )
             Spacer(modifier = Modifier.weight(1f))
             Text(
-                text = state.orderTotalLabel,
+                text = state.orderSummary.totalLabel,
                 style = AppTypography.Title3SemiBold,
                 color = AppColors.TextPrimary,
             )
@@ -229,32 +235,39 @@ private fun CheckoutScreenContent(
 private fun CheckoutScreenContentPreview() {
     LazyPizzaThemePreview {
         val sampleState = CheckoutUiState.Ready(
-            pickupOptionId = PickupOption.ASAP,
-            orderSummary = listOf(
-                OrderLineUi(
-                    productId = null,
-                    title = "Pizza Margherita",
-                    basePriceLabel = "$10.00",
-                    subtitleLines = listOf("Extra cheese ($0.5)", "Spicy sauce ($0.5)"),
-                    totalPriceLabel = "$12.00",
+            pickup = PickupUiState(
+                selectedOption = PickupOption.ASAP,
+                asapOption = PickupOptionDisplayModel(title = "Earliest available"),
+                scheduleOption = PickupOptionDisplayModel(title = "Schedule", dateLabel = "Choose a time"),
+                schedule = SchedulePickUpDisplayModel(
+                    days = listOf(),
+                    selection = PickUpSelection(
+                        selectedDayId = "tritani",
+                        selectedTimeSlotId = "eius",
+                    ),
+                    confirmation = null,
                 ),
-                OrderLineUi(
-                    productId = null,
-                    title = "Garlic Bread",
-                    basePriceLabel = "$2.00",
-                    subtitleLines = emptyList(),
+            ),
+            orderSummary = OrderSummaryUi(
+                lines = listOf(
+                    OrderLineUi.MainProduct(
+                        productId = "1",
+                        title = "Pizza Margherita",
+                        basePriceLabel = "$10.00",
+                        subtitleLines = listOf("Extra cheese ($0.5)", "Spicy sauce ($0.5)"),
+                        totalPriceLabel = "$12.00",
+                    ),
+                    OrderLineUi.SecondaryProduct(
+                        title = "Garlic Bread",
+                        basePriceLabel = "$2.00",
+                        subtitleLines = emptyList(),
+                        totalPriceLabel = null,
+                    ),
                 ),
+                totalLabel = "$12.00",
             ),
             comment = "",
-            orderTotalLabel = "$12.00",
             canPlaceOrder = true,
-            schedulePickUp = SchedulePickUpDisplayModel(
-                days = listOf(),
-                selectedDayId = "tritani",
-                selectedTimeSlotId = "eius",
-            ),
-            asapOption = PickupOptionDisplayModel(title = "Earliest available"),
-            scheduleOption = PickupOptionDisplayModel(title = "Schedule", dateLabel = "Choose a time"),
         )
 
         CheckoutScreenContent(

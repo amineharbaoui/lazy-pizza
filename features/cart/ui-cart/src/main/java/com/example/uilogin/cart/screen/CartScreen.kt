@@ -57,9 +57,9 @@ fun CartScreen(
             is CartUiState.Success -> CartScreenContent(
                 cartUiState = state,
                 onNavigateToCheckout = onNavigateToCheckout,
-                onAddToCart = viewModel::onAddToCart,
-                onLineQuantityChange = viewModel::onLineQuantityChange,
-                onRemoveLine = viewModel::onRemoveLine,
+                onAddToCart = viewModel::addItemToCart,
+                onLineQuantityChange = viewModel::updateLineQuantity,
+                onRemoveLine = viewModel::removeLine,
             )
         }
     }

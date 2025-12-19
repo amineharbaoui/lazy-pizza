@@ -48,7 +48,7 @@ class PizzaDetailViewModel @Inject constructor(
         }
     }
 
-    fun onToppingQuantityChange(
+    fun updateToppingQuantity(
         toppingId: String,
         newQuantity: Int,
     ) {
@@ -72,7 +72,7 @@ class PizzaDetailViewModel @Inject constructor(
         }
     }
 
-    fun onQuantityChange(newQuantity: Int) {
+    fun updateQuantity(newQuantity: Int) {
         val current = _uiState.value as? PizzaDetailUiState.Success ?: return
         val safeQuantity = newQuantity.coerceAtLeast(1)
 
@@ -89,7 +89,7 @@ class PizzaDetailViewModel @Inject constructor(
         }
     }
 
-    fun onAddToCartClick(pizzaDetails: PizzaDetailUiState.Success) {
+    fun addItemToCart(pizzaDetails: PizzaDetailUiState.Success) {
         viewModelScope.launch {
             addCartItemUseCase(pizzaDetails.toPizzaCartItem())
         }

@@ -42,23 +42,14 @@ class CartViewModel @Inject constructor(
                 observeCartUseCase(),
                 observeRecommendedItemsUseCase(),
             ) { cart, recommendedItems ->
-                if (cart.items.isEmpty()) {
-                    CartUiState.Empty
-                } else {
-                    val cartDisplayModel = cart.toDisplayModel()
-                    val recommendedItemsDisplayModel = recommendedItems.map { it.toRecommendedItemDisplayModel() }
-                    CartUiState.Success(
-                        cart = cartDisplayModel,
-                        recommendedItems = recommendedItemsDisplayModel,
-                    )
-                }
+                mapToCartUiState(cart, recommendedItems)
             }.collect { state ->
                 _uiState.value = state
             }
         }
     }
 
-    fun onLineQuantityChange(
+    fun updateLineQuantity(
         item: CartLineDisplayModel,
         newQuantity: Int,
     ) {
@@ -68,23 +59,19 @@ class CartViewModel @Inject constructor(
             } else {
                 updateCartItemQuantityUseCase(
                     lineId = item.lineId,
-                    quantity = if (newQuantity > item.quantity) {
-                        item.quantity + 1
-                    } else {
-                        (item.quantity - 1).coerceAtLeast(0)
-                    },
+                    quantity = newQuantity,
                 )
             }
         }
     }
 
-    fun onRemoveLine(lineId: String) {
+    fun removeLine(lineId: String) {
         viewModelScope.launch {
             removeCartItemUseCase(lineId)
         }
     }
 
-    fun onAddToCart(item: RecommendedItemDisplayModel) {
+    fun addItemToCart(item: RecommendedItemDisplayModel) {
         viewModelScope.launch {
             addCartItemUseCase(item.toCartItemDisplayModel())
         }

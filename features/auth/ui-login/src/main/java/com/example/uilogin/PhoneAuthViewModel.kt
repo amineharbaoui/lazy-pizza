@@ -43,7 +43,7 @@ class PhoneAuthViewModel @Inject constructor(
     private var currentVerificationId: String? = null
     private var resendTimerJob: Job? = null
 
-    fun onPhoneChanged(phone: String) {
+    fun updatePhone(phone: String) {
         val normalized = phone.trim()
         val current = _uiState.value
         if (current is PhoneAuthUiState.EnterPhone) {
@@ -54,7 +54,7 @@ class PhoneAuthViewModel @Inject constructor(
         }
     }
 
-    fun onFullPhoneChanged(fullPhone: String) {
+    fun updateFullPhone(fullPhone: String) {
         val current = _uiState.value
         if (current is PhoneAuthUiState.EnterPhone) {
             _uiState.value = current.copy(
@@ -64,7 +64,7 @@ class PhoneAuthViewModel @Inject constructor(
         }
     }
 
-    fun onCountryIsoChanged(iso: String) {
+    fun updateCountryIso(iso: String) {
         val current = _uiState.value
         if (current is PhoneAuthUiState.EnterPhone) {
             _uiState.value = current.copy(
@@ -74,7 +74,7 @@ class PhoneAuthViewModel @Inject constructor(
         }
     }
 
-    fun onPhoneValidityChanged(isValid: Boolean) {
+    fun updatePhoneValidity(isValid: Boolean) {
         val current = _uiState.value
         if (current is PhoneAuthUiState.EnterPhone) {
             _uiState.value = current.copy(
@@ -84,7 +84,7 @@ class PhoneAuthViewModel @Inject constructor(
         }
     }
 
-    fun onContinueWithPhoneClick() {
+    fun verifyPhone() {
         val current = _uiState.value as? PhoneAuthUiState.EnterPhone ?: return
         if (!current.continueEnabled) return
 
@@ -95,7 +95,7 @@ class PhoneAuthViewModel @Inject constructor(
         }
     }
 
-    fun onEditPhoneClick() {
+    fun editPhone() {
         val current = _uiState.value as? PhoneAuthUiState.EnterCode ?: return
         resendTimerJob?.cancel()
         resendTimerJob = null
@@ -113,11 +113,11 @@ class PhoneAuthViewModel @Inject constructor(
         )
     }
 
-    fun onSkipClick() {
+    fun skipAuth() {
         viewModelScope.launch { _events.emit(PhoneAuthEvent.SkipAuth) }
     }
 
-    fun onCodeSent(verificationId: String) {
+    fun handleCodeSent(verificationId: String) {
         currentVerificationId = verificationId
         val phoneState = (uiState.value as? PhoneAuthUiState.EnterPhone) ?: return
         val phone = phoneState.fullPhoneNumber
@@ -138,7 +138,7 @@ class PhoneAuthViewModel @Inject constructor(
         startResendTimer()
     }
 
-    fun onVerificationFailed(error: Throwable) {
+    fun handleVerificationFailure(error: Throwable) {
         val text = error.message ?: "Something went wrong. Please try again."
         when (val current = _uiState.value) {
             is PhoneAuthUiState.EnterPhone -> _uiState.value = current.copy(isLoading = false, errorMessage = text)
@@ -148,14 +148,14 @@ class PhoneAuthViewModel @Inject constructor(
 
     // --- code step --------------------------------------------------------
 
-    fun onCodeChanged(code: String) {
+    fun updateCode(code: String) {
         val digits = code.filter { it.isDigit() }.take(6)
         val current = _uiState.value as? PhoneAuthUiState.EnterCode ?: return
         _uiState.value = current.copy(code = digits, errorMessage = null)
     }
 
-    fun onConfirmClick() {
-        Log.d("TAG", "onConfirmClick() called")
+    fun confirmCode() {
+        Log.d("TAG", "confirmCode() called")
         val current = _uiState.value as? PhoneAuthUiState.EnterCode ?: return
         val verificationId = currentVerificationId ?: return
         if (!current.confirmEnabled) return
@@ -179,7 +179,7 @@ class PhoneAuthViewModel @Inject constructor(
         }
     }
 
-    fun onResendCodeClick() {
+    fun resendCode() {
         val current = _uiState.value as? PhoneAuthUiState.EnterCode ?: return
         if (!current.resendEnabled) return
 

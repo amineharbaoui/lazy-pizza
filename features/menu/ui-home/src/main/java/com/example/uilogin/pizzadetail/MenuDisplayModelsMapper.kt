@@ -48,3 +48,50 @@ fun MenuItemDisplayModel.toSimpleCartItem(quantity: Int): CartItem.Other = CartI
     price = price,
     quantity = quantity,
 )
+
+fun mapToMenuUiState(
+    menuSections: List<MenuSection>,
+    cart: com.example.domain.model.Cart,
+    searchQuery: String,
+): MenuUiState {
+    val menuSectionsDisplayModel = menuSections.map { it.toDisplayModel() }
+
+    val qtyByProductId = cart.items
+        .filterIsInstance<CartItem.Other>()
+        .associate { it.productId to it.quantity }
+
+    val menuWithQuantities = menuSectionsDisplayModel.map { section ->
+        section.copy(
+            items = section.items.map { item ->
+                if (item is MenuItemDisplayModel.Other) {
+                    val qty = qtyByProductId[item.id] ?: 0
+                    item.copy(quantity = qty)
+                } else {
+                    item
+                }
+            },
+        )
+    }
+
+    val tags = menuWithQuantities
+        .mapNotNull { it.category.toMenuTag() }
+        .distinct()
+
+    val filtered = if (searchQuery.isBlank()) {
+        menuWithQuantities
+    } else {
+        menuWithQuantities.mapNotNull { section ->
+            val filteredItems = section.items.filter { item ->
+                item.name.contains(searchQuery, ignoreCase = true)
+            }
+            if (filteredItems.isEmpty()) null else section.copy(items = filteredItems)
+        }
+    }
+
+    return MenuUiState.Success(
+        originalMenu = menuWithQuantities,
+        filteredMenu = filtered,
+        menuTags = tags,
+        searchQuery = searchQuery,
+    )
+}

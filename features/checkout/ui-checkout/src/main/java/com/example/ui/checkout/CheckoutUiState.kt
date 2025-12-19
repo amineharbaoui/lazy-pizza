@@ -3,36 +3,70 @@ package com.example.ui.checkout
 sealed interface CheckoutUiState {
 
     data object Loading : CheckoutUiState
-    data object Error : CheckoutUiState
+
+    data class Error(
+        val message: String,
+    ) : CheckoutUiState
 
     data class Ready(
-        val pickupOptionId: PickupOption,
-        val asapOption: PickupOptionDisplayModel,
-        val scheduleOption: PickupOptionDisplayModel,
-        val orderSummary: List<OrderLineUi>,
+        val pickup: PickupUiState,
+        val orderSummary: OrderSummaryUi,
         val comment: String,
-        val orderTotalLabel: String,
         val canPlaceOrder: Boolean,
-
-        val schedulePickUp: SchedulePickUpDisplayModel,
-
+        val isPlacingOrder: Boolean = false,
     ) : CheckoutUiState
 }
 
-data class OrderLineUi(
-    val productId: String?,
-    val title: String,
-    val basePriceLabel: String,
-    val totalPriceLabel: String? = null,
-    val subtitleLines: List<String>,
+data class PickupUiState(
+    val selectedOption: PickupOption,
+    val asapOption: PickupOptionDisplayModel,
+    val scheduleOption: PickupOptionDisplayModel,
+    val schedule: SchedulePickUpDisplayModel,
 )
+
+data class OrderSummaryUi(
+    val lines: List<OrderLineUi>,
+    val totalLabel: String,
+)
+
+sealed interface OrderLineUi {
+    val title: String
+    val basePriceLabel: String
+    val totalPriceLabel: String?
+    val subtitleLines: List<String>
+
+    /** Main product (Pizza) → navigable to details */
+    data class MainProduct(
+        val productId: String,
+        override val title: String,
+        override val basePriceLabel: String,
+        override val totalPriceLabel: String?,
+        override val subtitleLines: List<String>,
+    ) : OrderLineUi
+
+    /** Secondary product (drink, ice cream, sauce…) → not navigable */
+    data class SecondaryProduct(
+        override val title: String,
+        override val basePriceLabel: String,
+        override val totalPriceLabel: String?,
+        override val subtitleLines: List<String>,
+    ) : OrderLineUi
+}
 
 data class SchedulePickUpDisplayModel(
     val days: List<PickUpDay>,
+    val selection: PickUpSelection,
+    val confirmation: PickUpConfirmation? = null,
+)
+
+data class PickUpSelection(
     val selectedDayId: String?,
     val selectedTimeSlotId: String?,
-    val confirmedDayId: String? = null,
-    val confirmedTimeSlotId: String? = null,
+)
+
+data class PickUpConfirmation(
+    val dayId: String,
+    val timeSlotId: String,
 )
 
 data class PickUpDay(

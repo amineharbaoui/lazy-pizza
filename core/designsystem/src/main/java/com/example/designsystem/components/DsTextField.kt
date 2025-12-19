@@ -92,7 +92,10 @@ object DsTextField {
     ) {
         OutlinedTextField(
             modifier = modifier
-                .background(AppColors.SurfaceHigher, RoundedCornerShape(28.dp)),
+                .background(
+                    color = AppColors.TextSecondary,
+                    shape = RoundedCornerShape(28.dp),
+                ),
             value = value,
             onValueChange = onValueChange,
             placeholder = {
@@ -111,8 +114,8 @@ object DsTextField {
             },
             shape = RoundedCornerShape(28.dp),
             colors = OutlinedTextFieldDefaults.colors(
-                focusedBorderColor = Color.Transparent,
-                unfocusedBorderColor = Color.Transparent,
+                focusedBorderColor = AppColors.Outline,
+                unfocusedBorderColor = AppColors.Outline,
                 disabledBorderColor = Color.Transparent,
                 errorBorderColor = Color.Transparent,
                 focusedContainerColor = AppColors.SurfaceHigher,

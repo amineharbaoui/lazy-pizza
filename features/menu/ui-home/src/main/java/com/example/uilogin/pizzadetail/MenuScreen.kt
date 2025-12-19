@@ -98,9 +98,9 @@ fun MenuScreen(
                 menuTags = state.menuTags,
                 searchQuery = state.searchQuery,
                 onPizzaClick = { onProductClick(it.id) },
-                onOtherItemAddClick = viewModel::onOtherItemAddClick,
-                onOtherItemQuantityChange = viewModel::onOtherItemQuantityChange,
-                onSearchQueryChange = viewModel::onSearchQueryChange,
+                onOtherItemAddClick = viewModel::addOtherItemToCart,
+                onOtherItemQuantityChange = viewModel::updateOtherItemQuantity,
+                onSearchQueryChange = viewModel::updateSearchQuery,
                 listState = listState,
                 gridState = gridState,
             )
@@ -115,7 +115,7 @@ fun MenuScreen(
                 secondaryButtonText = stringResource(id = DsR.string.cancel),
                 onPrimaryClick = {
                     showLogoutConfirm = false
-                    viewModel.onSignOutClick()
+                    viewModel.signOut()
                     onLogout()
                 },
                 onDismissRequest = { showLogoutConfirm = false },
