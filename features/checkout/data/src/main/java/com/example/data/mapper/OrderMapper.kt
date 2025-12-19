@@ -36,6 +36,7 @@ private fun OrderItem.toDto(): OrderItemDto = when (this) {
                 quantity = it.quantity,
             )
         },
+        category = category.name,
     )
 
     is OrderItem.Other -> OrderItemDto(
