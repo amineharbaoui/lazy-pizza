@@ -329,7 +329,7 @@ private fun ExtraToppingsContent(
                 val qty = toppingQuantities[item.id] ?: 0
                 DsCardItem.AddonCard(
                     title = item.name,
-                    priceText = item.priceFormatted,
+                    priceText = item.unitPriceFormatted,
                     image = rememberAsyncImagePainter(item.imageUrl),
                     quantity = qty,
                     onQuantityChange = { newQty ->
@@ -402,8 +402,8 @@ private fun DetailContentPreview() {
         name = "Margherita",
         description = "Tomato sauce, mozzarella, fresh basil, olive oil",
         imageUrl = "",
-        price = 8.99,
-        priceFormatted = "$8.99",
+        unitPrice = 8.99,
+        unitPriceFormatted = "$8.99",
     )
 
     val toppings = listOf(

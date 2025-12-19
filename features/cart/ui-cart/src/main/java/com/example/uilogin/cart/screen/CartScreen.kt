@@ -34,6 +34,7 @@ import com.example.designsystem.theme.AppTypography
 import com.example.designsystem.theme.LazyPizzaThemePreview
 import com.example.designsystem.utils.PreviewPhoneTablet
 import com.example.designsystem.utils.isWideLayout
+import com.example.model.ProductCategory
 import com.example.uilogin.cart.screen.components.RecommendationsSection
 
 @Composable
@@ -233,26 +234,26 @@ private fun CartScreenPreview() {
                     RecommendedItemDisplayModel(
                         id = "",
                         title = "Chocolate Ice Cream",
-                        price = 2.44,
-                        priceFormatted = "$2.44",
+                        unitPrice = 2.44,
+                        unitPriceFormatted = "$2.44",
                         imageUrl = "",
-                        category = "",
+                        category = ProductCategory.ICE_CREAM,
                     ),
                     RecommendedItemDisplayModel(
                         id = "",
                         title = "Ice Cream",
-                        price = 2.44,
-                        priceFormatted = "$2.44",
+                        unitPrice = 2.44,
+                        unitPriceFormatted = "$2.44",
                         imageUrl = "",
-                        category = "",
+                        category = ProductCategory.ICE_CREAM,
                     ),
                     RecommendedItemDisplayModel(
                         id = "",
                         title = "Chocolate Ice Cream",
-                        price = 2.44,
-                        priceFormatted = "$2.44",
+                        unitPrice = 2.44,
+                        unitPriceFormatted = "$2.44",
                         imageUrl = "",
-                        category = "",
+                        category = ProductCategory.ICE_CREAM,
                     ),
                 ),
             ),

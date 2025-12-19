@@ -31,7 +31,7 @@ data class OrderSummaryUi(
 
 sealed interface OrderLineUi {
     val title: String
-    val basePriceLabel: String
+    val unitPriceLabel: String
     val totalPriceLabel: String?
     val subtitleLines: List<String>
 
@@ -39,7 +39,7 @@ sealed interface OrderLineUi {
     data class MainProduct(
         val productId: String,
         override val title: String,
-        override val basePriceLabel: String,
+        override val unitPriceLabel: String,
         override val totalPriceLabel: String?,
         override val subtitleLines: List<String>,
     ) : OrderLineUi
@@ -47,7 +47,7 @@ sealed interface OrderLineUi {
     /** Secondary product (drink, ice cream, sauce…) → not navigable */
     data class SecondaryProduct(
         override val title: String,
-        override val basePriceLabel: String,
+        override val unitPriceLabel: String,
         override val totalPriceLabel: String?,
         override val subtitleLines: List<String>,
     ) : OrderLineUi

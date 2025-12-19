@@ -1,5 +1,7 @@
 package com.example.uilogin.cart.screen
 
+import com.example.model.ProductCategory
+
 data class CartLineDisplayModel(
     val lineId: String,
     val title: String,
@@ -18,8 +20,8 @@ data class CartDisplayModel(
 data class RecommendedItemDisplayModel(
     val id: String,
     val title: String,
-    val price: Double,
-    val priceFormatted: String,
+    val unitPrice: Double,
+    val unitPriceFormatted: String,
     val imageUrl: String,
-    val category: String,
+    val category: ProductCategory,
 )

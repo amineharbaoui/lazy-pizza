@@ -2,6 +2,7 @@ package com.example.data.datasource.db.entity
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.example.model.ProductCategory
 
 @Entity(tableName = "cart_items")
 data class CartItemEntity(
@@ -10,13 +11,8 @@ data class CartItemEntity(
     val productId: String,
     val name: String,
     val imageUrl: String,
-    val type: CartItemType,
+    val category: ProductCategory,
     val otherItemPrice: Double?,
     val pizzaItemPrice: Double?,
     val quantity: Int,
 )
-
-enum class CartItemType {
-    OTHER,
-    PIZZA,
-}

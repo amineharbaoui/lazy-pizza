@@ -5,14 +5,14 @@ data class PizzaDetailDisplayModel(
     val name: String,
     val description: String,
     val imageUrl: String,
-    val price: Double,
-    val priceFormatted: String,
+    val unitPrice: Double,
+    val unitPriceFormatted: String,
 )
 
 data class ToppingDisplayModel(
     val id: String,
     val name: String,
-    val price: Double,
-    val priceFormatted: String,
+    val unitPrice: Double,
+    val unitPriceFormatted: String,
     val imageUrl: String,
 )

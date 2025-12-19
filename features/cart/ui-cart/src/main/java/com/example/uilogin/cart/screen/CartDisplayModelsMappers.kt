@@ -20,7 +20,7 @@ private fun CartItem.toDisplayModel(): CartLineDisplayModel = when (this) {
         subtitleLines = emptyList(),
         imageUrl = imageUrl,
         quantity = quantity,
-        unitPriceFormatted = price.toFormattedCurrency(),
+        unitPriceFormatted = unitPrice.toFormattedCurrency(),
         lineTotalFormatted = lineTotal.toFormattedCurrency(),
     )
 
@@ -35,7 +35,7 @@ private fun CartItem.toDisplayModel(): CartLineDisplayModel = when (this) {
             subtitleLines = subtitle,
             imageUrl = imageUrl,
             quantity = quantity,
-            unitPriceFormatted = basePrice.toFormattedCurrency(),
+            unitPriceFormatted = unitPrice.toFormattedCurrency(),
             lineTotalFormatted = lineTotal.toFormattedCurrency(),
         )
     }
@@ -44,10 +44,10 @@ private fun CartItem.toDisplayModel(): CartLineDisplayModel = when (this) {
 fun MenuItem.toRecommendedItemDisplayModel() = RecommendedItemDisplayModel(
     id = id,
     title = name,
-    price = price,
-    priceFormatted = price.toFormattedCurrency(),
+    unitPrice = unitPrice,
+    unitPriceFormatted = unitPrice.toFormattedCurrency(),
     imageUrl = imageUrl,
-    category = (this as MenuItem.OtherMenuItem).category.name,
+    category = category,
 )
 
 fun RecommendedItemDisplayModel.toCartItemDisplayModel() = CartItem.Other(
@@ -55,7 +55,7 @@ fun RecommendedItemDisplayModel.toCartItemDisplayModel() = CartItem.Other(
     productId = id,
     name = title,
     imageUrl = imageUrl,
-    price = price,
+    unitPrice = unitPrice,
     category = category,
     quantity = 1,
 )

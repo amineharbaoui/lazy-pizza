@@ -22,6 +22,7 @@ import com.example.designsystem.theme.AppColors
 import com.example.designsystem.theme.AppTypography
 import com.example.designsystem.theme.LazyPizzaThemePreview
 import com.example.designsystem.utils.PreviewPhoneTablet
+import com.example.model.ProductCategory
 import com.example.uilogin.cart.screen.RecommendedItemDisplayModel
 
 @Composable
@@ -49,7 +50,7 @@ fun RecommendationsSection(
             recommendedItems.forEach { item ->
                 DsCardItem.ExtraItem(
                     title = item.title,
-                    price = item.priceFormatted,
+                    price = item.unitPriceFormatted,
                     image = rememberAsyncImagePainter(item.imageUrl),
                     onAdd = { onAddToCart(item) },
                 )
@@ -66,18 +67,18 @@ private fun RecommendationsSectionPreview() {
         RecommendedItemDisplayModel(
             id = "1",
             title = "Extra Fries",
-            price = 2.50,
-            priceFormatted = "$2.50",
+            unitPrice = 2.50,
+            unitPriceFormatted = "$2.50",
             imageUrl = "https://example.com/fries.jpg",
-            category = "",
+            category = ProductCategory.DRINK,
         ),
         RecommendedItemDisplayModel(
             id = "2",
             title = "Cola",
-            price = 1.50,
-            priceFormatted = "$1.50",
+            unitPrice = 1.50,
+            unitPriceFormatted = "$1.50",
             imageUrl = "https://example.com/cola.jpg",
-            category = "",
+            category = ProductCategory.DRINK,
         ),
     )
     LazyPizzaThemePreview {

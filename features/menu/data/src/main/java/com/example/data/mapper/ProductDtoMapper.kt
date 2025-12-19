@@ -2,17 +2,18 @@ package com.example.data.mapper
 
 import com.example.data.model.ProductDto
 import com.example.domain.model.MenuItem
-import com.example.domain.model.ProductCategory
 import com.example.domain.model.Topping
+import com.example.model.ProductCategory
 
 fun ProductDto.toMenuItem(): MenuItem = when (val categoryEnum = category.toProductCategory()) {
     ProductCategory.PIZZA -> MenuItem.PizzaItem(
         id = id,
         name = name,
         imageUrl = imageUrl,
-        price = price,
+        unitPrice = price,
         description = description,
         toppings = emptyList(),
+        category = categoryEnum,
     )
 
     ProductCategory.DRINK,
@@ -23,7 +24,7 @@ fun ProductDto.toMenuItem(): MenuItem = when (val categoryEnum = category.toProd
         id = id,
         name = name,
         imageUrl = imageUrl,
-        price = price,
+        unitPrice = price,
         category = categoryEnum,
     )
 }
@@ -35,7 +36,7 @@ fun ProductDto.toTopping(): Topping {
     return Topping(
         id = id,
         name = name,
-        price = price,
+        unitPrice = price,
         imageUrl = imageUrl,
     )
 }

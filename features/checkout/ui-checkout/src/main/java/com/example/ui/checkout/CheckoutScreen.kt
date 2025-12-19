@@ -159,7 +159,7 @@ private fun CheckoutScreenContent(
                     state.orderSummary.lines.forEachIndexed { index, line ->
                         OrderSummaryContent(
                             title = line.title,
-                            priceLabel = line.basePriceLabel,
+                            priceLabel = line.unitPriceLabel,
                             subtitleLines = line.subtitleLines,
                             totalPriceLabel = line.totalPriceLabel,
                             onOrderItemClick = {
@@ -253,13 +253,13 @@ private fun CheckoutScreenContentPreview() {
                     OrderLineUi.MainProduct(
                         productId = "1",
                         title = "Pizza Margherita",
-                        basePriceLabel = "$10.00",
+                        unitPriceLabel = "$10.00",
                         subtitleLines = listOf("Extra cheese ($0.5)", "Spicy sauce ($0.5)"),
                         totalPriceLabel = "$12.00",
                     ),
                     OrderLineUi.SecondaryProduct(
                         title = "Garlic Bread",
-                        basePriceLabel = "$2.00",
+                        unitPriceLabel = "$2.00",
                         subtitleLines = emptyList(),
                         totalPriceLabel = null,
                     ),

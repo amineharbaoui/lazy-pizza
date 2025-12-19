@@ -25,7 +25,7 @@ fun ProductCard(
                 modifier = modifier,
                 title = product.name,
                 description = product.description,
-                price = product.formattedPrice,
+                price = product.formattedUnitPrice,
                 image = rememberAsyncImagePainter(product.imageUrl),
                 onClick = { onPizzaClick(product) },
             )
@@ -43,7 +43,7 @@ fun ProductCard(
                     DsCardRow.AddToCartItem(
                         modifier = modifier,
                         title = product.name,
-                        price = product.formattedPrice,
+                        price = product.formattedUnitPrice,
                         image = rememberAsyncImagePainter(product.imageUrl),
                         onAddToCart = { onOtherItemAddClick(product) },
                     )
@@ -52,7 +52,7 @@ fun ProductCard(
                         modifier = modifier,
                         title = product.name,
                         quantity = product.quantity,
-                        unitPriceText = product.formattedPrice,
+                        unitPriceText = product.formattedUnitPrice,
                         totalPriceText = product.totalPriceFormatted,
                         image = rememberAsyncImagePainter(product.imageUrl),
                         onQuantityChange = { newQty ->

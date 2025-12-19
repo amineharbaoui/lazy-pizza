@@ -48,6 +48,8 @@ dependencies {
     implementation(projects.features.cart.domain)
     implementation(projects.features.auth.domain)
 
+    implementation(projects.core.model)
+
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
 

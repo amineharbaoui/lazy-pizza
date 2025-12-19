@@ -1,7 +1,7 @@
 package com.example.data.datasource
 
 import com.example.data.model.ProductDto
-import com.example.domain.model.ProductCategory
+import com.example.model.ProductCategory
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow

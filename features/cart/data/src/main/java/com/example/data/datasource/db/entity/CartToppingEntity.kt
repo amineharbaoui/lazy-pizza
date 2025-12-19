@@ -10,6 +10,6 @@ data class CartToppingEntity(
     val lineId: String,
     val toppingId: String,
     val name: String,
-    val price: Double,
+    val unitPrice: Double,
     val quantity: Int,
 )

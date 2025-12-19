@@ -52,22 +52,23 @@ private fun CartItem.toOrderItem(): OrderItem = when (this) {
     is CartItem.Pizza -> OrderItem.Pizza(
         productId = productId,
         name = name,
-        unitPrice = basePrice,
+        unitPrice = unitPrice,
         quantity = quantity,
         toppings = toppings.map {
             OrderTopping(
                 productId = it.toppingId,
                 name = it.name,
-                unitPrice = it.price,
+                unitPrice = it.unitPrice,
                 quantity = it.quantity,
             )
         },
+        category = category,
     )
 
     is CartItem.Other -> OrderItem.Other(
         productId = productId,
         name = name,
-        unitPrice = price,
+        unitPrice = unitPrice,
         quantity = quantity,
         category = category,
     )
@@ -114,14 +115,14 @@ private fun CartItem.toOrderLineUi(): OrderLineUi = when (this) {
     is CartItem.Pizza -> OrderLineUi.MainProduct(
         productId = productId,
         title = "${quantity}x $name",
-        basePriceLabel = basePrice.toFormattedCurrency(),
-        subtitleLines = toppings.map { "${it.quantity}x ${it.name} (${it.price.toFormattedCurrency()})" },
+        unitPriceLabel = unitPrice.toFormattedCurrency(),
+        subtitleLines = toppings.map { "${it.quantity}x ${it.name} (${it.unitPrice.toFormattedCurrency()})" },
         totalPriceLabel = lineTotal.toFormattedCurrency().takeIf { toppings.isNotEmpty() },
     )
 
     is CartItem.Other -> OrderLineUi.SecondaryProduct(
         title = "${quantity}x $name",
-        basePriceLabel = (price * quantity).toFormattedCurrency(),
+        unitPriceLabel = (unitPrice * quantity).toFormattedCurrency(),
         totalPriceLabel = null,
         subtitleLines = emptyList(),
     )

@@ -5,9 +5,9 @@ import com.example.data.mapper.toMenuItem
 import com.example.data.mapper.toTopping
 import com.example.domain.model.MenuItem
 import com.example.domain.model.MenuSection
-import com.example.domain.model.ProductCategory
 import com.example.domain.model.Topping
 import com.example.domain.repository.MenuRepository
+import com.example.model.ProductCategory
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map

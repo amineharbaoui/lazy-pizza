@@ -3,7 +3,7 @@ package com.example.uilogin.pizzadetail
 import com.example.domain.model.CartItem
 import com.example.domain.model.MenuItem
 import com.example.domain.model.MenuSection
-import com.example.domain.model.ProductCategory
+import com.example.model.ProductCategory
 import com.example.uilogin.utils.formatting.toFormattedCurrency
 
 fun MenuSection.toDisplayModel() = MenuSectionDisplayModel(
@@ -16,17 +16,18 @@ fun MenuItem.toDisplayModel(): MenuItemDisplayModel = when (this) {
         id = id,
         name = name,
         imageUrl = imageUrl,
-        price = price,
-        formattedPrice = price.toFormattedCurrency(),
+        unitPrice = unitPrice,
+        formattedUnitPrice = unitPrice.toFormattedCurrency(),
         description = description,
+        category = category,
     )
 
     is MenuItem.OtherMenuItem -> MenuItemDisplayModel.Other(
         id = id,
         name = name,
         imageUrl = imageUrl,
-        price = price,
-        formattedPrice = price.toFormattedCurrency(),
+        unitPrice = unitPrice,
+        formattedUnitPrice = unitPrice.toFormattedCurrency(),
         category = category,
         quantity = 0,
     )
@@ -45,9 +46,9 @@ fun MenuItemDisplayModel.toSimpleCartItem(quantity: Int): CartItem.Other = CartI
     productId = id,
     name = name,
     imageUrl = imageUrl,
-    price = price,
+    unitPrice = unitPrice,
     quantity = quantity,
-    category = (this as MenuItemDisplayModel.Other).category.name,
+    category = category,
 )
 
 fun mapToMenuUiState(

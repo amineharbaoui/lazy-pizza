@@ -1,5 +1,6 @@
 package com.example.domain.model
 
+import com.example.model.ProductCategory
 import java.time.Instant
 
 data class Order(
@@ -17,12 +18,14 @@ sealed interface OrderItem {
     val name: String
     val unitPrice: Double
     val quantity: Int
+    val category: ProductCategory
 
     data class Pizza(
         override val productId: String,
         override val name: String,
         override val unitPrice: Double,
         override val quantity: Int,
+        override val category: ProductCategory,
         val toppings: List<OrderTopping>,
     ) : OrderItem
 
@@ -31,7 +34,7 @@ sealed interface OrderItem {
         override val name: String,
         override val unitPrice: Double,
         override val quantity: Int,
-        val category: String,
+        override val category: ProductCategory,
     ) : OrderItem
 }
 

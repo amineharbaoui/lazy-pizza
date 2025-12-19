@@ -37,7 +37,7 @@ class PizzaDetailViewModel @Inject constructor(
                         toppings = toppingsDisplay,
                         toppingQuantities = toppingQuantities,
                         totalPriceFormatted = computeTotalPrice(
-                            basePrice = pizzaDisplay.price,
+                            unitPrice = pizzaDisplay.unitPrice,
                             toppings = toppingsDisplay,
                             toppingQuantities = toppingQuantities,
                             quantity = quantity,
@@ -63,7 +63,7 @@ class PizzaDetailViewModel @Inject constructor(
             current.copy(
                 toppingQuantities = newMap,
                 totalPriceFormatted = computeTotalPrice(
-                    basePrice = current.pizza.price,
+                    unitPrice = current.pizza.unitPrice,
                     toppings = current.toppings,
                     toppingQuantities = newMap,
                     quantity = current.quantity,
@@ -80,7 +80,7 @@ class PizzaDetailViewModel @Inject constructor(
             current.copy(
                 quantity = safeQuantity,
                 totalPriceFormatted = computeTotalPrice(
-                    basePrice = current.pizza.price,
+                    unitPrice = current.pizza.unitPrice,
                     toppings = current.toppings,
                     toppingQuantities = current.toppingQuantities,
                     quantity = safeQuantity,
@@ -96,17 +96,17 @@ class PizzaDetailViewModel @Inject constructor(
     }
 
     private fun computeTotalPrice(
-        basePrice: Double,
+        unitPrice: Double,
         toppings: List<ToppingDisplayModel>,
         toppingQuantities: Map<String, Int>,
         quantity: Int,
     ): String {
         val toppingsTotalForOnePizza = toppings.sumOf { topping ->
             val toppingQty = toppingQuantities[topping.id] ?: 0
-            topping.price * toppingQty
+            topping.unitPrice * toppingQty
         }
 
-        val total = (basePrice + toppingsTotalForOnePizza) * quantity
+        val total = (unitPrice + toppingsTotalForOnePizza) * quantity
         return total.toFormattedCurrency()
     }
 }

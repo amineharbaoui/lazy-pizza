@@ -42,6 +42,8 @@ android {
 dependencies {
     implementation(projects.core.designsystem)
     implementation(projects.core.ui)
+    implementation(projects.core.model)
+
     implementation(projects.features.menu.domain)
     implementation(projects.features.cart.domain)
     implementation(projects.features.auth.domain)

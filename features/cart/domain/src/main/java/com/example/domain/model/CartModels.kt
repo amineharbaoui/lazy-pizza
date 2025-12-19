@@ -1,9 +1,11 @@
 package com.example.domain.model
 
+import com.example.model.ProductCategory
+
 data class CartTopping(
     val toppingId: String,
     val name: String,
-    val price: Double,
+    val unitPrice: Double,
     val quantity: Int,
 )
 
@@ -14,6 +16,7 @@ sealed interface CartItem {
     val imageUrl: String
     val quantity: Int
     val lineTotal: Double
+    val category: ProductCategory
 
     data class Other(
         override val lineId: String,
@@ -21,11 +24,11 @@ sealed interface CartItem {
         override val name: String,
         override val imageUrl: String,
         override val quantity: Int,
-        val category: String,
-        val price: Double,
+        override val category: ProductCategory,
+        val unitPrice: Double,
     ) : CartItem {
         override val lineTotal: Double
-            get() = price * quantity
+            get() = unitPrice * quantity
     }
 
     data class Pizza(
@@ -33,16 +36,17 @@ sealed interface CartItem {
         override val productId: String,
         override val name: String,
         override val imageUrl: String,
-        val basePrice: Double,
-        val toppings: List<CartTopping>,
         override val quantity: Int,
+        override val category: ProductCategory,
+        val unitPrice: Double,
+        val toppings: List<CartTopping>,
     ) : CartItem {
 
         private val toppingsPriceForOne: Double
-            get() = toppings.sumOf { it.price * it.quantity }
+            get() = toppings.sumOf { it.unitPrice * it.quantity }
 
         override val lineTotal: Double
-            get() = (basePrice + toppingsPriceForOne) * quantity
+            get() = (unitPrice + toppingsPriceForOne) * quantity
     }
 }
 

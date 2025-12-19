@@ -14,7 +14,7 @@ import com.example.data.datasource.db.entity.CartToppingEntity
         CartToppingEntity::class,
         CartMetadataEntity::class,
     ],
-    version = 2,
+    version = 3,
     exportSchema = false,
 )
 abstract class CartDatabase : RoomDatabase() {

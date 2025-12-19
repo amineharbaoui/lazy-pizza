@@ -3,8 +3,8 @@ package com.example.data.repository
 import com.example.data.datasource.ProductRemoteDataSource
 import com.example.data.mapper.toMenuItem
 import com.example.domain.model.MenuItem
-import com.example.domain.model.ProductCategory
 import com.example.domain.repository.RecommendedItemsRepository
+import com.example.model.ProductCategory
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import javax.inject.Inject

@@ -39,6 +39,7 @@ android {
 
 dependencies {
     implementation(projects.features.checkout.domain)
+    implementation(projects.core.model)
 
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)

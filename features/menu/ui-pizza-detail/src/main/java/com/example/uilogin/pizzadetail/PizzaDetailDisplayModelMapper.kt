@@ -4,6 +4,7 @@ import com.example.domain.model.CartItem
 import com.example.domain.model.CartTopping
 import com.example.domain.model.PizzaDetail
 import com.example.domain.model.Topping
+import com.example.model.ProductCategory
 import com.example.uilogin.utils.formatting.toFormattedCurrency
 import java.util.UUID
 
@@ -13,8 +14,8 @@ fun PizzaDetail.toDisplayModels(): Pair<PizzaDetailDisplayModel, List<ToppingDis
         name = pizza.name,
         description = pizza.description,
         imageUrl = pizza.imageUrl,
-        price = pizza.price,
-        priceFormatted = pizza.price.toFormattedCurrency(),
+        unitPrice = pizza.unitPrice,
+        unitPriceFormatted = pizza.unitPrice.toFormattedCurrency(),
     )
 
     val toppingsDisplay = availableToppings.map { it.toDisplayModel() }
@@ -25,8 +26,8 @@ fun PizzaDetail.toDisplayModels(): Pair<PizzaDetailDisplayModel, List<ToppingDis
 fun Topping.toDisplayModel() = ToppingDisplayModel(
     id = id,
     name = name,
-    price = price,
-    priceFormatted = price.toFormattedCurrency(),
+    unitPrice = unitPrice,
+    unitPriceFormatted = unitPrice.toFormattedCurrency(),
     imageUrl = imageUrl,
 )
 
@@ -40,7 +41,7 @@ fun PizzaDetailUiState.Success.toPizzaCartItem(): CartItem.Pizza {
                 CartTopping(
                     toppingId = topping.id,
                     name = topping.name,
-                    price = topping.price,
+                    unitPrice = topping.unitPrice,
                     quantity = qty,
                 )
             }
@@ -51,8 +52,9 @@ fun PizzaDetailUiState.Success.toPizzaCartItem(): CartItem.Pizza {
         productId = pizza.id,
         name = pizza.name,
         imageUrl = pizza.imageUrl,
-        basePrice = pizza.price,
+        unitPrice = pizza.unitPrice,
         toppings = selectedToppings,
         quantity = quantity,
+        category = ProductCategory.PIZZA,
     )
 }

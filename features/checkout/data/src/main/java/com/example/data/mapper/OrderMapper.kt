@@ -45,6 +45,6 @@ private fun OrderItem.toDto(): OrderItemDto = when (this) {
         name = name,
         unitPrice = unitPrice,
         quantity = quantity,
-        category = category,
+        category = category.name,
     )
 }
