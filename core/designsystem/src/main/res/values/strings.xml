@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">LazyPizza</string>
+    <string name="phone_number">+1 (555) 321–7890</string>
+    <string name="no_products_found">No products found</string>
+    <string name="cart">Cart</string>
+    <string name="orders">Orders</string>
+    <string name="recommended_title">RECOMMENDED TO ADD TO YOUR ORDER</string>
+    <string name="continue_text">Continue</string>
+    <string name="skip">Continue without signing in</string>
+    <string name="confirm">Confirm</string>
+    <string name="resend_code">Resend code</string>
+    <string name="logout">Log out</string>
+    <string name="cancel">Cancel</string>
+    <string name="logout_confirm_title">Are you sure you want to log out?</string>
+    <string name="change_number">Change mobile number?</string>
+</resources>
