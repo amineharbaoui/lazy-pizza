@@ -1,0 +1,56 @@
+package com.example.data.datasource
+
+import com.example.data.model.RemoteUser
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.PhoneAuthCredential
+import com.google.firebase.auth.PhoneAuthProvider
+import kotlinx.coroutines.suspendCancellableCoroutine
+import javax.inject.Inject
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
+
+class PhoneAuthDataSource @Inject constructor(
+    private val firebaseAuth: FirebaseAuth,
+) {
+    suspend fun signInWithCode(
+        verificationId: String,
+        smsCode: String,
+    ): RemoteUser {
+        val credential = PhoneAuthProvider.getCredential(verificationId, smsCode)
+        val firebaseUser = signInWithCredential(credential)
+        return RemoteUser(
+            uid = firebaseUser.uid,
+            phoneNumber = firebaseUser.phoneNumber,
+        )
+    }
+
+    fun getCurrentUser(): RemoteUser? {
+        val user = firebaseAuth.currentUser ?: return null
+        return RemoteUser(
+            uid = user.uid,
+            phoneNumber = user.phoneNumber,
+        )
+    }
+
+    fun signOut() {
+        firebaseAuth.signOut()
+    }
+
+    private suspend fun signInWithCredential(credential: PhoneAuthCredential) = suspendCancellableCoroutine { continuationHandler ->
+        firebaseAuth
+            .signInWithCredential(credential)
+            .addOnSuccessListener { result ->
+                val user = result.user
+                if (user != null) {
+                    continuationHandler.resume(user)
+                } else {
+                    continuationHandler.resumeWithException(
+                        IllegalStateException("FirebaseUser is null after signInWithCredential"),
+                    )
+                }
+            }
+            .addOnFailureListener { e ->
+                if (continuationHandler.isActive) continuationHandler.resumeWithException(e)
+            }
+    }
+}
