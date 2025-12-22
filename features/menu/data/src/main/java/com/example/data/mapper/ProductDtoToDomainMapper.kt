@@ -1,0 +1,58 @@
+package com.example.data.mapper
+
+import com.example.data.model.ProductDto
+import com.example.domain.model.MenuItem
+import com.example.domain.model.Topping
+import com.example.model.ProductCategory
+import javax.inject.Inject
+
+class ProductDtoToDomainMapper @Inject constructor() {
+
+    fun mapToMenuItem(dto: ProductDto): MenuItem {
+        val categoryEnum = mapToProductCategory(dto.category)
+        return when (categoryEnum) {
+            ProductCategory.PIZZA -> MenuItem.PizzaItem(
+                id = dto.id,
+                name = dto.name,
+                imageUrl = dto.imageUrl,
+                unitPrice = dto.price,
+                description = dto.description,
+                toppings = emptyList(),
+                category = categoryEnum,
+            )
+
+            ProductCategory.DRINK,
+            ProductCategory.SAUCE,
+            ProductCategory.ICE_CREAM,
+            ProductCategory.TOPPING,
+            -> MenuItem.OtherMenuItem(
+                id = dto.id,
+                name = dto.name,
+                imageUrl = dto.imageUrl,
+                unitPrice = dto.price,
+                category = categoryEnum,
+            )
+        }
+    }
+
+    fun mapToTopping(dto: ProductDto): Topping {
+        require(mapToProductCategory(dto.category) == ProductCategory.TOPPING) {
+            "ProductDto must have category TOPPING to map to Topping"
+        }
+        return Topping(
+            id = dto.id,
+            name = dto.name,
+            unitPrice = dto.price,
+            imageUrl = dto.imageUrl,
+        )
+    }
+
+    fun mapToProductCategory(category: String): ProductCategory {
+        return ProductCategory.entries.firstOrNull { it.name == category }
+            ?: throw IllegalArgumentException("Invalid product category: $category")
+    }
+
+    fun mapListToMenuItems(dtos: List<ProductDto>): List<MenuItem> = dtos.map { mapToMenuItem(it) }
+
+    fun mapListToToppings(dtos: List<ProductDto>): List<Topping> = dtos.map { mapToTopping(it) }
+}

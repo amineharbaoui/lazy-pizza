@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="phone_number">+1 (555) 321–7890</string>
+    <string name="no_products_found">No products found</string>
+</resources>
