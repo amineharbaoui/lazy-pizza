@@ -1,20 +1,13 @@
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-
 plugins {
-    alias(libs.plugins.android.library)
-    alias(libs.plugins.kotlin.android)
-    alias(libs.plugins.hilt)
-    alias(libs.plugins.ksp)
+    alias(libs.plugins.custom.android.module)
+    alias(libs.plugins.custom.hilt)
+    alias(libs.plugins.custom.room)
 }
 
 android {
     namespace = "com.example.cart.data"
-    compileSdk {
-        version = release(36)
-    }
-    defaultConfig {
-        minSdk = 26
 
+    defaultConfig {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
     }
@@ -32,15 +25,6 @@ android {
             buildConfigField("long", "CART_TOUCH_THROTTLE_SECONDS", "60")
         }
     }
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
-    }
-    kotlin {
-        compilerOptions {
-            jvmTarget = JvmTarget.JVM_11
-        }
-    }
 }
 
 dependencies {
@@ -49,12 +33,6 @@ dependencies {
 
     implementation(projects.core.model)
 
-    implementation(libs.hilt.android)
-    ksp(libs.hilt.compiler)
-
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.firestore)
-
-    implementation(libs.room.runtime)
-    ksp(libs.room.compiler)
 }
