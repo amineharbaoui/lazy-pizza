@@ -2,4 +2,5 @@
 <resources>
     <string name="phone_number">+1 (555) 321–7890</string>
     <string name="no_products_found">No products found</string>
+    <string name="no_orders_yet">No Orders Yet</string>
 </resources>

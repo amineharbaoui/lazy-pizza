@@ -13,7 +13,7 @@ class RecommendedItemsRepositoryImpl @Inject constructor(
     private val productRemoteDataSource: ProductRemoteDataSource,
     private val productMapper: ProductDtoToDomainMapper,
 ) : RecommendedItemsRepository {
-    override suspend fun getRecommendedItems(): Flow<List<MenuItem>> = combine(
+    override fun getRecommendedItems(): Flow<List<MenuItem>> = combine(
         productRemoteDataSource.observeProductsByCategory(ProductCategory.DRINK),
         productRemoteDataSource.observeProductsByCategory(ProductCategory.ICE_CREAM),
     ) { drinks, iceCreams ->

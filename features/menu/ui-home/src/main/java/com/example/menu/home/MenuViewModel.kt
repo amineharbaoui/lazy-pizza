@@ -113,9 +113,12 @@ class MenuViewModel @Inject constructor(
     }
 
     private inline fun updateSuccessState(block: (MenuUiState.Ready) -> MenuUiState.Ready) {
-        val current = _uiState.value
-        if (current is MenuUiState.Ready) {
-            _uiState.update { block(current) }
+        _uiState.update { currentState ->
+            if (currentState is MenuUiState.Ready) {
+                block(currentState)
+            } else {
+                currentState
+            }
         }
     }
 

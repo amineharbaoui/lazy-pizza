@@ -4,5 +4,5 @@ import com.example.domain.repository.RecommendedItemsRepository
 import javax.inject.Inject
 
 class ObserveRecommendedItemsUseCase @Inject constructor(private val recommendedItemsRepository: RecommendedItemsRepository) {
-    suspend operator fun invoke() = recommendedItemsRepository.getRecommendedItems()
+    operator fun invoke() = recommendedItemsRepository.getRecommendedItems()
 }

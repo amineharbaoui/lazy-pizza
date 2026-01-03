@@ -8,31 +8,28 @@ import javax.inject.Inject
 
 class ProductDtoToDomainMapper @Inject constructor() {
 
-    fun mapToMenuItem(dto: ProductDto): MenuItem {
-        val categoryEnum = mapToProductCategory(dto.category)
-        return when (categoryEnum) {
-            ProductCategory.PIZZA -> MenuItem.PizzaItem(
-                id = dto.id,
-                name = dto.name,
-                imageUrl = dto.imageUrl,
-                unitPrice = dto.price,
-                description = dto.description,
-                toppings = emptyList(),
-                category = categoryEnum,
-            )
+    fun mapToMenuItem(dto: ProductDto): MenuItem = when (val categoryEnum = mapToProductCategory(dto.category)) {
+        ProductCategory.PIZZA -> MenuItem.PizzaItem(
+            id = dto.id,
+            name = dto.name,
+            imageUrl = dto.imageUrl,
+            unitPrice = dto.price,
+            description = dto.description,
+            toppings = emptyList(),
+            category = categoryEnum,
+        )
 
-            ProductCategory.DRINK,
-            ProductCategory.SAUCE,
-            ProductCategory.ICE_CREAM,
-            ProductCategory.TOPPING,
-            -> MenuItem.OtherMenuItem(
-                id = dto.id,
-                name = dto.name,
-                imageUrl = dto.imageUrl,
-                unitPrice = dto.price,
-                category = categoryEnum,
-            )
-        }
+        ProductCategory.DRINK,
+        ProductCategory.SAUCE,
+        ProductCategory.ICE_CREAM,
+        ProductCategory.TOPPING,
+        -> MenuItem.OtherMenuItem(
+            id = dto.id,
+            name = dto.name,
+            imageUrl = dto.imageUrl,
+            unitPrice = dto.price,
+            category = categoryEnum,
+        )
     }
 
     fun mapToTopping(dto: ProductDto): Topping {
@@ -47,9 +44,10 @@ class ProductDtoToDomainMapper @Inject constructor() {
         )
     }
 
-    fun mapToProductCategory(category: String): ProductCategory {
-        return ProductCategory.entries.firstOrNull { it.name == category }
-            ?: throw IllegalArgumentException("Invalid product category: $category")
+    fun mapToProductCategory(category: String): ProductCategory = try {
+        ProductCategory.valueOf(category)
+    } catch (e: IllegalArgumentException) {
+        throw IllegalArgumentException("Invalid product category: $category", e)
     }
 
     fun mapListToMenuItems(dtos: List<ProductDto>): List<MenuItem> = dtos.map { mapToMenuItem(it) }

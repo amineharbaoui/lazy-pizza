@@ -17,23 +17,35 @@ class MenuRepositoryImpl @Inject constructor(
     private val productMapper: ProductDtoToDomainMapper,
 ) : MenuRepository {
 
-    override fun observeMenuSections(): Flow<List<MenuSection>> = combine(
-        flow = productRemoteDataSource.observeProductsByCategory(ProductCategory.PIZZA),
-        flow2 = productRemoteDataSource.observeProductsByCategory(ProductCategory.DRINK),
-        flow3 = productRemoteDataSource.observeProductsByCategory(ProductCategory.SAUCE),
-        flow4 = productRemoteDataSource.observeProductsByCategory(ProductCategory.ICE_CREAM),
-    ) { pizzas, drinks, sauces, iceCreams ->
-        listOf(
-            MenuSection(category = ProductCategory.PIZZA, items = productMapper.mapListToMenuItems(pizzas)),
-            MenuSection(category = ProductCategory.DRINK, items = productMapper.mapListToMenuItems(drinks)),
-            MenuSection(category = ProductCategory.SAUCE, items = productMapper.mapListToMenuItems(sauces)),
-            MenuSection(category = ProductCategory.ICE_CREAM, items = productMapper.mapListToMenuItems(iceCreams)),
+    override fun observeMenuSections(): Flow<List<MenuSection>> {
+        val categories = listOf(
+            ProductCategory.PIZZA,
+            ProductCategory.DRINK,
+            ProductCategory.SAUCE,
+            ProductCategory.ICE_CREAM,
         )
+        val categoryFlows = categories.map { category ->
+            productRemoteDataSource.observeProductsByCategory(category)
+        }
+        return combine(categoryFlows) { productsArray ->
+            productsArray.mapIndexed { index, products ->
+                MenuSection(
+                    category = categories[index],
+                    items = productMapper.mapListToMenuItems(products),
+                )
+            }
+        }
     }
 
-    override fun observePizzaById(id: String): Flow<MenuItem.PizzaItem?> = productRemoteDataSource
-        .observeProductById(id).map { dto ->
-            dto?.let { productMapper.mapToMenuItem(it) } as? MenuItem.PizzaItem
+    override fun observePizzaById(id: String): Flow<MenuItem.PizzaItem?> = productRemoteDataSource.observeProductById(id)
+        .map { dto ->
+            if (dto == null) return@map null
+
+            val item = productMapper.mapToMenuItem(dto)
+            require(item is MenuItem.PizzaItem) {
+                "Product $id is not a PizzaItem (got ${item::class.simpleName})"
+            }
+            item
         }
 
     override fun observeToppings(): Flow<List<Topping>> = productRemoteDataSource

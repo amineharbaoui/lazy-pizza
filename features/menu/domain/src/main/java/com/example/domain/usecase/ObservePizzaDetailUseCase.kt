@@ -7,14 +7,16 @@ import kotlinx.coroutines.flow.combine
 import javax.inject.Inject
 
 class ObservePizzaDetailUseCase @Inject constructor(private val menuRepository: MenuRepository) {
-    operator fun invoke(id: String): Flow<PizzaDetail> = combine(
-        menuRepository.observePizzaById(id),
-        menuRepository.observeToppings(),
-    ) { pizza, toppings ->
-        val pizzaDetails = pizza ?: throw IllegalStateException("Pizza with id=$id not found")
-        PizzaDetail(
-            pizza = pizzaDetails,
-            availableToppings = toppings,
-        )
+    operator fun invoke(id: String): Flow<PizzaDetail> {
+        return combine(
+            menuRepository.observePizzaById(id),
+            menuRepository.observeToppings(),
+        ) { pizza, toppings ->
+            val pizzaDetails = pizza ?: throw IllegalStateException("Pizza with id=$id not found")
+            PizzaDetail(
+                pizza = pizzaDetails,
+                availableToppings = toppings,
+            )
+        }
     }
 }

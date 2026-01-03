@@ -74,7 +74,7 @@ fun MenuScreen(
     onNavigateToAuth: () -> Unit = {},
     onLogout: () -> Unit = {},
 ) {
-    val content = LocalContext.current
+    val context = LocalContext.current
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     var showLogoutConfirm by remember { mutableStateOf(false) }
@@ -87,7 +87,7 @@ fun MenuScreen(
         DsTopBar.Primary(
             phoneNumber = stringResource(R.string.phone_number),
             onPhoneClick = { phoneNumber ->
-                onPhoneClick(context = content, phoneNumber = phoneNumber)
+                onPhoneClick(context = context, phoneNumber = phoneNumber)
             },
             isLoggedIn = isLoggedIn,
             onAccountClick = {
@@ -349,7 +349,7 @@ fun NoProductsFound(modifier: Modifier = Modifier) {
             val isLandscape = maxWidth > maxHeight
             Image(
                 painter = painterResource(DsR.drawable.no_result),
-                contentDescription = "No Orders Yet",
+                contentDescription = stringResource(R.string.no_orders_yet),
                 modifier = Modifier.size(if (isLandscape) 128.dp else 256.dp),
             )
         }
