@@ -1,37 +1,17 @@
 package com.example.data.repository
 
-import com.example.domain.repository.PhoneAuthRepository
+import com.example.data.datasource.PhoneAuthDataSource
 import com.example.domain.repository.SessionRepository
-import com.google.firebase.auth.FirebaseAuth
-import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.callbackFlow
 import javax.inject.Inject
 
 class SessionRepositoryImpl @Inject constructor(
-    private val phoneAuthRepository: PhoneAuthRepository,
-    private val firebaseAuth: FirebaseAuth,
+    private val phoneAuthDataSource: PhoneAuthDataSource,
 ) : SessionRepository {
 
-    override val userIdFlow: Flow<String?> = callbackFlow {
-        val listener = FirebaseAuth.AuthStateListener { firebaseAuth ->
-            trySend(firebaseAuth.currentUser?.uid)
-        }
-        firebaseAuth.addAuthStateListener(listener)
-        trySend(firebaseAuth.currentUser?.uid)
-        awaitClose { firebaseAuth.removeAuthStateListener(listener) }
-    }
+    override val userIdFlow: Flow<String?> = phoneAuthDataSource.userIdFlow
 
-    override val isSignedIn: Flow<Boolean> = callbackFlow {
-        trySend(firebaseAuth.currentUser != null)
+    override val isSignedIn: Flow<Boolean> = phoneAuthDataSource.isSignedIn
 
-        val listener = FirebaseAuth.AuthStateListener { firebaseAuth ->
-            trySend(firebaseAuth.currentUser != null)
-        }
-        firebaseAuth.addAuthStateListener(listener)
-
-        awaitClose { firebaseAuth.removeAuthStateListener(listener) }
-    }
-
-    override suspend fun currentUserUid(): String? = phoneAuthRepository.currentUser()?.uid
+    override suspend fun currentUserUid(): String? = phoneAuthDataSource.getCurrentUser()?.uid
 }

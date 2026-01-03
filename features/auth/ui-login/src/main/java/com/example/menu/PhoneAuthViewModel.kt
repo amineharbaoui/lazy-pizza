@@ -1,6 +1,5 @@
 package com.example.menu
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.auth.uilogin.R
@@ -155,7 +154,6 @@ class PhoneAuthViewModel @Inject constructor(
     }
 
     fun confirmCode() {
-        Log.d("TAG", "confirmCode() called")
         val current = _uiState.value as? PhoneAuthUiState.EnterCode ?: return
         val verificationId = currentVerificationId ?: return
         if (!current.confirmEnabled) return
