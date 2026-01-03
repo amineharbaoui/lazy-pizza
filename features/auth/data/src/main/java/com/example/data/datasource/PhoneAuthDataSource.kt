@@ -4,6 +4,9 @@ import com.example.data.model.RemoteUser
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.PhoneAuthCredential
 import com.google.firebase.auth.PhoneAuthProvider
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.suspendCancellableCoroutine
 import javax.inject.Inject
 import kotlin.coroutines.resume
@@ -12,6 +15,25 @@ import kotlin.coroutines.resumeWithException
 class PhoneAuthDataSource @Inject constructor(
     private val firebaseAuth: FirebaseAuth,
 ) {
+
+    val userIdFlow: Flow<String?> = callbackFlow {
+        val listener = FirebaseAuth.AuthStateListener { auth ->
+            trySend(auth.currentUser?.uid)
+        }
+        firebaseAuth.addAuthStateListener(listener)
+        trySend(firebaseAuth.currentUser?.uid)
+        awaitClose { firebaseAuth.removeAuthStateListener(listener) }
+    }
+
+    val isSignedIn: Flow<Boolean> = callbackFlow {
+        val listener = FirebaseAuth.AuthStateListener { auth ->
+            trySend(auth.currentUser != null)
+        }
+        firebaseAuth.addAuthStateListener(listener)
+        trySend(firebaseAuth.currentUser != null)
+        awaitClose { firebaseAuth.removeAuthStateListener(listener) }
+    }
+
     suspend fun signInWithCode(
         verificationId: String,
         smsCode: String,
