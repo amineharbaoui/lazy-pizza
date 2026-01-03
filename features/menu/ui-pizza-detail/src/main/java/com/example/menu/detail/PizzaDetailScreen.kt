@@ -1,6 +1,5 @@
 package com.example.menu.detail
 
-import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -71,7 +70,6 @@ fun PizzaDetailScreen(
                 onAddToCartClick = {
                     viewModel.addItemToCart(state)
                     onNavigateToMenu()
-                    Toast.makeText(context, "Added to cart!", Toast.LENGTH_SHORT).show()
                 },
                 onQuantityChange = viewModel::updateQuantity,
             )
@@ -212,7 +210,7 @@ private fun WideDetailLayout(
                     .fillMaxWidth()
                     .heightIn(max = 260.dp)
                     .clip(RoundedCornerShape(8.dp)),
-                painter = painterResource(R.drawable.img_pizza),
+                painter = rememberAsyncImagePainter(uiState.pizza.imageUrl),
                 contentDescription = null,
                 contentScale = ContentScale.Inside,
             )
@@ -373,7 +371,7 @@ private fun QuantitySelector(
                 iconTint = AppColors.TextSecondary,
                 enabled = quantity != 1,
                 onClick = {
-                    val newQty = (quantity - 1).coerceAtLeast(0)
+                    val newQty = (quantity - 1).coerceAtLeast(1)
                     onQuantityChange(newQty)
                 },
             )
