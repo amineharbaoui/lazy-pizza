@@ -104,7 +104,7 @@ fun CartScreenContent(
                 )
                 DsButton.Filled(
                     text = cartUiState.cart.totalPriceFormatted,
-                    onClick = {},
+                    onClick = onNavigateToCheckout,
                     modifier = Modifier
                         .padding(horizontal = 16.dp)
                         .padding(bottom = 16.dp)
@@ -188,7 +188,7 @@ private fun EmptyState() {
         )
         Spacer(Modifier.height(16.dp))
         DsButton.Filled(
-            text = "Start Ordering",
+            text = stringResource(com.example.cart.ui.R.string.start_ordering),
             onClick = {},
         )
     }

@@ -11,7 +11,6 @@ import com.example.domain.model.Cart
 import com.example.domain.model.CartItem
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emitAll
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
@@ -61,9 +60,8 @@ class CartLocalDataSource @Inject constructor(
         quantity: Int,
     ) {
         expireIfNeeded(ownerKey)
-        val currentLine = cartDao.observeCartLines(ownerKey)
-            .map { lines -> lines.firstOrNull { it.item.lineId == lineId } }
-            .firstOrNull()
+        val currentLine = cartDao.getCartLinesOnce(ownerKey)
+            .firstOrNull { it.item.lineId == lineId }
             ?: return
 
         if (quantity <= 0) {
