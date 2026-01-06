@@ -46,7 +46,7 @@ fun NavigationRail(
                 icon = painterResource(destination.toIcon()),
                 badgeCount = if (destination == CartRoute) badgeCount else 0,
                 label = destination.toLabel(),
-                isSelected = (currentRoute::class == destination::class),
+                isSelected = (destination == currentRoute),
                 onClick = { onRouteSelect(destination) },
             )
         },
@@ -57,14 +57,14 @@ private fun NavKey.toIcon(): Int = when (this) {
     MenuRoute -> R.drawable.menu
     CartRoute -> R.drawable.shopping_cart
     OrdersRoute -> R.drawable.orders
-    else -> R.drawable.menu
+    else -> throw IllegalArgumentException("No Icon defined for NavKey: $this")
 }
 
 private fun NavKey.toLabel(): String = when (this) {
     MenuRoute -> "Menu"
     CartRoute -> "Cart"
     OrdersRoute -> "Orders"
-    else -> ""
+    else -> throw IllegalArgumentException("No label defined for NavKey: $this")
 }
 
 @PreviewPhoneTablet
