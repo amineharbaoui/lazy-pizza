@@ -11,9 +11,11 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object AppModule {
+    private const val FIRESTORE_DB_NAME = "lazypizzadb"
+
     @Provides
     @Singleton
-    fun provideFirestore(): FirebaseFirestore = FirebaseFirestore.getInstance("lazypizzadb")
+    fun provideFirestore(): FirebaseFirestore = FirebaseFirestore.getInstance(FIRESTORE_DB_NAME)
 
     @Provides
     @Singleton
