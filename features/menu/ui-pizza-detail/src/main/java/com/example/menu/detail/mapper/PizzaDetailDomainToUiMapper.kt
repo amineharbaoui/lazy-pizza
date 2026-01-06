@@ -56,7 +56,7 @@ class PizzaDetailDomainToUiMapper @Inject constructor(
             }
 
         return CartItem.Pizza(
-            lineId = UUID.randomUUID().toString(),
+            lineId = state.lineId ?: UUID.randomUUID().toString(),
             productId = state.pizza.id,
             name = state.pizza.name,
             imageUrl = state.pizza.imageUrl,

@@ -39,7 +39,6 @@ android {
 
 dependencies {
     implementation(projects.features.menu.domain)
-    implementation(projects.features.cart.domain)
 
     implementation(projects.core.model)
 

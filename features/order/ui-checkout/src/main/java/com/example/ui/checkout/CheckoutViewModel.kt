@@ -3,6 +3,7 @@ package com.example.ui.checkout
 import CheckoutUiState
 import PickupConfirmationUiModel
 import PickupOption
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.domain.usecase.ClearCartUseCase
@@ -53,7 +54,7 @@ class CheckoutViewModel @Inject constructor(
         viewModelScope.launch {
             observeCartUseCase().collect { cart ->
                 _uiState.update { currentState ->
-                    currentState as? CheckoutUiState.Success ?: checkoutUiStateFactory.createInitialReadyState(cart)
+                    currentState as? CheckoutUiState.OrderPlaced ?: checkoutUiStateFactory.createInitialReadyState(cart)
                 }
             }
         }
@@ -174,22 +175,25 @@ class CheckoutViewModel @Inject constructor(
                 return@launch
             }
 
-            val state = _uiState.value as? CheckoutUiState.Ready ?: return@launch
+            val state = _uiState.value as? CheckoutUiState.ReadyToOrder ?: return@launch
             val cart = observeCartUseCase().firstOrNull() ?: return@launch
 
-            _uiState.update { (it as? CheckoutUiState.Ready)?.copy(isPlacingOrder = true) ?: it }
+            _uiState.update { (it as? CheckoutUiState.ReadyToOrder)?.copy(isPlacingOrder = true) ?: it }
 
             val order = cartToOrderMapper.map(cart = cart, userId = userId, checkout = state)
+            Log.d("CheckoutVM", "submitOrder: start")
+
             val result = placeOrderUseCase(order)
 
+            Log.d("CheckoutVM", "submitOrder: after placeOrderUseCase")
+            Log.d("CheckoutVM", "submitOrder: result=$result")
             result.fold(
                 onSuccess = {
                     clearCartUseCase()
-                    _uiState.value = CheckoutUiState.Success(
+                    _uiState.value = CheckoutUiState.OrderPlaced(
                         orderNumber = order.orderNumber.formatOrderNumber(),
                         pickupTime = order.pickupAt.toPickupDisplayLabel().uppercase(),
                     )
-                    println(_uiState.value)
                 },
                 onFailure = { e ->
                     _uiState.value = CheckoutUiState.Error(message = e.message ?: "Could not place order")
@@ -198,7 +202,7 @@ class CheckoutViewModel @Inject constructor(
         }
     }
 
-    private fun updateReadyState(block: (CheckoutUiState.Ready) -> CheckoutUiState.Ready) {
-        _uiState.update { state -> if (state is CheckoutUiState.Ready) block(state) else state }
+    private fun updateReadyState(block: (CheckoutUiState.ReadyToOrder) -> CheckoutUiState.ReadyToOrder) {
+        _uiState.update { state -> if (state is CheckoutUiState.ReadyToOrder) block(state) else state }
     }
 }

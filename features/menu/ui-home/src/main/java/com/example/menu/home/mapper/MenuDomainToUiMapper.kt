@@ -4,10 +4,10 @@ import com.example.domain.model.Cart
 import com.example.domain.model.CartItem
 import com.example.domain.model.MenuItem
 import com.example.domain.model.MenuSection
+import com.example.menu.home.MenuContentUiState
 import com.example.menu.home.MenuItemDisplayModel
 import com.example.menu.home.MenuSectionDisplayModel
 import com.example.menu.home.MenuTag
-import com.example.menu.home.MenuUiState
 import com.example.menu.utils.formatting.CurrencyFormatter
 import com.example.model.ProductCategory
 import javax.inject.Inject
@@ -16,11 +16,11 @@ class MenuDomainToUiMapper @Inject constructor(
     private val currencyFormatter: CurrencyFormatter,
 ) {
 
-    fun mapToMenuUiState(
+    fun mapToMenuContentUiState(
         menuSections: List<MenuSection>,
         cart: Cart,
         searchQuery: String,
-    ): MenuUiState {
+    ): MenuContentUiState {
         val menuSectionsDisplayModel = menuSections.map { mapMenuSection(it) }
 
         val qtyByProductId = cart.items
@@ -55,7 +55,7 @@ class MenuDomainToUiMapper @Inject constructor(
             }
         }
 
-        return MenuUiState.Ready(
+        return MenuContentUiState.Ready(
             originalMenu = menuWithQuantities,
             filteredMenu = filtered,
             menuTags = tags,

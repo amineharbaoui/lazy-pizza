@@ -2,7 +2,12 @@ package com.example.menu.home
 
 import android.content.Context
 import android.content.Intent
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.SharedTransitionLayout
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -11,12 +16,14 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -30,6 +37,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults.windowInsets
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -65,38 +73,39 @@ import com.example.designsystem.R as DsR
 @Composable
 fun MenuScreen(
     innerPadding: PaddingValues,
-    onProductClick: (productId: String) -> Unit,
     listState: LazyListState,
     gridState: LazyGridState,
+    sharedTransitionScope: SharedTransitionScope,
+    animatedVisibilityScope: AnimatedVisibilityScope,
+    onProductClick: (productId: String) -> Unit,
+    onNavigateToAuth: () -> Unit,
+    onLogout: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: MenuViewModel = hiltViewModel(),
-    isLoggedIn: Boolean = false,
-    onNavigateToAuth: () -> Unit = {},
-    onLogout: () -> Unit = {},
 ) {
     val context = LocalContext.current
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-
     var showLogoutConfirm by remember { mutableStateOf(false) }
 
     Column(
         modifier = modifier
-            .fillMaxSize()
-            .padding(innerPadding),
+            .windowInsetsPadding(windowInsets.only(WindowInsetsSides.Right))
+            .fillMaxSize(),
     ) {
         DsTopBar.Primary(
             phoneNumber = stringResource(R.string.phone_number),
             onPhoneClick = { phoneNumber ->
                 onPhoneClick(context = context, phoneNumber = phoneNumber)
             },
-            isLoggedIn = isLoggedIn,
+            isLoggedIn = uiState.isLoggedIn,
             onAccountClick = {
-                if (isLoggedIn) showLogoutConfirm = true else onNavigateToAuth()
+                if (uiState.isLoggedIn) showLogoutConfirm = true else onNavigateToAuth()
             },
         )
-        when (val state = uiState) {
-            MenuUiState.Loading -> MenuScreenLoadingState()
-            is MenuUiState.Ready -> MenuScreenContent(
+        when (val state = uiState.content) {
+            MenuContentUiState.Loading -> MenuScreenLoadingState()
+            is MenuContentUiState.Ready -> MenuScreenContent(
+                innerPadding = innerPadding,
                 sections = state.filteredMenu,
                 menuTags = state.menuTags,
                 searchQuery = state.searchQuery,
@@ -106,9 +115,11 @@ fun MenuScreen(
                 onSearchQueryChange = viewModel::updateSearchQuery,
                 listState = listState,
                 gridState = gridState,
+                sharedTransitionScope = sharedTransitionScope,
+                animatedVisibilityScope = animatedVisibilityScope,
             )
 
-            MenuUiState.Error -> MenuScreenErrorState()
+            MenuContentUiState.Error -> MenuScreenErrorState()
         }
 
         if (showLogoutConfirm) {
@@ -129,8 +140,10 @@ fun MenuScreen(
 
 @Composable
 fun MenuScreenContent(
+    innerPadding: PaddingValues,
     sections: List<MenuSectionDisplayModel>,
     menuTags: List<MenuTag>,
+    modifier: Modifier = Modifier,
     onPizzaClick: (product: MenuItemDisplayModel.Pizza) -> Unit,
     onOtherItemAddClick: (product: MenuItemDisplayModel.Other) -> Unit,
     onOtherItemQuantityChange: (product: MenuItemDisplayModel.Other, newQuantity: Int) -> Unit,
@@ -138,141 +151,238 @@ fun MenuScreenContent(
     onSearchQueryChange: (String) -> Unit,
     listState: LazyListState,
     gridState: LazyGridState,
+    sharedTransitionScope: SharedTransitionScope,
+    animatedVisibilityScope: AnimatedVisibilityScope,
 ) {
     val isWide = isWideLayout()
-    val scope = rememberCoroutineScope()
-
     val sectionStartIndices: List<Int> = remember(sections) { buildSectionStartIndices(sections) }
     val isEmpty = sections.isEmpty() || sections.all { it.items.isEmpty() }
 
-    Column(
-        verticalArrangement = Arrangement.Top,
-    ) {
+    Column(modifier = modifier) {
         if (isWide) {
-            LazyVerticalGrid(
-                state = gridState,
-                columns = GridCells.Fixed(2),
-                modifier = Modifier
-                    .fillMaxSize(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-            ) {
-                item(span = { GridItemSpan(maxLineSpan) }) {
-                    Header(
-                        menuTags = menuTags,
-                        searchQuery = searchQuery,
-                        onSearchQueryChange = onSearchQueryChange,
-                        onScroll = { tagIndex ->
-                            val target = sectionStartIndices.getOrElse(tagIndex) { 0 }
-                            scope.launch {
-                                gridState.animateScrollToItem(target)
-                            }
-                        },
-                    )
-                }
-                if (isEmpty) {
-                    item(span = { GridItemSpan(maxLineSpan) }) {
-                        NoProductsFound()
-                    }
-                } else {
-                    sections.forEach { section ->
-                        item(span = { GridItemSpan(maxLineSpan) }) {
-                            Text(
-                                text = section.category.name.uppercase(),
-                                style = AppTypography.Label2SemiBold,
-                                color = AppColors.TextSecondary,
-                                modifier = Modifier
-                                    .padding(bottom = 8.dp)
-                                    .padding(horizontal = 16.dp),
-                            )
-                        }
-                        items(section.items, key = { it.id }) { product ->
-                            ProductCard(
-                                modifier = Modifier.padding(horizontal = 16.dp),
-                                product = product,
-                                onPizzaClick = onPizzaClick,
-                                onOtherItemAddClick = onOtherItemAddClick,
-                                onOtherItemQuantityChange = onOtherItemQuantityChange,
-                            )
-                        }
-                        item(span = { GridItemSpan(maxLineSpan) }) { Spacer(Modifier.height(16.dp)) }
-                    }
-                }
-            }
+            WideMenuScreenContent(
+                sections = sections,
+                menuTags = menuTags,
+                sectionStartIndices = sectionStartIndices,
+                isEmpty = isEmpty,
+                gridState = gridState,
+                searchQuery = searchQuery,
+                onSearchQueryChange = onSearchQueryChange,
+                onPizzaClick = onPizzaClick,
+                onOtherItemAddClick = onOtherItemAddClick,
+                onOtherItemQuantityChange = onOtherItemQuantityChange,
+                sharedTransitionScope = sharedTransitionScope,
+                animatedVisibilityScope = animatedVisibilityScope,
+            )
         } else {
-            LazyColumn(
-                state = listState,
-                modifier = Modifier
-                    .fillMaxSize(),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-            ) {
-                item {
-                    Header(
-                        menuTags = menuTags,
-                        searchQuery = searchQuery,
-                        onSearchQueryChange = onSearchQueryChange,
-                        onScroll = { tagIndex ->
-                            val target = sectionStartIndices.getOrElse(tagIndex) { 0 }
-                            scope.launch {
-                                listState.animateScrollToItem(target)
-                            }
-                        },
-                    )
-                }
-                if (isEmpty) {
-                    item {
-                        NoProductsFound()
-                    }
-                } else {
-                    sections.forEach { section ->
-                        item {
-                            Text(
-                                text = section.category.name.uppercase(),
-                                style = AppTypography.Label2SemiBold,
-                                color = AppColors.TextSecondary,
-                                modifier = Modifier
-                                    .padding(bottom = 8.dp)
-                                    .padding(horizontal = 16.dp),
-                            )
-                        }
-                        items(section.items, key = { it.id }) { product ->
-                            ProductCard(
-                                modifier = Modifier.padding(horizontal = 16.dp),
-                                product = product,
-                                onPizzaClick = onPizzaClick,
-                                onOtherItemAddClick = onOtherItemAddClick,
-                                onOtherItemQuantityChange = onOtherItemQuantityChange,
-                            )
-                        }
-                        item { Spacer(Modifier.height(16.dp)) }
-                    }
-                }
-            }
+            PhoneMenuScreenContent(
+                sections = sections,
+                menuTags = menuTags,
+                sectionStartIndices = sectionStartIndices,
+                isEmpty = isEmpty,
+                listState = listState,
+                innerPadding = innerPadding,
+                searchQuery = searchQuery,
+                onSearchQueryChange = onSearchQueryChange,
+                onPizzaClick = onPizzaClick,
+                onOtherItemAddClick = onOtherItemAddClick,
+                onOtherItemQuantityChange = onOtherItemQuantityChange,
+                sharedTransitionScope = sharedTransitionScope,
+                animatedVisibilityScope = animatedVisibilityScope,
+            )
         }
         Spacer(Modifier.height(16.dp))
     }
 }
 
 @Composable
-private fun Header(
+private fun WideMenuScreenContent(
+    sections: List<MenuSectionDisplayModel>,
+    menuTags: List<MenuTag>,
+    sectionStartIndices: List<Int>,
+    modifier: Modifier = Modifier,
+    isEmpty: Boolean,
+    gridState: LazyGridState,
+    searchQuery: String,
+    onSearchQueryChange: (String) -> Unit,
+    onPizzaClick: (product: MenuItemDisplayModel.Pizza) -> Unit,
+    onOtherItemAddClick: (product: MenuItemDisplayModel.Other) -> Unit,
+    onOtherItemQuantityChange: (product: MenuItemDisplayModel.Other, newQuantity: Int) -> Unit,
+    sharedTransitionScope: SharedTransitionScope,
+    animatedVisibilityScope: AnimatedVisibilityScope,
+) {
+    val scope = rememberCoroutineScope()
+    LazyVerticalGrid(
+        state = gridState,
+        columns = GridCells.Fixed(2),
+        modifier = modifier
+            .fillMaxSize(),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+        item(contentType = "MenuImageHeader") {
+            MenuImageHeader()
+        }
+        stickyHeader(contentType = "MenuSearchAndTagsHeader") {
+            MenuSearchAndTagsHeader(
+                searchQuery = searchQuery,
+                onSearchQueryChange = onSearchQueryChange,
+                onScroll = { tagIndex ->
+                    val target = sectionStartIndices.getOrElse(tagIndex) { 0 }
+                    scope.launch {
+                        gridState.animateScrollToItem(target)
+                    }
+                },
+                menuTags = menuTags,
+            )
+        }
+        if (isEmpty) {
+            item(
+                span = { GridItemSpan(maxLineSpan) },
+                contentType = "NoProductsFound",
+            ) {
+                NoProductsFound()
+            }
+        } else {
+            sections.forEach { section ->
+                item(
+                    span = { GridItemSpan(maxLineSpan) },
+                    contentType = "Category",
+                ) {
+                    Text(
+                        text = section.category.name.uppercase(),
+                        style = AppTypography.Label2SemiBold,
+                        color = AppColors.TextSecondary,
+                        modifier = Modifier
+                            .padding(bottom = 8.dp)
+                            .padding(horizontal = 16.dp),
+                    )
+                }
+                items(
+                    items = section.items,
+                    key = { it.id },
+                    contentType = { _ -> "MenuItems" },
+                ) { product ->
+                    ProductCard(
+                        modifier = Modifier.padding(horizontal = 16.dp),
+                        product = product,
+                        onPizzaClick = onPizzaClick,
+                        onOtherItemAddClick = onOtherItemAddClick,
+                        onOtherItemQuantityChange = onOtherItemQuantityChange,
+                        sharedTransitionScope = sharedTransitionScope,
+                        animatedVisibilityScope = animatedVisibilityScope,
+                    )
+                }
+                item(
+                    span = { GridItemSpan(maxLineSpan) },
+                    contentType = "BottomSpacer",
+                ) { Spacer(Modifier.height(16.dp)) }
+            }
+        }
+    }
+}
+
+@Composable
+fun PhoneMenuScreenContent(
+    sections: List<MenuSectionDisplayModel>,
+    menuTags: List<MenuTag>,
+    sectionStartIndices: List<Int>,
+    isEmpty: Boolean,
+    listState: LazyListState,
+    innerPadding: PaddingValues,
+    modifier: Modifier = Modifier,
+    searchQuery: String,
+    onSearchQueryChange: (String) -> Unit,
+    onPizzaClick: (product: MenuItemDisplayModel.Pizza) -> Unit,
+    onOtherItemAddClick: (product: MenuItemDisplayModel.Other) -> Unit,
+    onOtherItemQuantityChange: (product: MenuItemDisplayModel.Other, newQuantity: Int) -> Unit,
+    sharedTransitionScope: SharedTransitionScope,
+    animatedVisibilityScope: AnimatedVisibilityScope,
+) {
+    val scope = rememberCoroutineScope()
+    LazyColumn(
+        state = listState,
+        modifier = modifier
+            .fillMaxSize()
+            .padding(bottom = innerPadding.calculateBottomPadding()),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+        item(contentType = "MenuImageHeader") {
+            MenuImageHeader()
+        }
+        stickyHeader(contentType = "MenuSearchAndTagsHeader") {
+            MenuSearchAndTagsHeader(
+                searchQuery = searchQuery,
+                onSearchQueryChange = onSearchQueryChange,
+                menuTags = menuTags,
+                onScroll = { tagIndex ->
+                    val target = sectionStartIndices.getOrElse(tagIndex) { 0 }
+                    scope.launch { listState.animateScrollToItem(target) }
+                },
+            )
+        }
+        if (isEmpty) {
+            item(contentType = "NoProductsFound") {
+                NoProductsFound()
+            }
+        } else {
+            sections.forEach { section ->
+                item(contentType = "Category") {
+                    Text(
+                        text = section.category.name.uppercase(),
+                        style = AppTypography.Label2SemiBold,
+                        color = AppColors.TextSecondary,
+                        modifier = Modifier
+                            .padding(bottom = 8.dp)
+                            .padding(horizontal = 16.dp),
+                    )
+                }
+                items(
+                    items = section.items,
+                    key = { it.id },
+                    contentType = { _ -> "MenuItems" },
+                ) { product ->
+                    ProductCard(
+                        modifier = Modifier.padding(horizontal = 16.dp),
+                        product = product,
+                        onPizzaClick = onPizzaClick,
+                        onOtherItemAddClick = onOtherItemAddClick,
+                        onOtherItemQuantityChange = onOtherItemQuantityChange,
+                        sharedTransitionScope = sharedTransitionScope,
+                        animatedVisibilityScope = animatedVisibilityScope,
+                    )
+                }
+                item(contentType = "BottomSpacer") { Spacer(Modifier.height(16.dp)) }
+            }
+        }
+    }
+}
+
+@Composable
+private fun MenuImageHeader(modifier: Modifier = Modifier) {
+    if (isWideLayout().not()) {
+        Image(
+            modifier = modifier
+                .fillMaxWidth()
+                .height(160.dp)
+                .padding(horizontal = 16.dp)
+                .padding(bottom = 16.dp)
+                .clip(RoundedCornerShape(8.dp)),
+            painter = painterResource(R.drawable.img_home_screen),
+            contentDescription = null,
+            contentScale = ContentScale.Fit,
+        )
+    }
+}
+
+@Composable
+private fun MenuSearchAndTagsHeader(
     searchQuery: String,
     onSearchQueryChange: (String) -> Unit,
     onScroll: (targetPosition: Int) -> Unit,
     menuTags: List<MenuTag>,
     modifier: Modifier = Modifier,
 ) {
-    Column(modifier = modifier) {
-        Image(
-            modifier = Modifier
-                .fillMaxWidth()
-                .heightIn(max = 160.dp)
-                .padding(horizontal = 16.dp)
-                .clip(RoundedCornerShape(8.dp)),
-            painter = painterResource(R.drawable.img_home_screen),
-            contentDescription = "Image Home Screen",
-            contentScale = ContentScale.Crop,
-        )
-        Spacer(Modifier.height(16.dp))
+    Column(modifier = modifier.background(AppColors.Bg)) {
         DsTextField.Search(
             modifier = Modifier
                 .fillMaxWidth()
@@ -319,16 +429,11 @@ private fun MenuScreenErrorState() {
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        BoxWithConstraints(modifier = Modifier) {
-            val isLandscape = maxWidth > maxHeight
-            Image(
-                painter = painterResource(DsR.drawable.error),
-                contentDescription = null,
-                modifier = Modifier.size(
-                    if (isLandscape) 128.dp else 256.dp,
-                ),
-            )
-        }
+        Image(
+            painter = painterResource(DsR.drawable.error),
+            contentDescription = null,
+            modifier = Modifier.size(256.dp),
+        )
         Text(
             text = "Something went wrong. Please try again later.",
             style = AppTypography.Body1Medium,
@@ -378,7 +483,7 @@ private fun onPhoneClick(
 
 private fun buildSectionStartIndices(sections: List<MenuSectionDisplayModel>): List<Int> {
     val indices = mutableListOf<Int>()
-    var current = 1
+    var current = 0
     sections.forEach { section ->
         indices += current
         current += 1 + section.items.size + 1
@@ -433,7 +538,7 @@ private fun MenuScreenContentPreview() {
                     unitPrice = 2.0,
                     unitPriceFormatted = "€2.00",
                     category = ProductCategory.DRINK,
-                    quantity = 2, // in cart
+                    quantity = 2,
                 ),
             ),
         ),
@@ -478,17 +583,28 @@ private fun MenuScreenContentPreview() {
         ),
     )
     LazyPizzaThemePreview {
-        MenuScreenContent(
-            sections = previewMenuSections,
-            searchQuery = "",
-            onPizzaClick = {},
-            onSearchQueryChange = {},
-            menuTags = emptyList(),
-            onOtherItemAddClick = {},
-            onOtherItemQuantityChange = { _, _ -> },
-            listState = rememberLazyListState(),
-            gridState = rememberLazyGridState(),
-        )
+        SharedTransitionLayout {
+            AnimatedContent(targetState = true, label = "preview") { visible ->
+                MenuScreenContent(
+                    innerPadding = PaddingValues(0.dp), sections = previewMenuSections,
+                    searchQuery = "",
+                    onPizzaClick = {},
+                    onSearchQueryChange = {},
+                    menuTags = listOf(
+                        MenuTag.PIZZA,
+                        MenuTag.DRINK,
+                        MenuTag.SAUCE,
+                        MenuTag.ICE_CREAM,
+                    ),
+                    onOtherItemAddClick = {},
+                    onOtherItemQuantityChange = { _, _ -> },
+                    listState = rememberLazyListState(),
+                    gridState = rememberLazyGridState(),
+                    animatedVisibilityScope = this,
+                    sharedTransitionScope = this@SharedTransitionLayout,
+                )
+            }
+        }
     }
 }
 
@@ -496,16 +612,31 @@ private fun MenuScreenContentPreview() {
 @Composable
 private fun EmptyMenuScreenPreview() {
     LazyPizzaThemePreview {
-        MenuScreenContent(
-            sections = emptyList(),
-            searchQuery = "",
-            onPizzaClick = {},
-            onSearchQueryChange = {},
-            menuTags = emptyList(),
-            onOtherItemAddClick = {},
-            onOtherItemQuantityChange = { _, _ -> },
-            listState = rememberLazyListState(),
-            gridState = rememberLazyGridState(),
-        )
+        SharedTransitionLayout {
+            AnimatedContent(targetState = true, label = "preview") { visible ->
+                MenuScreenContent(
+                    innerPadding = PaddingValues(0.dp),
+                    sections = emptyList(),
+                    searchQuery = "",
+                    onPizzaClick = {},
+                    onSearchQueryChange = {},
+                    menuTags = emptyList(),
+                    onOtherItemAddClick = {},
+                    onOtherItemQuantityChange = { _, _ -> },
+                    animatedVisibilityScope = this,
+                    sharedTransitionScope = this@SharedTransitionLayout,
+                    listState = rememberLazyListState(),
+                    gridState = rememberLazyGridState(),
+                )
+            }
+        }
+    }
+}
+
+@PreviewPhoneTablet
+@Composable
+private fun MenuScreenErrorStatePreview() {
+    LazyPizzaThemePreview {
+        MenuScreenErrorState()
     }
 }

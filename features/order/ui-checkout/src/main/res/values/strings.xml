@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="confirmation_order">Thank you for your order! Please come at the indicated time.</string>
+    <string name="your_order_has_been_placed">Your order has been placed!</string>
+    <string name="order_number">ORDER NUMBER:</string>
+    <string name="pickup_time">PICKUP TIME:</string>
+</resources>

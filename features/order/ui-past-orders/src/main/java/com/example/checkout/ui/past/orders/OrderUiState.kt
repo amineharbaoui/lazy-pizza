@@ -4,6 +4,7 @@ import com.example.model.OrderStatus
 
 sealed interface OrderUiState {
     object Loading : OrderUiState
+    object NotLoggedIn : OrderUiState
     data class Ready(
         val orders: List<OrderUi>,
     ) : OrderUiState
@@ -14,10 +15,10 @@ sealed interface OrderUiState {
 }
 
 data class OrderUi(
-    val orderNumberLabel: String, // "Order #12347"
-    val dateTimeLabel: String, // "September 25, 12:15"
-    val items: List<OrderItem>, // ["1 x Margherita", "2 x Pepsi", ...]
-    val totalAmountLabel: String, // "$25.45"
+    val orderNumberLabel: String,
+    val dateTimeLabel: String,
+    val items: List<OrderItem>,
+    val totalAmountLabel: String,
     val status: OrderStatus,
 )
 

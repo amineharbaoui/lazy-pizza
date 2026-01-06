@@ -6,10 +6,13 @@ import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
@@ -17,6 +20,7 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults.windowInsets
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -40,6 +44,7 @@ import com.example.model.OrderStatus
 @Composable
 fun OrdersScreen(
     innerPadding: PaddingValues,
+    onSignInClick: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: OrdersViewModel = hiltViewModel(),
 ) {
@@ -48,13 +53,14 @@ fun OrdersScreen(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .padding(innerPadding),
+            .padding(bottom = innerPadding.calculateBottomPadding())
+            .windowInsetsPadding(windowInsets.only(WindowInsetsSides.Right)),
     ) {
         DsTopBar.Secondary(title = stringResource(R.string.orders))
         when (val state = uiState) {
-            OrderUiState.Loading -> {
-                // show loader
-            }
+            OrderUiState.Loading -> { }
+
+            OrderUiState.NotLoggedIn -> NotLoggedInState(onSignInClick = onSignInClick)
 
             is OrderUiState.Ready -> {
                 OrderScreenContent(orders = state.orders)
@@ -86,18 +92,19 @@ private fun OrderScreenContent(
                 verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
                 if (isEmpty) {
-                    item(span = { GridItemSpan(maxLineSpan) }) {
+                    item(
+                        span = { GridItemSpan(maxLineSpan) },
+                        contentType = "NoOrders",
+                    ) {
                         NoOrders()
                     }
                 } else {
                     items(
                         items = orders,
-//                            key = { orderUi.orderNumberLabel },
+                        key = { it.orderNumberLabel },
+                        contentType = { it.orderNumberLabel },
                     ) { orderUi ->
-                        OrderCard(
-                            orderUi = orderUi,
-                            onClick = {},
-                        )
+                        OrderCard(orderUi = orderUi)
                     }
                 }
             }
@@ -108,24 +115,59 @@ private fun OrderScreenContent(
                 verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
                 if (isEmpty) {
-                    item {
+                    item(contentType = "NoOrders") {
                         NoOrders()
                     }
                 } else {
                     items(
                         items = orders,
-//                            key = { orderUi.orderNumberLabel },
+                        key = { it.orderNumberLabel },
+                        contentType = { it.orderNumberLabel },
                     ) { orderUi ->
-                        println(orderUi)
-                        OrderCard(
-                            orderUi = orderUi,
-                            onClick = {},
-                        )
+                        OrderCard(orderUi = orderUi)
                     }
                 }
+                item(contentType = "BottomSpacer") { Spacer(Modifier.height(24.dp)) }
             }
         }
         Spacer(Modifier.height(16.dp))
+    }
+}
+
+@Composable
+private fun NotLoggedInState(
+    onSignInClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Column(
+        modifier = modifier
+            .fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        BoxWithConstraints {
+            val isLandscape = maxWidth > maxHeight
+            Image(
+                painter = painterResource(R.drawable.not_logged_in),
+                contentDescription = "Not Signed In",
+                modifier = Modifier.size(if (isLandscape) 128.dp else 256.dp),
+            )
+        }
+        Text(
+            text = "Not Signed In",
+            style = AppTypography.Title1SemiBold,
+            color = AppColors.TextPrimary,
+        )
+        Text(
+            text = "Please sign in to view your order history.",
+            style = AppTypography.Body3Regular,
+            color = AppColors.TextSecondary,
+        )
+        Spacer(Modifier.height(16.dp))
+        DsButton.Filled(
+            text = "Sign In",
+            onClick = onSignInClick,
+        )
     }
 }
 
@@ -278,6 +320,15 @@ private fun EmptyOrderStatePreview() {
 @Composable
 private fun ErrorCartPreview() {
     LazyPizzaThemePreview {
-       ErrorState("An error occurred while loading orders.")
+        ErrorState("An error occurred while loading orders.")
+    }
+}
+
+@PreviewPhoneTablet
+@Preview
+@Composable
+private fun NotLoggedInStatePreview() {
+    LazyPizzaThemePreview {
+        NotLoggedInState(onSignInClick = {})
     }
 }

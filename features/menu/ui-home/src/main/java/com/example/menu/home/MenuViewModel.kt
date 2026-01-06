@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.domain.usecase.AddCartItemUseCase
 import com.example.domain.usecase.ClearCartUseCase
 import com.example.domain.usecase.ObserveCartUseCase
+import com.example.domain.usecase.ObserveIsSignedInUseCase
 import com.example.domain.usecase.ObserveMenuUseCase
 import com.example.domain.usecase.RemoveCartItemUseCase
 import com.example.domain.usecase.SignOutUseCase
@@ -31,16 +32,17 @@ class MenuViewModel @Inject constructor(
     private val removeCartItemUseCase: RemoveCartItemUseCase,
     private val clearCartUseCase: ClearCartUseCase,
     private val signOutUseCase: SignOutUseCase,
+    private val observeIsSignedInUseCase: ObserveIsSignedInUseCase,
     private val menuMapper: MenuDomainToUiMapper,
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow<MenuUiState>(MenuUiState.Loading)
+    private val _uiState = MutableStateFlow(MenuUiState(isLoggedIn = false, content = MenuContentUiState.Loading))
     val uiState: StateFlow<MenuUiState> = _uiState.onStart {
         observeMenu()
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5.seconds.inWholeMilliseconds),
-        initialValue = MenuUiState.Loading,
+        initialValue = MenuUiState(isLoggedIn = false, content = MenuContentUiState.Loading),
     )
 
     private var allSections: List<MenuSectionDisplayModel> = emptyList()
@@ -50,13 +52,18 @@ class MenuViewModel @Inject constructor(
             combine(
                 observeMenuUseCase(),
                 observeCartUseCase(),
-            ) { menuSections, cart ->
-                val current = _uiState.value
-                val searchQuery = if (current is MenuUiState.Ready) current.searchQuery else ""
+                observeIsSignedInUseCase(),
+            ) { menuSections, cart, isSignedIn ->
+                val current = _uiState.value.content
+                val searchQuery = if (current is MenuContentUiState.Ready) current.searchQuery else ""
 
-                val nextState = menuMapper.mapToMenuUiState(menuSections, cart, searchQuery)
-                allSections = (nextState as? MenuUiState.Ready)?.originalMenu ?: emptyList()
-                nextState
+                val nextContent = menuMapper.mapToMenuContentUiState(menuSections, cart, searchQuery)
+                allSections = (nextContent as? MenuContentUiState.Ready)?.originalMenu ?: emptyList()
+
+                MenuUiState(
+                    isLoggedIn = isSignedIn,
+                    content = nextContent,
+                )
             }.collect { uiState ->
                 _uiState.value = uiState
             }
@@ -112,12 +119,13 @@ class MenuViewModel @Inject constructor(
         }
     }
 
-    private inline fun updateSuccessState(block: (MenuUiState.Ready) -> MenuUiState.Ready) {
-        _uiState.update { currentState ->
-            if (currentState is MenuUiState.Ready) {
-                block(currentState)
+    private inline fun updateSuccessState(block: (MenuContentUiState.Ready) -> MenuContentUiState.Ready) {
+        _uiState.update { current ->
+            val currentContent = current.content
+            if (currentContent is MenuContentUiState.Ready) {
+                current.copy(content = block(currentContent))
             } else {
-                currentState
+                current
             }
         }
     }

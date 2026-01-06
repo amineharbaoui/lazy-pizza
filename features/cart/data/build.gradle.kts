@@ -44,7 +44,6 @@ android {
 }
 
 dependencies {
-    implementation(projects.features.menu.domain)
     implementation(projects.features.cart.domain)
     implementation(projects.features.auth.domain)
 
@@ -57,6 +56,5 @@ dependencies {
     implementation(libs.firebase.firestore)
 
     implementation(libs.room.runtime)
-    implementation(libs.room.ktx)
     ksp(libs.room.compiler)
 }

@@ -1,13 +1,18 @@
 package com.example.menu.home
 
-sealed interface MenuUiState {
-    object Loading : MenuUiState
+data class MenuUiState(
+    val isLoggedIn: Boolean,
+    val content: MenuContentUiState,
+)
+
+sealed interface MenuContentUiState {
+    object Loading : MenuContentUiState
     data class Ready(
         val originalMenu: List<MenuSectionDisplayModel>,
         val filteredMenu: List<MenuSectionDisplayModel>,
         val menuTags: List<MenuTag>,
         val searchQuery: String = "",
-    ) : MenuUiState
+    ) : MenuContentUiState
 
-    object Error : MenuUiState
+    object Error : MenuContentUiState
 }

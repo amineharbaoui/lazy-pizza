@@ -34,6 +34,7 @@ class CartDomainToUiMapper @Inject constructor(
     private fun mapToCartLineDisplayModel(item: CartItem): CartLineDisplayModel = when (item) {
         is CartItem.Other -> CartLineDisplayModel(
             lineId = item.lineId,
+            productId = item.productId,
             name = item.name,
             subtitleLines = emptyList(),
             imageUrl = item.imageUrl,
@@ -49,6 +50,7 @@ class CartDomainToUiMapper @Inject constructor(
 
             CartLineDisplayModel(
                 lineId = item.lineId,
+                productId = item.productId,
                 name = item.name,
                 subtitleLines = subtitle,
                 imageUrl = item.imageUrl,

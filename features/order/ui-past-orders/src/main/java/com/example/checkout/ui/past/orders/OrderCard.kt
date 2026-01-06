@@ -29,7 +29,6 @@ import com.example.model.OrderStatus
 fun OrderCard(
     orderUi: OrderUi,
     modifier: Modifier = Modifier,
-    onClick: () -> Unit,
 ) {
     Card(
         modifier = modifier.fillMaxWidth(),
@@ -38,7 +37,6 @@ fun OrderCard(
             containerColor = AppColors.SurfaceHigher,
         ),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-        onClick = onClick,
     ) {
         Row(
             modifier = Modifier
@@ -152,7 +150,6 @@ private fun OrderCardPreview() {
                 status = OrderStatus.COMPLETED,
             ),
             modifier = Modifier.padding(16.dp),
-            onClick = {},
         )
     }
 }

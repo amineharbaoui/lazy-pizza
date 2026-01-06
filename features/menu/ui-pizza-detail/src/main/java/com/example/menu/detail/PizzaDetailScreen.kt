@@ -1,5 +1,9 @@
 package com.example.menu.detail
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.SharedTransitionLayout
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -8,25 +12,29 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults.windowInsets
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -41,24 +49,30 @@ import com.example.designsystem.theme.AppTypography
 import com.example.designsystem.theme.LazyPizzaThemePreview
 import com.example.designsystem.utils.PreviewPhoneTablet
 import com.example.designsystem.utils.isWideLayout
+import java.util.UUID
 
 @Composable
 fun PizzaDetailScreen(
-    productId: String,
-    innerPadding: PaddingValues,
+    args: PizzaDetailArgs,
     onBackClick: () -> Unit,
-    onNavigateToMenu: () -> Unit = {},
+    onNavigateToMenu: () -> Unit,
+    innerPadding: PaddingValues,
+    sharedTransitionScope: SharedTransitionScope,
+    animatedVisibilityScope: AnimatedVisibilityScope,
+    modifier: Modifier = Modifier,
     viewModel: PizzaDetailViewModel = hiltViewModel(),
 ) {
-    val context = LocalContext.current
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val sessionId = rememberSaveable { UUID.randomUUID().toString() }
 
-    LaunchedEffect(productId) { viewModel.observePizza(productId) }
+    LaunchedEffect(args, sessionId) {
+        viewModel.initialize(args, sessionId)
+    }
 
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
-            .padding(innerPadding),
+            .windowInsetsPadding(windowInsets.only(WindowInsetsSides.Horizontal)),
     ) {
         DsTopBar.Secondary(onBackClick = onBackClick)
         when (val state = uiState) {
@@ -66,12 +80,15 @@ fun PizzaDetailScreen(
             is PizzaDetailUiState.Error -> DetailErrorState()
             is PizzaDetailUiState.Ready -> DetailContent(
                 uiState = state,
+                innerPadding = innerPadding,
                 onToppingQuantityChange = viewModel::updateToppingQuantity,
                 onAddToCartClick = {
                     viewModel.addItemToCart(state)
                     onNavigateToMenu()
                 },
                 onQuantityChange = viewModel::updateQuantity,
+                sharedTransitionScope = sharedTransitionScope,
+                animatedVisibilityScope = animatedVisibilityScope,
             )
         }
     }
@@ -83,6 +100,9 @@ private fun DetailContent(
     onToppingQuantityChange: (toppingId: String, newQuantity: Int) -> Unit,
     onAddToCartClick: () -> Unit,
     onQuantityChange: (Int) -> Unit,
+    innerPadding: PaddingValues,
+    sharedTransitionScope: SharedTransitionScope,
+    animatedVisibilityScope: AnimatedVisibilityScope,
 ) {
     if (isWideLayout()) {
         WideDetailLayout(
@@ -90,13 +110,18 @@ private fun DetailContent(
             onToppingQuantityChange = onToppingQuantityChange,
             onAddToCartClick = onAddToCartClick,
             onQuantityChange = onQuantityChange,
+            sharedTransitionScope = sharedTransitionScope,
+            animatedVisibilityScope = animatedVisibilityScope,
         )
     } else {
         PhoneDetailLayout(
             uiState = uiState,
+            innerPadding = innerPadding,
             onToppingQuantityChange = onToppingQuantityChange,
             onAddToCartClick = onAddToCartClick,
             onQuantityChange = onQuantityChange,
+            sharedTransitionScope = sharedTransitionScope,
+            animatedVisibilityScope = animatedVisibilityScope,
         )
     }
 }
@@ -107,61 +132,70 @@ private fun PhoneDetailLayout(
     onToppingQuantityChange: (toppingId: String, newQuantity: Int) -> Unit,
     onAddToCartClick: () -> Unit,
     onQuantityChange: (Int) -> Unit,
+    innerPadding: PaddingValues,
+    sharedTransitionScope: SharedTransitionScope,
+    animatedVisibilityScope: AnimatedVisibilityScope,
 ) {
-    val ctaVerticalPadding = 16.dp
-    val ctaHeight = 56.dp
+    val sharedKey = "pizza-image-${uiState.pizza.id}"
 
-    Box(modifier = Modifier.fillMaxSize()) {
-        Column(modifier = Modifier.fillMaxSize()) {
-            Image(
-                modifier = Modifier
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(bottom = innerPadding.calculateBottomPadding()),
+    ) {
+        Image(
+            modifier = with(sharedTransitionScope) {
+                Modifier
                     .fillMaxWidth()
                     .heightIn(max = 220.dp)
-                    .clip(RoundedCornerShape(8.dp)),
-                painter = rememberAsyncImagePainter(uiState.pizza.imageUrl),
-                contentDescription = null,
-                contentScale = ContentScale.Fit,
-            )
-
-            Spacer(Modifier.height(16.dp))
-
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(
-                        color = AppColors.SurfaceHigher,
-                        shape = RoundedCornerShape(16.dp),
+                    .clip(RoundedCornerShape(8.dp))
+                    .sharedElement(
+                        sharedContentState = rememberSharedContentState(sharedKey),
+                        animatedVisibilityScope = animatedVisibilityScope,
                     )
-                    .padding(horizontal = 16.dp),
-            ) {
-                ProductHeaderSection(
-                    name = uiState.pizza.name,
-                    description = uiState.pizza.description,
-                )
-                Spacer(Modifier.height(8.dp))
-                ExtraToppingsContent(
-                    toppings = uiState.toppings,
-                    toppingQuantities = uiState.toppingQuantities,
-                    onToppingQuantityChange = onToppingQuantityChange,
-                    quantity = uiState.quantity,
-                    onQuantityChange = onQuantityChange,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .weight(1f, fill = true),
-                    contentPadding = PaddingValues(bottom = ctaHeight + ctaVerticalPadding * 2),
-                )
-            }
-        }
+            },
+            painter = rememberAsyncImagePainter(uiState.pizza.imageUrl),
+            contentDescription = null,
+            contentScale = ContentScale.Fit,
+        )
 
-        Box(
+        Spacer(Modifier.height(16.dp))
+
+        Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .align(Alignment.BottomCenter)
-                .padding(horizontal = 16.dp, vertical = ctaVerticalPadding),
+                .weight(1f)
+                .background(
+                    color = AppColors.SurfaceHigher,
+                    shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
+                )
+                .padding(horizontal = 16.dp),
         ) {
-            AddToCartButton(
-                totalPriceText = uiState.totalPriceFormatted,
+            ProductHeaderSection(
+                name = uiState.pizza.name,
+                description = uiState.pizza.description,
+            )
+            ExtraToppingsContent(
+                toppings = uiState.toppings,
+                toppingQuantities = uiState.toppingQuantities,
+                onToppingQuantityChange = onToppingQuantityChange,
+                quantity = uiState.quantity,
+                onQuantityChange = onQuantityChange,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f),
+                contentPadding = PaddingValues(bottom = 16.dp),
+            )
+            DsButton.Filled(
+                text = if (uiState.lineId != null) {
+                    "Update Cart for ${uiState.totalPriceFormatted}"
+                } else {
+                    "Add to Cart for ${uiState.totalPriceFormatted}"
+                },
                 onClick = onAddToCartClick,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 16.dp),
             )
         }
     }
@@ -195,7 +229,10 @@ private fun WideDetailLayout(
     onToppingQuantityChange: (toppingId: String, newQuantity: Int) -> Unit,
     onQuantityChange: (Int) -> Unit,
     onAddToCartClick: () -> Unit,
+    sharedTransitionScope: SharedTransitionScope,
+    animatedVisibilityScope: AnimatedVisibilityScope,
 ) {
+    val sharedKey = "pizza-image-${uiState.pizza.id}"
     Row(
         modifier = Modifier
             .fillMaxSize(),
@@ -206,10 +243,16 @@ private fun WideDetailLayout(
                 .weight(1f),
         ) {
             Image(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .heightIn(max = 260.dp)
-                    .clip(RoundedCornerShape(8.dp)),
+                modifier = with(sharedTransitionScope) {
+                    Modifier
+                        .fillMaxWidth()
+                        .heightIn(max = 220.dp)
+                        .clip(RoundedCornerShape(8.dp))
+                        .sharedElement(
+                            sharedContentState = rememberSharedContentState(sharedKey),
+                            animatedVisibilityScope = animatedVisibilityScope,
+                        )
+                },
                 painter = rememberAsyncImagePainter(uiState.pizza.imageUrl),
                 contentDescription = null,
                 contentScale = ContentScale.Inside,
@@ -241,9 +284,16 @@ private fun WideDetailLayout(
                     .weight(1f, fill = true),
             )
             Spacer(Modifier.height(12.dp))
-            AddToCartButton(
-                totalPriceText = uiState.totalPriceFormatted,
+            DsButton.Filled(
+                text = if (uiState.lineId != null) {
+                    "Update Cart for ${uiState.totalPriceFormatted}"
+                } else {
+                    "Add to Cart for ${uiState.totalPriceFormatted}"
+                },
                 onClick = onAddToCartClick,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 16.dp),
             )
         }
     }
@@ -272,23 +322,6 @@ private fun ProductHeaderSection(
 }
 
 @Composable
-private fun AddToCartButton(
-    totalPriceText: String,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    Column(
-        modifier = modifier.fillMaxWidth(),
-    ) {
-        DsButton.Filled(
-            text = "Add to Cart for $totalPriceText",
-            onClick = onClick,
-            modifier = Modifier.fillMaxWidth(),
-        )
-    }
-}
-
-@Composable
 private fun ExtraToppingsContent(
     toppings: List<ToppingDisplayModel>,
     toppingQuantities: Map<String, Int>,
@@ -298,49 +331,49 @@ private fun ExtraToppingsContent(
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(0.dp),
 ) {
-    Column(
-        modifier = modifier.background(
-            color = AppColors.SurfaceHigher,
-            shape = RoundedCornerShape(
-                topStart = 16.dp,
-                topEnd = 16.dp,
-            ),
-        ),
+    LazyVerticalGrid(
+        columns = GridCells.Fixed(3),
+        contentPadding = contentPadding,
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp),
+        modifier = modifier.fillMaxWidth(),
     ) {
-        Text(
-            text = "Add extra toppings",
-            style = AppTypography.Label2SemiBold,
-            color = AppColors.TextSecondary,
-        )
-        Spacer(Modifier.height(8.dp))
+        item(span = { GridItemSpan(maxLineSpan) }, contentType = "ExtraToppingsHeaderTitle") {
+            Column {
+                Text(
+                    text = "Add extra toppings",
+                    style = AppTypography.Label2SemiBold,
+                    color = AppColors.TextSecondary,
+                )
+                Spacer(Modifier.height(8.dp))
+            }
+        }
 
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(3),
-            contentPadding = contentPadding,
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f, fill = true),
+        items(
+            items = toppings,
+            key = { it.id },
+            contentType = { _ -> "ExtraToppingsItem" },
+        ) { item ->
+            val qty = toppingQuantities[item.id] ?: 0
+            DsCardItem.AddonCard(
+                title = item.name,
+                priceText = item.unitPriceFormatted,
+                image = rememberAsyncImagePainter(item.imageUrl),
+                quantity = qty,
+                onQuantityChange = { newQty ->
+                    onToppingQuantityChange(item.id, newQty)
+                },
+            )
+        }
+        item(
+            span = { GridItemSpan(maxLineSpan) },
+            contentType = "QuantitySelector",
         ) {
-            items(toppings, key = { it.id }) { item ->
-                val qty = toppingQuantities[item.id] ?: 0
-                DsCardItem.AddonCard(
-                    title = item.name,
-                    priceText = item.unitPriceFormatted,
-                    image = rememberAsyncImagePainter(item.imageUrl),
-                    quantity = qty,
-                    onQuantityChange = { newQty ->
-                        onToppingQuantityChange(item.id, newQty)
-                    },
-                )
-            }
-            item(span = { GridItemSpan(maxLineSpan) }) {
-                QuantitySelector(
-                    quantity = quantity,
-                    onQuantityChange = onQuantityChange,
-                )
-            }
+            QuantitySelector(
+                quantity = quantity,
+                onQuantityChange = onQuantityChange,
+                modifier = Modifier.padding(vertical = 16.dp),
+            )
         }
     }
 }
@@ -408,6 +441,8 @@ private fun DetailContentPreview() {
         ToppingDisplayModel("t1", "Extra Cheese", 1.0, "$1.00", ""),
         ToppingDisplayModel("t2", "Pepperoni", 1.5, "$1.50", ""),
         ToppingDisplayModel("t3", "Olives", 0.5, "$0.50", ""),
+        ToppingDisplayModel("t4", "Olives", 0.5, "$0.50", ""),
+        ToppingDisplayModel("t5", "Olives", 0.5, "$0.50", ""),
     )
 
     val state = PizzaDetailUiState.Ready(
@@ -419,11 +454,18 @@ private fun DetailContentPreview() {
     )
 
     LazyPizzaThemePreview {
-        DetailContent(
-            uiState = state,
-            onToppingQuantityChange = { _, _ -> },
-            onAddToCartClick = {},
-            onQuantityChange = {},
-        )
+        SharedTransitionLayout {
+            AnimatedContent(targetState = state, label = "preview") { targetState ->
+                DetailContent(
+                    uiState = targetState,
+                    onToppingQuantityChange = { _, _ -> },
+                    onAddToCartClick = {},
+                    onQuantityChange = {},
+                    innerPadding = PaddingValues(0.dp),
+                    sharedTransitionScope = this@SharedTransitionLayout,
+                    animatedVisibilityScope = this,
+                )
+            }
+        }
     }
 }

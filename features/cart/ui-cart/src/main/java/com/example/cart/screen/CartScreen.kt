@@ -45,6 +45,8 @@ import com.example.model.ProductCategory
 fun CartScreen(
     innerPadding: PaddingValues,
     onNavigateToCheckout: () -> Unit,
+    onNavigateToMenu: () -> Unit,
+    onNavigateToDetails: (productId: String, lineId: String) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: CartViewModel = hiltViewModel(),
 ) {
@@ -52,17 +54,18 @@ fun CartScreen(
 
     Column(
         modifier = modifier
-            .fillMaxSize()
-            .padding(innerPadding),
+            .padding(bottom = innerPadding.calculateBottomPadding())
+            .fillMaxSize(),
     ) {
         DsTopBar.Secondary(title = stringResource(R.string.cart))
         when (val state = uiState) {
-            CartUiState.Empty -> EmptyState()
             CartUiState.Loading -> LoadingState()
+            CartUiState.Empty -> EmptyState(onNavigateToMenu = onNavigateToMenu)
             is CartUiState.Error -> ErrorState(state.message)
             is CartUiState.Success -> CartScreenContent(
                 cartUiState = state,
                 onNavigateToCheckout = onNavigateToCheckout,
+                onNavigateToDetails = onNavigateToDetails,
                 onAddToCart = viewModel::addItemToCart,
                 onLineQuantityChange = viewModel::updateLineQuantity,
                 onRemoveLine = viewModel::removeLine,
@@ -75,18 +78,22 @@ fun CartScreen(
 fun CartScreenContent(
     cartUiState: CartUiState.Success,
     onNavigateToCheckout: () -> Unit,
+    onNavigateToDetails: (productId: String, lineId: String) -> Unit,
     onAddToCart: (item: RecommendedItemDisplayModel) -> Unit,
     onLineQuantityChange: (item: CartLineDisplayModel, newQuantity: Int) -> Unit,
     onRemoveLine: (lineId: String) -> Unit,
 ) {
     if (isWideLayout()) {
         Row(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState()),
             horizontalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             Box(modifier = Modifier.weight(1f)) {
                 CartItemsSection(
                     items = cartUiState.cart.items,
+                    onNavigateToDetails = onNavigateToDetails,
                     onLineQuantityChange = onLineQuantityChange,
                     onRemove = onRemoveLine,
                 )
@@ -125,6 +132,7 @@ fun CartScreenContent(
                 CartItemsSection(
                     modifier = Modifier.padding(horizontal = 12.dp),
                     items = cartUiState.cart.items,
+                    onNavigateToDetails = onNavigateToDetails,
                     onLineQuantityChange = onLineQuantityChange,
                     onRemove = onRemoveLine,
                 )
@@ -133,6 +141,7 @@ fun CartScreenContent(
                     recommendedItems = cartUiState.recommendedItems,
                     onAddToCart = onAddToCart,
                 )
+                Spacer(Modifier.height(8.dp))
             }
             DsButton.Filled(
                 text = "Proceed to Checkout  ${cartUiState.cart.totalPriceFormatted}",
@@ -141,7 +150,7 @@ fun CartScreenContent(
                     .padding(horizontal = 12.dp)
                     .fillMaxWidth(),
             )
-            Spacer(Modifier.height(12.dp))
+            Spacer(Modifier.height(32.dp))
         }
     }
 }
@@ -158,9 +167,12 @@ private fun LoadingState() {
 }
 
 @Composable
-private fun EmptyState() {
+private fun EmptyState(
+    onNavigateToMenu: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
             .padding(16.dp),
         verticalArrangement = Arrangement.Center,
@@ -189,7 +201,7 @@ private fun EmptyState() {
         Spacer(Modifier.height(16.dp))
         DsButton.Filled(
             text = stringResource(com.example.cart.ui.R.string.start_ordering),
-            onClick = {},
+            onClick = onNavigateToMenu,
         )
     }
 }
@@ -224,6 +236,7 @@ private fun ErrorState(errorMessage: String) {
 @Composable
 private fun CartItemsSection(
     items: List<CartLineDisplayModel>,
+    onNavigateToDetails: (productId: String, lineId: String) -> Unit,
     onLineQuantityChange: (item: CartLineDisplayModel, newQuantity: Int) -> Unit,
     onRemove: (String) -> Unit,
     modifier: Modifier = Modifier,
@@ -243,6 +256,7 @@ private fun CartItemsSection(
                 quantity = item.quantity,
                 onQuantityChange = { newQty -> onLineQuantityChange(item, newQty) },
                 onRemove = { onRemove(item.lineId) },
+                onClick = { onNavigateToDetails(item.productId, item.lineId) },
             )
         }
     }
@@ -259,6 +273,7 @@ private fun CartScreenPreview() {
                     items = listOf(
                         CartLineDisplayModel(
                             lineId = "1",
+                            productId = "p1",
                             name = "Margherita",
                             imageUrl = "",
                             unitPriceFormatted = "$8.99",
@@ -268,6 +283,7 @@ private fun CartScreenPreview() {
                         ),
                         CartLineDisplayModel(
                             lineId = "2",
+                            productId = "p2",
                             name = "Pepperoni",
                             imageUrl = "",
                             unitPriceFormatted = "$12.99",
@@ -309,6 +325,7 @@ private fun CartScreenPreview() {
             onRemoveLine = {},
             onAddToCart = {},
             onNavigateToCheckout = {},
+            onNavigateToDetails = { _, _ -> },
         )
     }
 }
@@ -318,7 +335,7 @@ private fun CartScreenPreview() {
 @Composable
 private fun EmptyCartPreview() {
     LazyPizzaThemePreview {
-        EmptyState()
+        EmptyState(onNavigateToMenu = {})
     }
 }
 

@@ -14,7 +14,7 @@ class OrdersRemoteDataSource @Inject constructor(
 ) {
     suspend fun createOrder(order: OrderDto): Result<Unit> = runCatching {
         firestore.collection("orders")
-            .document()
+            .document(order.orderNumber)
             .set(order)
             .await()
     }
@@ -24,8 +24,8 @@ class OrdersRemoteDataSource @Inject constructor(
             .whereEqualTo("userId", userId)
             .orderBy("createdAtEpochMs", Query.Direction.DESCENDING)
             .addSnapshotListener { snapshot, error ->
-                if (error != null) {
-                    close(error)
+                error?.let {
+                    close(it)
                     return@addSnapshotListener
                 }
 
