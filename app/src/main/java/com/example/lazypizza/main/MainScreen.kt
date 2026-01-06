@@ -1,40 +1,54 @@
 package com.example.lazypizza.main
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
+import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation3.runtime.NavKey
-import com.example.cart.shared.CartBadgeViewModel
+import com.example.designsystem.components.NoConnectionScreen
 import com.example.designsystem.utils.isWideLayout
 import com.example.lazypizza.navigation.AppNavigation
 import com.example.lazypizza.navigation.BottomBar
+import com.example.lazypizza.navigation.MenuRoute
 import com.example.lazypizza.navigation.NavigationRail
 import com.example.lazypizza.navigation.isTopLevel
-import com.example.menu.home.MenuRoute
 
 @Composable
-fun MainScreen() {
+fun MainScreen(viewModel: MainViewModel = hiltViewModel()) {
+    val context = LocalContext.current
     val isWide = isWideLayout()
-    val backStack = remember { mutableStateListOf<NavKey>(MenuRoute) }
+    val backStack = rememberSaveable { mutableStateListOf<NavKey>(MenuRoute) }
     val currentRoute: NavKey = backStack.last()
 
-    val cartBadgeViewModel: CartBadgeViewModel = hiltViewModel()
-    val badgeCount by cartBadgeViewModel.badgeCount.collectAsStateWithLifecycle()
+    val snackbarHostState = remember { SnackbarHostState() }
+    val isOnline by viewModel.isOnline.collectAsStateWithLifecycle()
+    val badgeCount by viewModel.badgeCount.collectAsStateWithLifecycle()
+
+    BackHandler(enabled = backStack.size > 1) {
+        backStack.removeAt(backStack.lastIndex)
+    }
+
+//    LaunchedEffect(isOnline) {
+//        if (!isOnline) {
+//            snackbarHostState.showSnackbar(
+//                message = context.getString(R.string.no_internet_connection),
+//                duration = SnackbarDuration.Indefinite,
+//            )
+//        }
+//    }
 
     Scaffold(
-        contentWindowInsets = WindowInsets.safeDrawing,
         bottomBar = {
             if (!isWide && currentRoute.isTopLevel()) {
                 BottomBar(
@@ -47,8 +61,18 @@ fun MainScreen() {
                 )
             }
         },
+//        snackbarHost = {
+//            SnackbarHost(
+//                snackbarHostState,
+//                modifier = Modifier.windowInsetsPadding(
+//                    WindowInsets.safeDrawing.exclude(
+//                        WindowInsets.ime,
+//                    ),
+//                ),
+//            )
+//        },
     ) { innerPadding ->
-        Row(Modifier.padding(innerPadding)) {
+        Row(Modifier.fillMaxSize()) {
             if (isWide && currentRoute.isTopLevel()) {
                 NavigationRail(
                     currentRoute = currentRoute,
@@ -59,13 +83,16 @@ fun MainScreen() {
                     badgeCount = badgeCount,
                 )
             }
-
-            Box(Modifier.weight(1f)) {
-                AppNavigation(
-                    backStack = backStack,
-                    onBack = { if (backStack.size > 1) backStack.removeAt(backStack.lastIndex) },
-                    innerPadding = PaddingValues(0.dp),
-                )
+            Box {
+                if (isOnline.not()) {
+                    NoConnectionScreen()
+                } else {
+                    AppNavigation(
+                        backStack = backStack,
+                        onBack = { if (backStack.size > 1) backStack.removeAt(backStack.lastIndex) },
+                        innerPadding = innerPadding,
+                    )
+                }
             }
         }
     }
