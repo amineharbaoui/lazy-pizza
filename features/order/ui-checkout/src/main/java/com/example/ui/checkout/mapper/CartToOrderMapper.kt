@@ -29,7 +29,7 @@ class CartToOrderMapper @Inject constructor() {
     fun map(
         cart: Cart,
         userId: String,
-        checkout: CheckoutUiState.Ready,
+        checkout: CheckoutUiState.ReadyToOrder,
     ): Order {
         val (pickupType, pickupAt) = mapPickupDetails(checkout)
 
@@ -46,7 +46,7 @@ class CartToOrderMapper @Inject constructor() {
         )
     }
 
-    private fun mapPickupDetails(checkout: CheckoutUiState.Ready): Pair<PickupType, Instant> = when (checkout.pickup.selectedOption) {
+    private fun mapPickupDetails(checkout: CheckoutUiState.ReadyToOrder): Pair<PickupType, Instant> = when (checkout.pickup.selectedOption) {
         PickupOption.ASAP -> {
             val pickupAt = computeAsapPickupInstant()
             PickupType.ASAP to pickupAt
@@ -63,7 +63,7 @@ class CartToOrderMapper @Inject constructor() {
      * Uses confirmation if present, else uses current selection.
      * Throws if missing because placing an order without a schedule selection is a bug.
      */
-    private fun resolveScheduledSelection(checkout: CheckoutUiState.Ready): Pair<String, String> {
+    private fun resolveScheduledSelection(checkout: CheckoutUiState.ReadyToOrder): Pair<String, String> {
         checkout.pickup.scheduleSheet.confirmation?.let { c ->
             return c.dayId to c.timeSlotId
         }

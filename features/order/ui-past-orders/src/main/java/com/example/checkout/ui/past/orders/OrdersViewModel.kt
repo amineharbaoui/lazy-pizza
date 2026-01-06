@@ -37,7 +37,7 @@ class OrdersViewModel @Inject constructor(
         viewModelScope.launch {
             val userId = getCurrentUserUidUseCase()
             if (userId == null) {
-                _uiState.value = OrderUiState.Ready(emptyList())
+                _uiState.value = OrderUiState.NotLoggedIn
                 return@launch
             }
 

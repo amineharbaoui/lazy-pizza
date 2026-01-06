@@ -2,21 +2,26 @@ package com.example.menu.detail
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.domain.model.CartItem
 import com.example.domain.usecase.AddCartItemUseCase
+import com.example.domain.usecase.ObserveCartItemUseCase
 import com.example.domain.usecase.ObservePizzaDetailUseCase
 import com.example.menu.detail.mapper.PizzaDetailDomainToUiMapper
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class PizzaDetailViewModel @Inject constructor(
     private val observePizzaDetailUseCase: ObservePizzaDetailUseCase,
+    private val observeCartItemUseCase: ObserveCartItemUseCase,
     private val addCartItemUseCase: AddCartItemUseCase,
     private val pizzaDetailMapper: PizzaDetailDomainToUiMapper,
 ) : ViewModel() {
@@ -24,28 +29,80 @@ class PizzaDetailViewModel @Inject constructor(
     private val _uiState = MutableStateFlow<PizzaDetailUiState>(PizzaDetailUiState.Loading)
     val uiState: StateFlow<PizzaDetailUiState> = _uiState.asStateFlow()
 
-    fun observePizza(productId: String) {
-        viewModelScope.launch {
-            observePizzaDetailUseCase(id = productId)
-                .catch { _uiState.value = PizzaDetailUiState.Error }
-                .collect { detail ->
-                    val (pizzaDisplay, toppingsDisplay) = pizzaDetailMapper.mapToDisplayModels(detail)
-                    val toppingQuantities = toppingsDisplay.associate { it.id to 0 }
-                    val quantity = 1
+    private var observeJob: Job? = null
+    private var currentProductId: String? = null
+    private var currentLineId: String? = null
+    private var currentSessionId: String? = null
 
-                    _uiState.value = PizzaDetailUiState.Ready(
-                        pizza = pizzaDisplay,
+    fun initialize(
+        args: PizzaDetailArgs,
+        sessionId: String,
+    ) {
+        val productId = args.productId
+        val lineId = (args as? PizzaDetailArgs.Edit)?.lineId
+
+        if (currentProductId == productId && currentLineId == lineId && currentSessionId == sessionId) return
+        currentProductId = productId
+        currentLineId = lineId
+        currentSessionId = sessionId
+
+        observeJob?.cancel()
+        _uiState.value = PizzaDetailUiState.Loading
+        observeJob = viewModelScope.launch {
+            val detailFlow = observePizzaDetailUseCase(id = productId)
+            val cartItemFlow = if (lineId != null) {
+                observeCartItemUseCase(lineId = lineId)
+            } else {
+                flowOf(null)
+            }
+
+            combine(detailFlow, cartItemFlow) { detail, cartItem ->
+                detail to cartItem
+            }.catch {
+                _uiState.value = PizzaDetailUiState.Error
+            }.collect { (detail, cartItem) ->
+                val (pizzaDisplay, toppingsDisplay) = pizzaDetailMapper.mapToDisplayModels(detail)
+                val previous = _uiState.value as? PizzaDetailUiState.Ready
+
+                val isInitial = previous == null
+
+                val quantity = if (isInitial && cartItem != null) {
+                    cartItem.quantity
+                } else {
+                    previous?.quantity ?: 1
+                }
+
+                val allowedIds = toppingsDisplay.map { it.id }.toSet()
+                val toppingQuantities = if (isInitial && cartItem is CartItem.Pizza) {
+                    buildMap {
+                        allowedIds.forEach { id ->
+                            put(id, cartItem.toppings.find { it.id == id }?.quantity ?: 0)
+                        }
+                    }
+                } else if (previous != null) {
+                    buildMap {
+                        allowedIds.forEach { id ->
+                            put(id, previous.toppingQuantities[id] ?: 0)
+                        }
+                    }
+                } else {
+                    allowedIds.associateWith { 0 }
+                }
+
+                _uiState.value = PizzaDetailUiState.Ready(
+                    lineId = lineId,
+                    pizza = pizzaDisplay,
+                    toppings = toppingsDisplay,
+                    toppingQuantities = toppingQuantities,
+                    quantity = quantity,
+                    totalPriceFormatted = pizzaDetailMapper.formatTotalPrice(
+                        unitPrice = pizzaDisplay.unitPrice,
                         toppings = toppingsDisplay,
                         toppingQuantities = toppingQuantities,
-                        totalPriceFormatted = pizzaDetailMapper.formatTotalPrice(
-                            unitPrice = pizzaDisplay.unitPrice,
-                            toppings = toppingsDisplay,
-                            toppingQuantities = toppingQuantities,
-                            quantity = quantity,
-                        ),
                         quantity = quantity,
-                    )
-                }
+                    ),
+                )
+            }
         }
     }
 
@@ -56,38 +113,32 @@ class PizzaDetailViewModel @Inject constructor(
         val current = _uiState.value as? PizzaDetailUiState.Ready ?: return
         val safeQty = newQuantity.coerceAtLeast(0)
 
-        val newMap = current.toppingQuantities.toMutableMap().apply {
-            this[toppingId] = safeQty
-        }
+        val newMap = current.toppingQuantities.toMutableMap().apply { this[toppingId] = safeQty }
 
-        _uiState.update {
-            current.copy(
+        _uiState.value = current.copy(
+            toppingQuantities = newMap,
+            totalPriceFormatted = pizzaDetailMapper.formatTotalPrice(
+                unitPrice = current.pizza.unitPrice,
+                toppings = current.toppings,
                 toppingQuantities = newMap,
-                totalPriceFormatted = pizzaDetailMapper.formatTotalPrice(
-                    unitPrice = current.pizza.unitPrice,
-                    toppings = current.toppings,
-                    toppingQuantities = newMap,
-                    quantity = current.quantity,
-                ),
-            )
-        }
+                quantity = current.quantity,
+            ),
+        )
     }
 
     fun updateQuantity(newQuantity: Int) {
         val current = _uiState.value as? PizzaDetailUiState.Ready ?: return
-        val safeQuantity = newQuantity.coerceAtLeast(1)
+        val safeQty = newQuantity.coerceAtLeast(1)
 
-        _uiState.update {
-            current.copy(
-                quantity = safeQuantity,
-                totalPriceFormatted = pizzaDetailMapper.formatTotalPrice(
-                    unitPrice = current.pizza.unitPrice,
-                    toppings = current.toppings,
-                    toppingQuantities = current.toppingQuantities,
-                    quantity = safeQuantity,
-                ),
-            )
-        }
+        _uiState.value = current.copy(
+            quantity = safeQty,
+            totalPriceFormatted = pizzaDetailMapper.formatTotalPrice(
+                unitPrice = current.pizza.unitPrice,
+                toppings = current.toppings,
+                toppingQuantities = current.toppingQuantities,
+                quantity = safeQty,
+            ),
+        )
     }
 
     fun addItemToCart(pizzaDetails: PizzaDetailUiState.Ready) {

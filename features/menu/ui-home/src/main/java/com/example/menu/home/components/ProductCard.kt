@@ -1,6 +1,8 @@
 package com.example.menu.home.components
 
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.SizeTransform
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -18,16 +20,26 @@ fun ProductCard(
     onPizzaClick: (product: MenuItemDisplayModel.Pizza) -> Unit,
     onOtherItemAddClick: (product: MenuItemDisplayModel.Other) -> Unit,
     onOtherItemQuantityChange: (product: MenuItemDisplayModel.Other, newQuantity: Int) -> Unit,
+    sharedTransitionScope: SharedTransitionScope,
+    animatedVisibilityScope: AnimatedVisibilityScope,
 ) {
     when (product) {
         is MenuItemDisplayModel.Pizza -> {
+            val sharedKey = "pizza-image-${product.id}"
             DsCardRow.MenuItem(
                 modifier = modifier,
+                imageModifier = with(sharedTransitionScope) {
+                    Modifier.sharedElement(
+                        sharedContentState = rememberSharedContentState(sharedKey),
+                        animatedVisibilityScope = animatedVisibilityScope,
+                    )
+                },
                 title = product.name,
                 description = product.description,
                 price = product.unitPriceFormatted,
                 image = rememberAsyncImagePainter(product.imageUrl),
                 onClick = { onPizzaClick(product) },
+
             )
         }
 

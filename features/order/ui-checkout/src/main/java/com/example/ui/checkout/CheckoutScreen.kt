@@ -10,11 +10,15 @@ import PickupUiState
 import SchedulePickupUiModel
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -49,6 +53,7 @@ import com.example.ui.checkout.components.SchedulePickUpContent
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CheckoutScreen(
+    innerPadding: PaddingValues,
     onBackClick: () -> Unit,
     onNavigateToAuth: () -> Unit,
     onOrderPlace: () -> Unit,
@@ -73,6 +78,8 @@ fun CheckoutScreen(
 
     Column(
         modifier = modifier
+            .padding(bottom = innerPadding.calculateBottomPadding())
+            .windowInsetsPadding(WindowInsets.safeDrawing)
             .fillMaxSize(),
     ) {
         DsTopBar.Secondary(
@@ -89,7 +96,7 @@ fun CheckoutScreen(
                 )
             }
 
-            is CheckoutUiState.Ready -> {
+            is CheckoutUiState.ReadyToOrder -> {
                 CheckoutScreenContent(
                     state = state,
                     onPickupOptionSelect = viewModel::selectPickupOption,
@@ -100,7 +107,7 @@ fun CheckoutScreen(
                 )
             }
 
-            is CheckoutUiState.Success -> {
+            is CheckoutUiState.OrderPlaced -> {
                 ConfirmationOrderComponent(
                     orderNumber = state.orderNumber,
                     pickupTime = state.pickupTime,
@@ -112,14 +119,14 @@ fun CheckoutScreen(
         }
     }
 
-    if (shouldShowBottomSheet && uiState is CheckoutUiState.Ready) {
+    if (shouldShowBottomSheet && uiState is CheckoutUiState.ReadyToOrder) {
         ModalBottomSheet(
             sheetState = sheetState,
             onDismissRequest = { shouldShowBottomSheet = false },
             containerColor = AppColors.Bg,
             content = {
                 SchedulePickUpContent(
-                    schedulePickupUiModel = (uiState as CheckoutUiState.Ready).pickup.scheduleSheet,
+                    schedulePickupUiModel = (uiState as CheckoutUiState.ReadyToOrder).pickup.scheduleSheet,
                     onSelectDay = { dayId ->
                         viewModel.selectScheduleDay(dayId)
                     },
@@ -138,7 +145,7 @@ fun CheckoutScreen(
 
 @Composable
 private fun CheckoutScreenContent(
-    state: CheckoutUiState.Ready,
+    state: CheckoutUiState.ReadyToOrder,
     onPickupOptionSelect: (PickupOption) -> Unit,
     onCommentChange: (String) -> Unit,
     onPlaceOrderClick: () -> Unit,
@@ -222,28 +229,30 @@ private fun CheckoutScreenContent(
             }
         }
 
-        Row(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
-            Text(
-                text = "ORDER TOTAL",
-                style = AppTypography.Label2SemiBold,
-                color = AppColors.TextSecondary,
-            )
-            Spacer(modifier = Modifier.weight(1f))
-            Text(
-                text = state.orderSummary.totalLabel,
-                style = AppTypography.Title3SemiBold,
-                color = AppColors.TextPrimary,
+        Column {
+            Row(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
+                Text(
+                    text = "ORDER TOTAL",
+                    style = AppTypography.Label2SemiBold,
+                    color = AppColors.TextSecondary,
+                )
+                Spacer(modifier = Modifier.weight(1f))
+                Text(
+                    text = state.orderSummary.totalLabel,
+                    style = AppTypography.Title3SemiBold,
+                    color = AppColors.TextPrimary,
+                )
+            }
+
+            DsButton.Filled(
+                text = if (isPlacingOrder) "Placing…" else "Place Order",
+                enabled = state.canPlaceOrder && !isPlacingOrder,
+                onClick = onPlaceOrderClick,
+                modifier = Modifier
+                    .padding(horizontal = 12.dp)
+                    .fillMaxWidth(),
             )
         }
-
-        DsButton.Filled(
-            text = if (isPlacingOrder) "Placing…" else "Place Order",
-            enabled = state.canPlaceOrder && !isPlacingOrder,
-            onClick = onPlaceOrderClick,
-            modifier = Modifier
-                .padding(horizontal = 12.dp)
-                .fillMaxWidth(),
-        )
     }
 }
 
@@ -252,7 +261,7 @@ private fun CheckoutScreenContent(
 @Composable
 private fun CheckoutScreenContentPreview() {
     LazyPizzaThemePreview {
-        val sampleState = CheckoutUiState.Ready(
+        val sampleState = CheckoutUiState.ReadyToOrder(
             pickup = PickupUiState(
                 selectedOption = PickupOption.ASAP,
                 asapCard = PickupOptionCardUiModel(

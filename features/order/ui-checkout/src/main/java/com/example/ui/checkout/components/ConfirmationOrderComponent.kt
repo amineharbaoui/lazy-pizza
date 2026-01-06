@@ -1,6 +1,7 @@
 package com.example.ui.checkout.components
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -9,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -16,14 +18,18 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.designsystem.components.DsButton
 import com.example.designsystem.theme.AppColors
 import com.example.designsystem.theme.AppTypography
 import com.example.designsystem.theme.LazyPizzaThemePreview
 import com.example.designsystem.utils.PreviewPhoneTablet
+import com.example.designsystem.utils.isWideLayout
+import com.example.ui.checkout.R
+import com.example.designsystem.R as DSR
 
 @Composable
 fun ConfirmationOrderComponent(
@@ -32,22 +38,66 @@ fun ConfirmationOrderComponent(
     onBackToMenuClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    if (isWideLayout()) {
+        Row(
+            modifier = modifier
+                .fillMaxSize()
+                .padding(32.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Image(
+                painter = painterResource(DSR.drawable.loading),
+                contentDescription = null,
+                modifier = Modifier.size(256.dp),
+            )
+            OrderDetails(
+                orderNumber = orderNumber,
+                pickupTime = pickupTime,
+                onBackToMenuClick = onBackToMenuClick,
+            )
+        }
+    } else {
+        Column(
+            modifier = modifier
+                .fillMaxSize()
+                .padding(24.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            Image(
+                painter = painterResource(DSR.drawable.loading),
+                contentDescription = null,
+                modifier = Modifier.size(256.dp),
+            )
+            OrderDetails(
+                orderNumber = orderNumber,
+                pickupTime = pickupTime,
+                onBackToMenuClick = onBackToMenuClick,
+            )
+        }
+    }
+}
+
+@Composable
+fun OrderDetails(
+    orderNumber: String,
+    pickupTime: String,
+    onBackToMenuClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
     Column(
         modifier = modifier
-            .fillMaxSize()
             .padding(24.dp),
-        verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Text(
-            text = "Your order has been placed!",
+            text = stringResource(R.string.your_order_has_been_placed),
             style = AppTypography.Title1SemiBold,
             color = AppColors.TextPrimary,
             textAlign = TextAlign.Center,
         )
         Spacer(Modifier.height(8.dp))
         Text(
-            text = "Thank you for your order! Please come at the indicated time.",
+            text = stringResource(R.string.confirmation_order),
             style = AppTypography.Body2Regular,
             color = AppColors.TextSecondary,
             textAlign = TextAlign.Center,
@@ -68,7 +118,7 @@ fun ConfirmationOrderComponent(
                     horizontalArrangement = Arrangement.SpaceBetween,
                 ) {
                     Text(
-                        text = "ORDER NUMBER:",
+                        text = stringResource(R.string.order_number),
                         style = AppTypography.Label2SemiBold,
                         color = AppColors.TextSecondary,
                     )
@@ -83,7 +133,7 @@ fun ConfirmationOrderComponent(
                     horizontalArrangement = Arrangement.SpaceBetween,
                 ) {
                     Text(
-                        text = "PICKUP TIME:",
+                        text = stringResource(R.string.pickup_time),
                         style = AppTypography.Label2SemiBold,
                         color = AppColors.TextSecondary,
                     )
@@ -105,7 +155,6 @@ fun ConfirmationOrderComponent(
 }
 
 @PreviewPhoneTablet
-@Preview
 @Composable
 private fun ConfirmationOrderComponentPreview() {
     LazyPizzaThemePreview {

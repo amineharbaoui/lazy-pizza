@@ -19,11 +19,10 @@ class CheckoutUiStateFactory @Inject constructor(
     private val cartToOrderSummaryUiMapper: CartToOrderSummaryUiMapper,
 ) {
 
-    fun createInitialReadyState(cart: Cart): CheckoutUiState.Ready {
+    fun createInitialReadyState(cart: Cart): CheckoutUiState.ReadyToOrder {
         val days = generatePickupDays()
         val today = days.firstOrNull()
 
-        // ASAP = now + 15min -> pick first matching slot
         val asapSlot = findAsapSlot(today)
 
         val asapDateLabel = today?.let { "${it.dayLabel} - ${it.dateLabel}" }
@@ -47,7 +46,7 @@ class CheckoutUiStateFactory @Inject constructor(
             isEnabled = days.isNotEmpty(),
         )
 
-        return CheckoutUiState.Ready(
+        return CheckoutUiState.ReadyToOrder(
             pickup = PickupUiState(
                 selectedOption = PickupOption.ASAP,
                 asapCard = asapCard,
@@ -74,7 +73,6 @@ class CheckoutUiStateFactory @Inject constructor(
         val nowPlus15 = LocalTime.now().plusMinutes(15)
         val candidates = today.timeSlots
 
-        // slot.id is "HH:mm"
         return candidates.firstOrNull { slot ->
             runCatching { LocalTime.parse(slot.id) }.getOrNull()?.let { !it.isBefore(nowPlus15) } ?: false
         } ?: candidates.firstOrNull()
@@ -98,9 +96,9 @@ class CheckoutUiStateFactory @Inject constructor(
             if (timeSlots.isEmpty()) return@mapNotNull null
 
             PickupDayUiModel(
-                id = date.toString(), // "2024-12-20"
-                dayLabel = title, // "Today"
-                dateLabel = date.format(subtitleFormatter), // "Dec 20"
+                id = date.toString(),
+                dayLabel = title,
+                dateLabel = date.format(subtitleFormatter),
                 isEnabled = true,
                 timeSlots = timeSlots,
             )
@@ -121,8 +119,8 @@ class CheckoutUiStateFactory @Inject constructor(
             val isFuture = !isToday || current.isAfter(now.plusMinutes(15))
             if (isFuture) {
                 slots += PickupTimeSlotUiModel(
-                    id = current.toString(), // "17:15"
-                    timeLabel = current.format(formatter), // "5:15 PM"
+                    id = current.toString(),
+                    timeLabel = current.format(formatter),
                     isEnabled = true,
                 )
             }

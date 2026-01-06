@@ -41,21 +41,15 @@ android {
 
 dependencies {
     implementation(projects.core.designsystem)
-    implementation(projects.core.ui)
 
     implementation(projects.features.auth.domain)
     implementation(projects.features.cart.domain)
 
-    implementation(libs.androidx.navigation3.runtime)
 
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.compose.ui)
-    implementation(libs.androidx.compose.ui.graphics)
-    implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.material3)
-    implementation(libs.androidx.compose.adaptive)
-    implementation(libs.androidx.compose.material3.adaptive.navigation.suite)
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
 

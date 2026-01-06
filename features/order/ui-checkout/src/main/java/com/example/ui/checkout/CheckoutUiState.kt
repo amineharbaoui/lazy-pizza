@@ -6,7 +6,7 @@ sealed interface CheckoutUiState {
         val message: String,
     ) : CheckoutUiState
 
-    data class Ready(
+    data class ReadyToOrder(
         val pickup: PickupUiState,
         val orderSummary: OrderSummaryUi,
         val comment: String,
@@ -14,7 +14,7 @@ sealed interface CheckoutUiState {
         val isPlacingOrder: Boolean = false,
     ) : CheckoutUiState
 
-    data class Success(
+    data class OrderPlaced(
         val orderNumber: String,
         val pickupTime: String,
     ) : CheckoutUiState
@@ -31,8 +31,8 @@ data class PickupUiState(
 data class PickupOptionCardUiModel(
     val id: PickupOption,
     val title: String,
-    val dateLabel: String?, // e.g. "Today - Dec 20" or "Choose a time"
-    val timeLabel: String?, // e.g. "5:07 PM" (single pickup time)
+    val dateLabel: String?,
+    val timeLabel: String?,
     val isSelected: Boolean,
     val isEnabled: Boolean = true,
 )
@@ -56,15 +56,15 @@ data class PickupConfirmationUiModel(
 
 data class PickupDayUiModel(
     val id: String,
-    val dayLabel: String, // "Today", "Tomorrow", "Mon"
-    val dateLabel: String, // "Dec 20"
+    val dayLabel: String,
+    val dateLabel: String,
     val isEnabled: Boolean = true,
     val timeSlots: List<PickupTimeSlotUiModel>,
 )
 
 data class PickupTimeSlotUiModel(
-    val id: String, // stable id (e.g. "17:15")
-    val timeLabel: String, // "5:15 PM"
+    val id: String,
+    val timeLabel: String,
     val isEnabled: Boolean = true,
 )
 

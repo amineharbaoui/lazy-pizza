@@ -4,6 +4,7 @@ import com.example.model.ProductCategory
 
 data class CartLineDisplayModel(
     val lineId: String,
+    val productId: String,
     val name: String,
     val subtitleLines: List<String>,
     val imageUrl: String,
