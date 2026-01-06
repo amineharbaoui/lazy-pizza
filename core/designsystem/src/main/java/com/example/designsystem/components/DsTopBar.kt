@@ -7,16 +7,20 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults.windowInsets
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -42,6 +46,7 @@ object DsTopBar {
         Row(
             modifier = modifier
                 .fillMaxWidth()
+                .windowInsetsPadding(windowInsets.only(WindowInsetsSides.Top))
                 .padding(horizontal = 16.dp, vertical = 10.dp)
                 .height(64.dp),
             verticalAlignment = Alignment.CenterVertically,
@@ -113,6 +118,7 @@ object DsTopBar {
         Row(
             modifier = modifier
                 .fillMaxWidth()
+                .windowInsetsPadding(windowInsets.only(WindowInsetsSides.Top))
                 .height(64.dp)
                 .padding(horizontal = 10.dp),
             verticalAlignment = Alignment.CenterVertically,

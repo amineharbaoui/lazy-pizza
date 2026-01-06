@@ -2,7 +2,6 @@ package com.example.designsystem.components.card
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -22,7 +21,6 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -50,12 +48,14 @@ object DsCardRow {
         price: String,
         image: Painter,
         modifier: Modifier = Modifier,
+        imageModifier: Modifier = Modifier,
         onClick: () -> Unit = {},
     ) {
         BaseCardRow(
             title = title,
             image = image,
             modifier = modifier,
+            imageModifier = imageModifier,
             onClick = onClick,
         ) {
             Column(
@@ -95,12 +95,13 @@ object DsCardRow {
         quantity: Int,
         onQuantityChange: (Int) -> Unit,
         onRemove: () -> Unit,
+        onClick: () -> Unit = {},
     ) {
         BaseCardRow(
             title = title,
             image = image,
             modifier = modifier,
-            onClick = null,
+            onClick = onClick,
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -197,7 +198,6 @@ object DsCardRow {
             title = title,
             image = image,
             modifier = modifier,
-            onClick = null,
         ) {
             Column(
                 modifier = Modifier.fillMaxHeight(),
@@ -232,24 +232,17 @@ object DsCardRow {
         title: String,
         image: Painter,
         modifier: Modifier = Modifier,
-        onClick: (() -> Unit)? = null,
+        imageModifier: Modifier = Modifier,
+        onClick: () -> Unit = {},
         content: @Composable ColumnScope.() -> Unit,
     ) {
-        val cardModifier = remember(modifier, onClick) {
-            if (onClick != null) {
-                modifier
-                    .fillMaxWidth()
-                    .clickable(onClick = onClick)
-            } else {
-                modifier.fillMaxWidth()
-            }
-        }
-
         Card(
-            modifier = cardModifier,
+            modifier = modifier
+                .fillMaxWidth(),
             shape = RoundedCornerShape(radius),
             colors = CardDefaults.cardColors(containerColor = Color.White),
             elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
+            onClick = onClick,
         ) {
             Row(modifier = Modifier.height(IntrinsicSize.Min)) {
                 Box(
@@ -271,7 +264,7 @@ object DsCardRow {
                     Image(
                         painter = image,
                         contentDescription = title,
-                        modifier = Modifier.size(96.dp),
+                        modifier = imageModifier.size(96.dp),
                         contentScale = ContentScale.Fit,
                     )
                 }

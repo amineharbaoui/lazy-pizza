@@ -81,7 +81,6 @@ fun DsExpandableCard(
         ),
     ) {
         Column(modifier = Modifier.fillMaxWidth()) {
-            // Header
             Row(
                 modifier = Modifier
                     .fillMaxWidth()

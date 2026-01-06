@@ -10,7 +10,6 @@ object PhoneCountryProvider {
 
     private const val DEFAULT_MASK = "XXXXXXXXXXXX"
     private val PHONE_MASKS_BY_ISO: Map<String, String> = mapOf(
-        // NANP countries
         "US" to "(XXX) XXX-XXXX",
         "CA" to "(XXX) XXX-XXXX",
         "PR" to "(XXX) XXX-XXXX",
@@ -29,7 +28,6 @@ object PhoneCountryProvider {
         "VG" to "(XXX) XXX-XXXX",
         "VI" to "(XXX) XXX-XXXX",
 
-        // Common international formats (indicative, simplified)
         "FR" to "X XX XX XX XX",
         "GB" to "XXXX XXX XXXX",
         "DE" to "XXXX XXXXXXX",

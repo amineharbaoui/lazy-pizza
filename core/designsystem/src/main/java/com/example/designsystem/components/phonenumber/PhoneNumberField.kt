@@ -24,6 +24,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -55,7 +56,6 @@ internal fun PhoneNumberField(
 ) {
     val (allCountries, defaultCountry) = PhoneCountryProvider.rememberPhoneCountriesWithDefault()
 
-    // Initialize selected country from provided ISO if available, otherwise default.
     var selectedCountry by remember(allCountries, defaultCountry, initialCountryIso) {
         val initial = initialCountryIso?.let { iso ->
             allCountries.firstOrNull { it.isoCode.equals(iso, ignoreCase = true) }
@@ -84,8 +84,7 @@ internal fun PhoneNumberField(
         onFullPhoneNumberChange(full)
     }
 
-    // Keep external state informed about the currently selected country.
-    androidx.compose.runtime.LaunchedEffect(selectedCountry.isoCode) {
+    LaunchedEffect(selectedCountry.isoCode) {
         onCountryIsoChanged(selectedCountry.isoCode)
     }
 

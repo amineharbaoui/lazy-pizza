@@ -109,25 +109,24 @@ object DsNavigationBar {
         menuItems: List<NavItem>,
         modifier: Modifier = Modifier,
     ) {
-        // Sizes
         val barHeight = 80.dp
         val bubbleSize = 48.dp
         val bubbleLift = bubbleSize / 2
 
-        val durationMs = 4000
+        val durationMs = 600
 
         val moveSpec = tween<Dp>(
             durationMillis = durationMs,
             easing = FastOutSlowInEasing,
         )
 
-        // ✅ selected index derived from the input list (like Bottom())
         val selectedIndex = remember(menuItems) {
             menuItems.indexOfFirst { it.isSelected }.let { if (it >= 0) it else 0 }
         }
 
         BoxWithConstraints(
             modifier = modifier
+                .background(Color.Transparent)
                 .fillMaxWidth()
                 .height(barHeight),
         ) {
@@ -162,7 +161,7 @@ object DsNavigationBar {
                     .height(notchHeight)
                     .align(Alignment.TopStart)
                     .zIndex(0f),
-                color = AppColors.TextPrimary,
+                color = AppColors.Overlay.copy(alpha = 0.1f),
             )
 
             Box(
@@ -186,7 +185,7 @@ object DsNavigationBar {
                         barHeight = barHeight,
                         durationMs = durationMs,
                         moveSpec = moveSpec,
-                        onClick = { if (!item.isSelected) item.onClick() }, // ✅ same behavior as Bottom()
+                        onClick = { if (!item.isSelected) item.onClick() },
                         modifier = Modifier.weight(1f),
                     )
                 }
@@ -235,12 +234,26 @@ object DsNavigationBar {
                 .fillMaxHeight()
                 .clickable(onClick = onClick),
         ) {
-            Icon(
-                painter = item.icon,
-                contentDescription = item.label,
-                tint = iconTint,
+            BadgedBox(
                 modifier = Modifier.offset(y = iconOffset),
-            )
+                badge = {
+                    if (item.badgeCount > 0) {
+                        Badge(
+                            modifier = Modifier.offset(x = 4.dp, y = (-4).dp),
+                        ) {
+                            Text(
+                                text = item.badgeCount.toString(),
+                            )
+                        }
+                    }
+                },
+            ) {
+                Icon(
+                    painter = item.icon,
+                    contentDescription = item.label,
+                    tint = iconTint,
+                )
+            }
 
             AnimatedVisibility(
                 visible = isSelected,
@@ -274,7 +287,6 @@ object DsNavigationBar {
             val width = size.width
             val height = size.height * verticalScaleFactor
 
-            // Mirror helpers
             fun mirror(x: Float) = 1f - x
 
             val rightControlPoint1X = width * controlPoint1XFactor
@@ -288,7 +300,6 @@ object DsNavigationBar {
                 moveTo(0f, 0f)
                 lineTo(width, 0f)
 
-                // Right curve down → bottom center
                 cubicTo(
                     rightControlPoint1X,
                     0f,
@@ -298,7 +309,6 @@ object DsNavigationBar {
                     height,
                 )
 
-                // Left curve up → back to start
                 cubicTo(
                     leftControlPoint2X,
                     height,
@@ -355,9 +365,15 @@ object DsNavigationBar {
         painter: Painter,
         label: String,
         badgeCount: Int,
+        iconTint: Color = AppColors.TextSecondary,
+        modifier: Modifier = Modifier,
     ) {
         val iconBase = @Composable {
-            Icon(painter = painter, contentDescription = label)
+            Icon(
+                painter = painter,
+                contentDescription = label,
+                tint = iconTint,
+            )
         }
 
         if (badgeCount > 0) {
@@ -398,7 +414,7 @@ object DsNavigationBar {
 private fun BubbleNotchBottomBarPreview() {
     LazyPizzaThemePreview {
         Column(modifier = Modifier.padding(vertical = 30.dp)) {
-            var selected by remember { mutableIntStateOf(0) }
+            var selected by remember { mutableIntStateOf(1) }
             val items = listOf(
                 DsNavigationBar.NavItem(
                     icon = painterResource(R.drawable.menu),

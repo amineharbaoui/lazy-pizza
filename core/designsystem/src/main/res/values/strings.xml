@@ -13,4 +13,6 @@
     <string name="cancel">Cancel</string>
     <string name="logout_confirm_title">Are you sure you want to log out?</string>
     <string name="change_number">Change mobile number?</string>
+    <string name="whooops">Whooops!</string>
+    <string name="no_internet">No internet connection was found. \nCheck your connection and try again.</string>
 </resources>
