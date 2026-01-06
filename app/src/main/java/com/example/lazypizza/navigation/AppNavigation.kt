@@ -56,7 +56,6 @@ fun AppNavigation(
                         sharedTransitionScope = this@SharedTransitionLayout,
                         animatedVisibilityScope = this,
                         onNavigateToAuth = { backStack.add(AuthRoute) },
-                        onLogout = {},
                     )
                 }
 

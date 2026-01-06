@@ -14,7 +14,7 @@ class OrdersRemoteDataSource @Inject constructor(
 ) {
     suspend fun createOrder(order: OrderDto): Result<Unit> = runCatching {
         firestore.collection("orders")
-            .document(order.orderNumber)
+            .document()
             .set(order)
             .await()
     }

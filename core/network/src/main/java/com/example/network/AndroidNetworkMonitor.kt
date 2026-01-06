@@ -13,9 +13,7 @@ import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.conflate
 import kotlinx.coroutines.flow.distinctUntilChanged
 import javax.inject.Inject
-import javax.inject.Singleton
 
-@Singleton
 class AndroidNetworkMonitor @Inject constructor(
     @ApplicationContext context: Context,
 ) : NetworkMonitor {

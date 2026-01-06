@@ -144,7 +144,10 @@ fun CartScreenContent(
                 Spacer(Modifier.height(8.dp))
             }
             DsButton.Filled(
-                text = "Proceed to Checkout  ${cartUiState.cart.totalPriceFormatted}",
+                text = stringResource(
+                    com.example.cart.ui.R.string.proceed_to_checkout,
+                    cartUiState.cart.totalPriceFormatted,
+                ),
                 onClick = onNavigateToCheckout,
                 modifier = Modifier
                     .padding(horizontal = 12.dp)
