@@ -3,7 +3,6 @@ package com.example.ui.checkout
 import CheckoutUiState
 import PickupConfirmationUiModel
 import PickupOption
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.domain.usecase.ClearCartUseCase
@@ -181,12 +180,9 @@ class CheckoutViewModel @Inject constructor(
             _uiState.update { (it as? CheckoutUiState.ReadyToOrder)?.copy(isPlacingOrder = true) ?: it }
 
             val order = cartToOrderMapper.map(cart = cart, userId = userId, checkout = state)
-            Log.d("CheckoutVM", "submitOrder: start")
 
             val result = placeOrderUseCase(order)
 
-            Log.d("CheckoutVM", "submitOrder: after placeOrderUseCase")
-            Log.d("CheckoutVM", "submitOrder: result=$result")
             result.fold(
                 onSuccess = {
                     clearCartUseCase()

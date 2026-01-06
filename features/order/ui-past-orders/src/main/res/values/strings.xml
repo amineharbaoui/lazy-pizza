@@ -1,4 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="orders">Orders</string>
+    <string name="not_signed_in_title">Not Signed In</string>
+    <string name="not_signed_in_message">Please sign in to view your order history.</string>
+    <string name="not_signed_in_image_description">Not Signed In</string>
+    <string name="sign_in">Sign In</string>
 </resources>

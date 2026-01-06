@@ -102,7 +102,7 @@ private fun OrderScreenContent(
                     items(
                         items = orders,
                         key = { it.orderNumberLabel },
-                        contentType = { it.orderNumberLabel },
+                        contentType = { "OrderCard" },
                     ) { orderUi ->
                         OrderCard(orderUi = orderUi)
                     }
@@ -122,7 +122,7 @@ private fun OrderScreenContent(
                     items(
                         items = orders,
                         key = { it.orderNumberLabel },
-                        contentType = { it.orderNumberLabel },
+                        contentType = { "OrderCard" },
                     ) { orderUi ->
                         OrderCard(orderUi = orderUi)
                     }
@@ -149,23 +149,23 @@ private fun NotLoggedInState(
             val isLandscape = maxWidth > maxHeight
             Image(
                 painter = painterResource(R.drawable.not_logged_in),
-                contentDescription = "Not Signed In",
+                contentDescription = stringResource(com.example.checkout.ui.past.orders.R.string.not_signed_in_image_description),
                 modifier = Modifier.size(if (isLandscape) 128.dp else 256.dp),
             )
         }
         Text(
-            text = "Not Signed In",
+            text = stringResource(com.example.checkout.ui.past.orders.R.string.not_signed_in_title),
             style = AppTypography.Title1SemiBold,
             color = AppColors.TextPrimary,
         )
         Text(
-            text = "Please sign in to view your order history.",
+            text = stringResource(com.example.checkout.ui.past.orders.R.string.not_signed_in_message),
             style = AppTypography.Body3Regular,
             color = AppColors.TextSecondary,
         )
         Spacer(Modifier.height(16.dp))
         DsButton.Filled(
-            text = "Sign In",
+            text = stringResource(com.example.checkout.ui.past.orders.R.string.sign_in),
             onClick = onSignInClick,
         )
     }

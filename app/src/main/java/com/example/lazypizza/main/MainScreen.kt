@@ -5,11 +5,9 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -31,22 +29,12 @@ fun MainScreen(viewModel: MainViewModel = hiltViewModel()) {
     val backStack = rememberSaveable { mutableStateListOf<NavKey>(MenuRoute) }
     val currentRoute: NavKey = backStack.last()
 
-    val snackbarHostState = remember { SnackbarHostState() }
     val isOnline by viewModel.isOnline.collectAsStateWithLifecycle()
     val badgeCount by viewModel.badgeCount.collectAsStateWithLifecycle()
 
     BackHandler(enabled = backStack.size > 1) {
         backStack.removeAt(backStack.lastIndex)
     }
-
-//    LaunchedEffect(isOnline) {
-//        if (!isOnline) {
-//            snackbarHostState.showSnackbar(
-//                message = context.getString(R.string.no_internet_connection),
-//                duration = SnackbarDuration.Indefinite,
-//            )
-//        }
-//    }
 
     Scaffold(
         bottomBar = {
@@ -61,16 +49,6 @@ fun MainScreen(viewModel: MainViewModel = hiltViewModel()) {
                 )
             }
         },
-//        snackbarHost = {
-//            SnackbarHost(
-//                snackbarHostState,
-//                modifier = Modifier.windowInsetsPadding(
-//                    WindowInsets.safeDrawing.exclude(
-//                        WindowInsets.ime,
-//                    ),
-//                ),
-//            )
-//        },
     ) { innerPadding ->
         Row(Modifier.fillMaxSize()) {
             if (isWide && currentRoute.isTopLevel()) {
@@ -83,7 +61,7 @@ fun MainScreen(viewModel: MainViewModel = hiltViewModel()) {
                     badgeCount = badgeCount,
                 )
             }
-            Box {
+            Box(Modifier.weight(1f)) {
                 if (isOnline.not()) {
                     NoConnectionScreen()
                 } else {

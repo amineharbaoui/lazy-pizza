@@ -79,7 +79,6 @@ fun MenuScreen(
     animatedVisibilityScope: AnimatedVisibilityScope,
     onProductClick: (productId: String) -> Unit,
     onNavigateToAuth: () -> Unit,
-    onLogout: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: MenuViewModel = hiltViewModel(),
 ) {
@@ -130,7 +129,6 @@ fun MenuScreen(
                 onPrimaryClick = {
                     showLogoutConfirm = false
                     viewModel.signOut()
-                    onLogout()
                 },
                 onDismissRequest = { showLogoutConfirm = false },
             )
