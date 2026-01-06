@@ -31,12 +31,12 @@ fun formatForOrderCard(
     val instant = Instant.ofEpochMilli(pickupAtEpochMs)
 
     val dateFormatter = DateTimeFormatter
-        .ofLocalizedDate(FormatStyle.LONG) // e.g. Sep 25, 2025 / 25 septembre 2025
+        .ofLocalizedDate(FormatStyle.LONG)
         .withLocale(locale)
         .withZone(zoneId)
 
     val timeFormatter = DateTimeFormatter
-        .ofLocalizedTime(FormatStyle.SHORT) // ✅ auto 12h/24h depending on locale
+        .ofLocalizedTime(FormatStyle.SHORT)
         .withLocale(locale)
         .withZone(zoneId)
 

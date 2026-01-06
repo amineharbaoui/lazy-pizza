@@ -8,6 +8,7 @@ plugins {
     alias(libs.plugins.ksp)
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.google.services)
+    alias(libs.plugins.kotlin.parcelize)
 }
 
 android {
@@ -57,6 +58,7 @@ dependencies {
     implementation(projects.features.menu.data)
 
     implementation(projects.features.cart.uiCart)
+    implementation(projects.features.cart.domain)
     implementation(projects.features.cart.data)
 
     implementation(projects.features.order.uiCheckout)
@@ -67,27 +69,23 @@ dependencies {
     implementation(projects.features.auth.uiLogin)
     implementation(projects.features.auth.data)
 
-    implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.lifecycle.runtime.ktx)
+    implementation(projects.core.common)
+    implementation(projects.core.network)
+
     implementation(libs.androidx.activity.compose)
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.compose.ui)
     implementation(libs.androidx.compose.ui.graphics)
-    implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.core.splashscreen)
     implementation(libs.androidx.navigation3.runtime)
     implementation(libs.androidx.navigation3.ui)
-    implementation(libs.androidx.lifecycle.viewmodel.navigation3)
 
     // Dependency Injection (Hilt)
     implementation(libs.hilt.android)
     implementation(libs.hilt.navigation.compose)
-    implementation(libs.androidx.compose.adaptive)
-    implementation(libs.androidx.compose.material3.adaptive.navigation.suite)
     ksp(libs.hilt.compiler)
 
-    implementation(libs.coil.compose)
     implementation(libs.coil.network.okhttp)
 
     implementation(platform(libs.firebase.bom))
