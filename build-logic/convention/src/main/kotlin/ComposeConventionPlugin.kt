@@ -1,5 +1,4 @@
-import com.android.build.api.dsl.ApplicationExtension
-import com.android.build.api.dsl.LibraryExtension
+import com.android.build.api.dsl.CommonExtension
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.dependencies
@@ -9,8 +8,7 @@ class ComposeConventionPlugin : Plugin<Project> {
         with(target) {
             pluginManager.alias(libs.plugins.kotlin.compose)
 
-            extensions.findByType(ApplicationExtension::class.java)?.let(::configureCompose)
-            extensions.findByType(LibraryExtension::class.java)?.let(::configureCompose)
+            extensions.findByType(CommonExtension::class.java)?.let(::configureCompose)
 
             dependencies {
                 implementation(platform(libs.androidx.compose.bom))

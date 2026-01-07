@@ -14,8 +14,8 @@ class AndroidApplicationConventionPlugin : Plugin<Project> {
                 compileSdk = libs.versions.compileSdk.get().toInt()
 
                 defaultConfig {
-                    minSdk = libs.versions.minSdk.get().toInt()
                     targetSdk = libs.versions.targetSdk.get().toInt()
+                    minSdk = libs.versions.minSdk.get().toInt()
                 }
                 compileOptions {
                     sourceCompatibility = JavaVersion.VERSION_11
