@@ -1,5 +1,4 @@
 import androidx.room.gradle.RoomExtension
-import com.google.devtools.ksp.gradle.KspExtension
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.configure
@@ -10,10 +9,6 @@ class RoomConventionPlugin : Plugin<Project> {
         with(target) {
             pluginManager.alias(libs.plugins.room)
             pluginManager.alias(libs.plugins.ksp)
-
-            extensions.configure<KspExtension> {
-                arg("room.generateKotlin", "true")
-            }
 
             extensions.configure<RoomExtension> {
                 schemaDirectory("$projectDir/schemas")
