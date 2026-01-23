@@ -42,5 +42,9 @@ gradlePlugin {
             id = libs.plugins.custom.room.get().pluginId
             implementationClass = "RoomConventionPlugin"
         }
+        register("Test") {
+            id = libs.plugins.custom.testing.get().pluginId
+            implementationClass = "TestConventionPlugin"
+        }
     }
 }

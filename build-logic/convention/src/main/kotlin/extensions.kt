@@ -26,6 +26,14 @@ fun DependencyHandler.debugImplementation(notation: Any) {
     add("debugImplementation", notation)
 }
 
+fun DependencyHandler.testImplementation(notation: Any) {
+    add("testImplementation", notation)
+}
+
+fun DependencyHandler.testRuntimeOnly(notation: Any) {
+    add("testRuntimeOnly", notation)
+}
+
 fun DependencyHandler.ksp(notation: Any) {
     add("ksp", notation)
 }
