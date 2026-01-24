@@ -12,16 +12,12 @@ class TestConventionPlugin : Plugin<Project> {
 
             dependencies {
                 testImplementation(libs.junit.jupiter)
-                testRuntimeOnly(libs.junit.platform.launcher)
+                testRuntimeOnly(libs.junit.jupiter.engine)
 
                 testImplementation(libs.mockk)
                 testImplementation(libs.mockk.bdd)
 
                 testImplementation(libs.assertj)
-
-                testImplementation(libs.turbine)
-
-                testImplementation(libs.kotlinx.coroutines.test)
             }
         }
     }
