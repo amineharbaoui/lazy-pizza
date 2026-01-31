@@ -122,8 +122,8 @@ Shared logic must live in **core modules**.
 - Kotlin: **2.2.20**
 - AGP: **8.13.0**
 - Gradle JVM: **17+ required**
-- Kotlin `jvmTarget = 11`
-- Java source/target = 11
+- Kotlin `jvmTarget = 17`
+- Java source/target = 17
 
 SDK:
 
