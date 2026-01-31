@@ -392,3 +392,77 @@ SearchField(
     value = state.query,
     onValueChange = viewModel::updateSearchQuery
 )
+```
+
+---
+
+### 2. Testing
+
+## Tech stack (must use)
+- Kotlin + JUnit Jupiter (JUnit 6)
+- MockK in **BDD style**:
+    - every { ... }  -> given { ... }
+    - coEvery { ... } -> coGiven { ... }
+    - verify { ... } -> then { ... }
+    - coVerify { ... } -> coThen { ... }
+- Turbine for Flow testing when needed
+- AssertJ for assertions (no JUnit assertions unless unavoidable)
+
+## Test style (must follow)
+- Use **BDD** with clear **Given / When / Then** sections (as comments).
+- Use a **single concern per test** (1 outcome / 1 behavior).
+- Avoid **multiple Then** in the same test: split into separate test methods.
+- Keep tests **isolated** (mock dependencies, no network/db/filesystem).
+- Keep tests **fast, reliable, deterministic**:
+    - no real time delays
+    - no random values
+    - no shared state between tests
+- Avoid **if/for/while/switch** in test methods.
+- Avoid **creating complex data inside test methods**:
+    - use helper builders / fixtures for setup
+    - test method should mainly read like a scenario + assertion
+- Avoid **magic strings / magic numbers**:
+    - use constants or named helper functions
+- Prefer testing **observable behavior** (state/events/output), not implementation details.
+
+## Naming convention (strict)
+Use:
+methodUnderTest_whenStateOrEvent_thenExpectedBehavior
+
+Examples:
+submitOrder_whenUserIsNotSignedIn_thenEmitsNavigateToAuthEvent
+submitOrder_whenOrderSucceeds_thenEmitsOrderPlacedState
+observePizza_whenPizzaNotFound_thenEmitsErrorState
+updateSearchQuery_whenQueryMatchesItems_thenFiltersMenu
+addCartItem_whenItemAlreadyExists_thenIncrementsQuantity
+
+## Coroutine rules
+- Use kotlinx.coroutines.test:
+    - Important: Don't use runTest { ... }. With Junit 6 now you can just use `suspend` as we do in the implementation (example : `suspend fun addCartItem_whenItemAlreadyExists_thenIncrementsQuantity () { ... } `)
+    - MainDispatcherRule (JUnit5 extension) to set Dispatchers.Main to a TestDispatcher
+- Do not use GlobalScope.
+- If code uses Flow:
+    - Use Turbine (`flow.test { ... }`)
+    - Cancel collection properly (`cancelAndIgnoreRemainingEvents()`)
+
+## Output requirements
+When I paste code:
+1) Generate the test class in Kotlin (ready to copy-paste).
+2) Include required imports.
+3) Include a minimal, clean test setup:
+    - mocks
+    - system under test creation
+    - helpers/fixtures
+4) Use AssertJ for assertions:
+    - assertThat(...)
+    - assertThatThrownBy(...) if needed
+5) Use MockK BDD aliases (given/coGiven/then/coThen).
+6) If something is ambiguous, make a reasonable assumption and document it in a short comment at the top (do not ask questions unless absolutely blocking).
+
+## Extra best practices to apply (add these if relevant)
+- Use `@BeforeEach` for common setup, `@AfterEach` only if needed.
+- Prefer `relaxed = true` for mocks only when it improves readability and does not hide behavior.
+- Verify only what matters for the single concern (avoid over-verifying).
+- For sealed UI states/events: assert exact type and key fields.
+- For error handling: assert the modeled error (not raw exceptions) unless the code truly throws.
+
