@@ -9,9 +9,11 @@ class SessionRepositoryImpl @Inject constructor(
     private val phoneAuthDataSource: PhoneAuthDataSource,
 ) : SessionRepository {
 
-    override val userIdFlow: Flow<String?> = phoneAuthDataSource.userIdFlow
+    override val userIdFlow: Flow<String?>
+        get() = phoneAuthDataSource.userIdFlow
 
-    override val isSignedIn: Flow<Boolean> = phoneAuthDataSource.isSignedIn
+    override val isSignedIn: Flow<Boolean>
+        get() = phoneAuthDataSource.isSignedIn
 
     override suspend fun currentUserUid(): String? = phoneAuthDataSource.getCurrentUser()?.uid
 }
