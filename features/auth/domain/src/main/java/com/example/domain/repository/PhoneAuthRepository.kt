@@ -8,7 +8,5 @@ interface PhoneAuthRepository {
         smsCode: String,
     ): Result<AuthUser>
 
-    fun currentUser(): AuthUser?
-
     suspend fun signOut()
 }

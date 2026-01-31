@@ -1,0 +1,86 @@
+package com.example.data.repository
+
+import app.cash.turbine.test
+import com.example.data.datasource.PhoneAuthDataSource
+import io.mockk.bdd.given
+import io.mockk.bdd.then
+import io.mockk.every
+import io.mockk.impl.annotations.InjectMockKs
+import io.mockk.impl.annotations.MockK
+import io.mockk.junit5.MockKExtension
+import io.mockk.mockk
+import kotlinx.coroutines.flow.MutableStateFlow
+import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.extension.ExtendWith
+
+@ExtendWith(MockKExtension::class)
+class SessionRepositoryImplTest {
+    @MockK(relaxed = true)
+    private lateinit var phoneAuthDataSource: PhoneAuthDataSource
+
+    @InjectMockKs
+    private lateinit var sessionRepositoryImpl: SessionRepositoryImpl
+
+    @Test
+    suspend fun userIdFlow_whenSubscribed_thenForwardsDataFromPhoneAuthDataSource() {
+        // Given
+        val mockUserId = "user-id-123"
+        val userIdFlow = MutableStateFlow<String?>(mockUserId)
+        every { phoneAuthDataSource.userIdFlow } returns userIdFlow
+
+        // When
+        sessionRepositoryImpl.userIdFlow.test {
+            // Then
+            assertThat(awaitItem()).isEqualTo(mockUserId)
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    suspend fun isSignedIn_whenSubscribed_thenForwardsDataFromPhoneAuthDataSource() {
+        // Given
+        val isSignedInFlow = MutableStateFlow(false)
+        given { phoneAuthDataSource.isSignedIn } returns isSignedInFlow
+
+        // When
+        sessionRepositoryImpl.isSignedIn.test {
+            // Then
+            assertThat(awaitItem()).isFalse()
+
+            isSignedInFlow.tryEmit(true)
+            assertThat(awaitItem()).isTrue()
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    suspend fun currentUserUid_whenCalled_thenReturnsCurrentUserUidFromPhoneAuthDataSource() {
+        // Given
+        val mockUid = "user-id-123"
+        val mockRemoteUser = mockk<com.example.data.model.RemoteUser> {
+            given { uid } returns mockUid
+        }
+        given { phoneAuthDataSource.getCurrentUser() } returns mockRemoteUser
+
+        // When
+        val result = sessionRepositoryImpl.currentUserUid()
+
+        // Then
+        then { phoneAuthDataSource.getCurrentUser() }
+        assertThat(result).isEqualTo(mockUid)
+    }
+
+    @Test
+    suspend fun currentUserUid_whenNoUserLoggedIn_thenReturnsNull() {
+        // Given
+        given { phoneAuthDataSource.getCurrentUser() } returns null
+
+        // When
+        val result = sessionRepositoryImpl.currentUserUid()
+
+        // Then
+        then { phoneAuthDataSource.getCurrentUser() }
+        assertThat(result).isNull()
+    }
+}

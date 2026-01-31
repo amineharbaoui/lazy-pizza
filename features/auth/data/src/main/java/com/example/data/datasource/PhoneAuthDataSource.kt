@@ -12,10 +12,12 @@ import javax.inject.Inject
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 
+
 class PhoneAuthDataSource @Inject constructor(
     private val firebaseAuth: FirebaseAuth,
 ) {
 
+    // TODO Unify userIdFlow and isSignedIn
     val userIdFlow: Flow<String?> = callbackFlow {
         val listener = FirebaseAuth.AuthStateListener { auth ->
             trySend(auth.currentUser?.uid)
@@ -34,18 +36,6 @@ class PhoneAuthDataSource @Inject constructor(
         awaitClose { firebaseAuth.removeAuthStateListener(listener) }
     }
 
-    suspend fun signInWithCode(
-        verificationId: String,
-        smsCode: String,
-    ): RemoteUser {
-        val credential = PhoneAuthProvider.getCredential(verificationId, smsCode)
-        val firebaseUser = signInWithCredential(credential)
-        return RemoteUser(
-            uid = firebaseUser.uid,
-            phoneNumber = firebaseUser.phoneNumber,
-        )
-    }
-
     fun getCurrentUser(): RemoteUser? {
         val user = firebaseAuth.currentUser ?: return null
         return RemoteUser(
@@ -56,6 +46,18 @@ class PhoneAuthDataSource @Inject constructor(
 
     fun signOut() {
         firebaseAuth.signOut()
+    }
+
+    suspend fun signInWithCode(
+        verificationId: String,
+        smsCode: String,
+    ): RemoteUser {
+        val credential = PhoneAuthProvider.getCredential(verificationId, smsCode)
+        val firebaseUser = signInWithCredential(credential)
+        return RemoteUser(
+            uid = firebaseUser.uid,
+            phoneNumber = firebaseUser.phoneNumber,
+        )
     }
 
     private suspend fun signInWithCredential(credential: PhoneAuthCredential) = suspendCancellableCoroutine { continuationHandler ->

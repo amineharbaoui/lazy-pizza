@@ -1,0 +1,72 @@
+package com.example.data.repository
+
+import com.example.data.datasource.PhoneAuthDataSource
+import com.example.data.model.RemoteUser
+import com.example.domain.model.AuthUser
+import io.mockk.Runs
+import io.mockk.bdd.coGiven
+import io.mockk.bdd.coThen
+import io.mockk.impl.annotations.InjectMockKs
+import io.mockk.impl.annotations.MockK
+import io.mockk.junit5.MockKExtension
+import io.mockk.just
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.extension.ExtendWith
+
+@ExtendWith(MockKExtension::class)
+@OptIn(ExperimentalCoroutinesApi::class)
+class PhoneAuthRepositoryImplTest {
+
+    @MockK
+    private lateinit var phoneAuthDataSource: PhoneAuthDataSource
+
+    @InjectMockKs
+    private lateinit var phoneAuthRepository: PhoneAuthRepositoryImpl
+
+    @Test
+    suspend fun signInWithCode_whenSignInSucceeds_thenReturnsAuthUser() {
+        // Given
+        val mockRemoteUser = RemoteUser(uid = "uid123", phoneNumber = "+123456789")
+        val expected = AuthUser(uid = "uid123", phoneNumber = "+123456789")
+
+        coGiven { phoneAuthDataSource.signInWithCode("", "") } returns mockRemoteUser
+
+        // When
+        val result = phoneAuthRepository.signInWithCode("", "")
+
+        // Then
+        assertThat(result.isSuccess).isTrue
+        assertThat(result.getOrNull()).isEqualTo(expected)
+        coThen { phoneAuthDataSource.signInWithCode("", "") }
+    }
+
+    @Test
+    suspend fun signInWithCode_whenExceptionThrown_thenReturnsFailure() {
+        // Given
+        val exception = IllegalStateException("Invalid code")
+
+        coGiven { phoneAuthDataSource.signInWithCode("", "") } throws exception
+
+        // When
+        val result = phoneAuthRepository.signInWithCode("", "")
+
+        // Then
+        assertThat(result.isFailure).isTrue
+        assertThat(result.exceptionOrNull()).isEqualTo(exception)
+        coThen { phoneAuthDataSource.signInWithCode("", "") }
+    }
+
+    @Test
+    suspend fun signOut_whenCalled_thenInvokesDataSourceSignOut() {
+        // Given
+        coGiven { phoneAuthDataSource.signOut() } just Runs
+
+        // When
+        phoneAuthRepository.signOut()
+
+        // Then
+        coThen { phoneAuthDataSource.signOut() }
+    }
+}

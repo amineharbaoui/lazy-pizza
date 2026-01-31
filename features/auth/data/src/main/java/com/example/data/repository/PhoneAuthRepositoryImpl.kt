@@ -24,14 +24,6 @@ class PhoneAuthRepositoryImpl @Inject constructor(
         Result.failure(e)
     }
 
-    override fun currentUser(): AuthUser? {
-        val remoteUser = phoneAuthDataSource.getCurrentUser() ?: return null
-        return AuthUser(
-            uid = remoteUser.uid,
-            phoneNumber = remoteUser.phoneNumber,
-        )
-    }
-
     override suspend fun signOut() {
         phoneAuthDataSource.signOut()
     }
