@@ -122,6 +122,7 @@ play-services-auth = { module = "com.google.android.gms:play-services-auth", ver
 junit-jupiter = { module = "org.junit.jupiter:junit-jupiter", version.ref = "junit" }
 junit-params = { module = "org.junit.jupiter:junit-jupiter-params", version.ref = "junit" }
 junit-jupiter-engine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "junit" }
+junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher", version.ref = "junit" }
 mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
 mockk-bdd = { module = "io.mockk:mockk-bdd", version.ref = "mockk" }
 assertj = { module = "org.assertj:assertj-core", version.ref = "assertJ" }
