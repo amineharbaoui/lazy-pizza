@@ -1,5 +1,6 @@
 plugins {
     alias(libs.plugins.custom.kotlin.module)
+    alias(libs.plugins.custom.testing)
 }
 
 dependencies {
