@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.auth.uilogin"
+    namespace = "com.example.auth.ui.login"
 
     defaultConfig {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"

@@ -1,4 +1,4 @@
-package com.example.menu
+package com.example.auth.ui.login
 
 import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.layout.Arrangement

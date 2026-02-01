@@ -1,4 +1,4 @@
-package com.example.menu
+package com.example.auth.ui.login
 
 import android.app.Activity
 import com.google.firebase.FirebaseException

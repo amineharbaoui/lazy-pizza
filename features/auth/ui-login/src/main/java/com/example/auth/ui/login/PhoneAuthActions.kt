@@ -1,4 +1,4 @@
-package com.example.menu
+package com.example.auth.ui.login
 
 data class PhoneAuthActions(
     val onPhoneChange: (String) -> Unit,
