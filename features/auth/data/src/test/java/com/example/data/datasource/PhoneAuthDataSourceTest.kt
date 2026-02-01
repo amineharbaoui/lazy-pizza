@@ -18,9 +18,7 @@ import io.mockk.mockk
 import io.mockk.mockkStatic
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
-import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 
@@ -135,7 +133,7 @@ class PhoneAuthDataSourceTest {
     }
 
     @Test
-    fun signInWithCode_whenCredentialValid_ButUserIsNull_thenReturnsRemoteUser() {
+    suspend fun signInWithCode_whenCredentialValid_ButUserIsNull_thenReturnsRemoteUser() {
         // Given
         val verificationId = "verification-id"
         val smsCode = "123456"
@@ -156,10 +154,11 @@ class PhoneAuthDataSourceTest {
         }
         given { task.addOnFailureListener(any()) } returns task
 
-        // When // Then
-        assertThatThrownBy {
-            runTest { phoneAuthDataSource.signInWithCode(verificationId, smsCode) }
-        }.isInstanceOf(IllegalStateException::class.java)
+        // When
+        val result = runCatching { phoneAuthDataSource.signInWithCode(verificationId, smsCode) }
+
+        // Then
+        assertThat(result.exceptionOrNull()).isInstanceOf(IllegalStateException::class.java)
     }
 
     @Test
