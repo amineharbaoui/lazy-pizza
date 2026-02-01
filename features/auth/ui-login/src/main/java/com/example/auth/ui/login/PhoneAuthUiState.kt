@@ -1,4 +1,4 @@
-package com.example.menu
+package com.example.auth.ui.login
 
 import androidx.annotation.StringRes
 import java.util.Locale

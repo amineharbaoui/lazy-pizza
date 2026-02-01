@@ -14,9 +14,9 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Modifier
 import androidx.navigation3.runtime.NavKey
+import com.example.auth.ui.login.PhoneAuthScreen
 import com.example.cart.screen.CartScreen
 import com.example.checkout.ui.past.orders.OrdersScreen
-import com.example.menu.PhoneAuthScreen
 import com.example.menu.detail.PizzaDetailArgs
 import com.example.menu.detail.PizzaDetailScreen
 import com.example.menu.home.MenuScreen
