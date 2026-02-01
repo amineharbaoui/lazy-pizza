@@ -36,7 +36,7 @@ class PhoneAuthDataSourceTest {
     lateinit var phoneAuthDataSource: PhoneAuthDataSource
 
     @Test
-    suspend fun userIdFlow_whenAuthStateChanges_andUidIsNotNull_thenEmitsUserId() {
+    suspend fun `userIdFlow when auth state changes and uid is not null then emits user id`() {
         // Given
         val mockUserId = "user-id-123"
         given { firebaseAuth.currentUser } returns firebaseUser
@@ -50,7 +50,7 @@ class PhoneAuthDataSourceTest {
     }
 
     @Test
-    suspend fun userIdFlow_whenAuthStateChanges_andUidIsNull_thenEmitsUserId() {
+    suspend fun `userIdFlow when auth state changes and uid is null then emits null`() {
         // Given
         given { firebaseAuth.currentUser } returns null
 
@@ -62,7 +62,7 @@ class PhoneAuthDataSourceTest {
     }
 
     @Test
-    suspend fun userIdFlow_whenNoUserLoggedIn_thenEmitsNull() {
+    suspend fun `userIdFlow when no user logged in then emits null`() {
         // Given
         given { firebaseAuth.currentUser } returns null
 
@@ -74,7 +74,7 @@ class PhoneAuthDataSourceTest {
     }
 
     @Test
-    suspend fun isSignedIn_whenUserIsLoggedIn_thenEmitsTrue() {
+    suspend fun `isSignedIn when user is logged in then emits true`() {
         // Given
         given { firebaseAuth.currentUser } returns firebaseUser
 
@@ -86,7 +86,7 @@ class PhoneAuthDataSourceTest {
     }
 
     @Test
-    suspend fun isSignedIn_whenNoUserLoggedIn_thenEmitsFalse() {
+    suspend fun `isSignedIn when no user logged in then emits false`() {
         // Given
         given { firebaseAuth.currentUser } returns null
 
@@ -98,7 +98,7 @@ class PhoneAuthDataSourceTest {
     }
 
     @Test
-    suspend fun signInWithCode_whenCredentialValid_thenReturnsRemoteUser() {
+    suspend fun `signInWithCode when credential valid then returns remote user`() {
         // Given
         val verificationId = "verification-id"
         val smsCode = "123456"
@@ -133,7 +133,7 @@ class PhoneAuthDataSourceTest {
     }
 
     @Test
-    suspend fun signInWithCode_whenCredentialValid_ButUserIsNull_thenReturnsRemoteUser() {
+    suspend fun `signInWithCode when credential valid but user is null then throws illegal state exception`() {
         // Given
         val verificationId = "verification-id"
         val smsCode = "123456"
@@ -162,7 +162,7 @@ class PhoneAuthDataSourceTest {
     }
 
     @Test
-    fun getCurrentUser_whenUserIsLoggedIn_thenReturnsRemoteUser() {
+    fun `getCurrentUser when user is logged in then returns remote user`() {
         // Given
         val mockUid = "remoteUser123"
         val mockPhoneNumber = "+123456789"
@@ -179,7 +179,7 @@ class PhoneAuthDataSourceTest {
     }
 
     @Test
-    fun getCurrentUser_whenNoUserLoggedIn_thenReturnsNull() {
+    fun `getCurrentUser when no user logged in then returns null`() {
         // Given
         given { firebaseAuth.currentUser } returns null
 
@@ -191,7 +191,7 @@ class PhoneAuthDataSourceTest {
     }
 
     @Test
-    fun signOut_whenCalled_thenFirebaseAuthSignsOut() {
+    fun `signOut when called then firebase auth signs out`() {
         // Given
         given { firebaseAuth.signOut() } just Runs
 

@@ -21,7 +21,7 @@ class ObserveIsSignedInUseCaseTest {
     private lateinit var useCase: ObserveIsSignedInUseCase
 
     @Test
-    suspend fun whenIsSignedInEmitsValues_thenEmitsSameValues() {
+    suspend fun `invoke when is signed in emits values then emits same values`() {
         // Given
         val isSignedInFlow = MutableStateFlow(false)
         given { sessionRepository.isSignedIn } returns isSignedInFlow

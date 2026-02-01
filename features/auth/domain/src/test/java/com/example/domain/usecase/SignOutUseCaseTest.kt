@@ -20,7 +20,7 @@ class SignOutUseCaseTest {
     private lateinit var signOutUseCase: SignOutUseCase
 
     @Test
-    suspend fun whenCalled_thenCallsRepositorySignOut() {
+    suspend fun `invoke when called then calls repository sign out`() {
         // Given
         coGiven { phoneAuthRepository.signOut() } just Runs
 

@@ -20,7 +20,7 @@ class SignInWithSmsCodeUseCaseTest {
     private lateinit var useCase: SignInWithSmsCodeUseCase
 
     @Test
-    suspend fun whenSignInSucceeds_thenReturnsAuthUser() {
+    suspend fun `invoke when sign in succeeds then returns auth user`() {
         // Given
         val verificationId = "test-verification-id"
         val smsCode = "123456"
@@ -37,7 +37,7 @@ class SignInWithSmsCodeUseCaseTest {
     }
 
     @Test
-    suspend fun whenSignInFails_thenReturnsFailure() {
+    suspend fun `invoke when sign in fails then returns failure`() {
         // Given
         val verificationId = "test-verification-id"
         val smsCode = "123456"
