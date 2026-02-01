@@ -427,14 +427,33 @@ SearchField(
 
 ## Naming convention (strict)
 Use:
-methodUnderTest_whenStateOrEvent_thenExpectedBehavior
+Use Kotlin backtick BDD style
+```
+`methodUnderTest when stateOrEvent then expectedBehavior`
+```
+
+Rules:
+- Use backticks `` around the test name
+- Write in natural language
+- No underscores _
+- No punctuation (. , ? !)
+- Start with the method name
+- Use consistent verbs: returns, emits, updates, shows, navigates, throws
+- Keep it concise but readable
+
 
 Examples:
-submitOrder_whenUserIsNotSignedIn_thenEmitsNavigateToAuthEvent
-submitOrder_whenOrderSucceeds_thenEmitsOrderPlacedState
-observePizza_whenPizzaNotFound_thenEmitsErrorState
-updateSearchQuery_whenQueryMatchesItems_thenFiltersMenu
-addCartItem_whenItemAlreadyExists_thenIncrementsQuantity
+```
+`submitOrder when user is not signed in then emits navigate to auth event`
+
+`submitOrder when order succeeds then emits order placed state`
+
+`observePizza when pizza not found then emits error state`
+
+`updateSearchQuery when query matches items then filters menu`
+
+`addCartItem when item already exists then increments quantity`
+```
 
 ## Coroutine rules
 - Use kotlinx.coroutines.test:
