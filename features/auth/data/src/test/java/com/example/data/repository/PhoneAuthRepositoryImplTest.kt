@@ -26,7 +26,7 @@ class PhoneAuthRepositoryImplTest {
     private lateinit var phoneAuthRepository: PhoneAuthRepositoryImpl
 
     @Test
-    suspend fun signInWithCode_whenSignInSucceeds_thenReturnsAuthUser() {
+    suspend fun `signInWithCode when sign in succeeds then returns auth user`() {
         // Given
         val mockRemoteUser = RemoteUser(uid = "uid123", phoneNumber = "+123456789")
         val expected = AuthUser(uid = "uid123", phoneNumber = "+123456789")
@@ -43,7 +43,7 @@ class PhoneAuthRepositoryImplTest {
     }
 
     @Test
-    suspend fun signInWithCode_whenExceptionThrown_thenReturnsFailure() {
+    suspend fun `signInWithCode when exception thrown then returns failure`() {
         // Given
         val exception = IllegalStateException("Invalid code")
 
@@ -59,7 +59,7 @@ class PhoneAuthRepositoryImplTest {
     }
 
     @Test
-    suspend fun signOut_whenCalled_thenInvokesDataSourceSignOut() {
+    suspend fun `signOut when called then invokes data source sign out`() {
         // Given
         coGiven { phoneAuthDataSource.signOut() } just Runs
 

@@ -19,7 +19,7 @@ class GetCurrentUserUidUseCaseTest {
     lateinit var getCurrentUserUidUseCase: GetCurrentUserUidUseCase
 
     @Test
-    suspend fun whenCurrentUserUidIsAvailable_thenReturnsUid() {
+    suspend fun `invoke when current user uid is available then returns uid`() {
         // Given
         val expectedUid = "test_user_uid"
         coGiven { sessionRepository.currentUserUid() } returns expectedUid
@@ -32,7 +32,7 @@ class GetCurrentUserUidUseCaseTest {
     }
 
     @Test
-    suspend fun whenCurrentUserUidIsNull_thenReturnsNull() {
+    suspend fun `invoke when current user uid is null then returns null`() {
         // Given
         coGiven { sessionRepository.currentUserUid() } returns null
 

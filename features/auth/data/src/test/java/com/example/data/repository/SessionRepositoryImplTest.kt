@@ -23,7 +23,7 @@ class SessionRepositoryImplTest {
     private lateinit var sessionRepositoryImpl: SessionRepositoryImpl
 
     @Test
-    suspend fun userIdFlow_whenSubscribed_thenForwardsDataFromPhoneAuthDataSource() {
+    suspend fun `userIdFlow when subscribed then forwards data from phone auth data source`() {
         // Given
         val mockUserId = "user-id-123"
         val userIdFlow = MutableStateFlow<String?>(mockUserId)
@@ -38,7 +38,7 @@ class SessionRepositoryImplTest {
     }
 
     @Test
-    suspend fun isSignedIn_whenSubscribed_thenForwardsDataFromPhoneAuthDataSource() {
+    suspend fun `isSignedIn when subscribed then forwards data from phone auth data source`() {
         // Given
         val isSignedInFlow = MutableStateFlow(false)
         given { phoneAuthDataSource.isSignedIn } returns isSignedInFlow
@@ -55,7 +55,7 @@ class SessionRepositoryImplTest {
     }
 
     @Test
-    suspend fun currentUserUid_whenCalled_thenReturnsCurrentUserUidFromPhoneAuthDataSource() {
+    suspend fun `currentUserUid when called then returns current user uid from phone auth data source`() {
         // Given
         val mockUid = "user-id-123"
         val mockRemoteUser = mockk<com.example.data.model.RemoteUser> {
@@ -72,7 +72,7 @@ class SessionRepositoryImplTest {
     }
 
     @Test
-    suspend fun currentUserUid_whenNoUserLoggedIn_thenReturnsNull() {
+    suspend fun `currentUserUid when no user logged in then returns null`() {
         // Given
         given { phoneAuthDataSource.getCurrentUser() } returns null
 
