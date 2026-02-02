@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.cart.ui"
+    namespace = "com.example.cart.ui.cart"
 
     defaultConfig {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"

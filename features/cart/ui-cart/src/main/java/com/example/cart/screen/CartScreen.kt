@@ -145,7 +145,7 @@ fun CartScreenContent(
             }
             DsButton.Filled(
                 text = stringResource(
-                    com.example.cart.ui.R.string.proceed_to_checkout,
+                    com.example.cart.ui.cart.R.string.proceed_to_checkout,
                     cartUiState.cart.totalPriceFormatted,
                 ),
                 onClick = onNavigateToCheckout,
@@ -203,7 +203,7 @@ private fun EmptyState(
         )
         Spacer(Modifier.height(16.dp))
         DsButton.Filled(
-            text = stringResource(com.example.cart.ui.R.string.start_ordering),
+            text = stringResource(com.example.cart.ui.cart.R.string.start_ordering),
             onClick = onNavigateToMenu,
         )
     }
