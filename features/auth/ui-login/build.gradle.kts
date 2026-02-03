@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.custom.compose)
     alias(libs.plugins.custom.hilt)
     alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.custom.testing)
 }
 
 android {
@@ -31,4 +32,6 @@ dependencies {
 
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.auth)
+
+    implementation(projects.core.testing)
 }
