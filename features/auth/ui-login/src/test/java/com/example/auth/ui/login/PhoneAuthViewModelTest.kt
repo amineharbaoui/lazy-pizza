@@ -142,13 +142,13 @@ class PhoneAuthViewModelTest {
         fun `updatePhoneValidity when in enter code then does nothing`() {
             // Given
             givenEnterCodeState()
-            val originalCode = currentEnterCodeState().code
+            val originalCode = currentEnterCodeState()
 
             // When
             viewModel.updatePhoneValidity(true)
 
             // Then
-            assertThat(currentEnterCodeState().code).isEqualTo(originalCode)
+            assertThat(currentEnterCodeState()).isEqualTo(originalCode)
         }
     }
 

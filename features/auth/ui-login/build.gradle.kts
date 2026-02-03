@@ -33,5 +33,5 @@ dependencies {
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.auth)
 
-    implementation(projects.core.testing)
+    testImplementation(projects.core.testing)
 }
