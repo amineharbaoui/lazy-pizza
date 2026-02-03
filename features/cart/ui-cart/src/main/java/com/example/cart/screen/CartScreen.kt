@@ -30,7 +30,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.rememberAsyncImagePainter
 import com.example.cart.screen.components.RecommendationsSection
-import com.example.designsystem.R
+import com.example.cart.ui.cart.R
 import com.example.designsystem.components.DsButton
 import com.example.designsystem.components.DsTopBar
 import com.example.designsystem.components.card.DsCardRow
@@ -40,6 +40,7 @@ import com.example.designsystem.theme.LazyPizzaThemePreview
 import com.example.designsystem.utils.PreviewPhoneTablet
 import com.example.designsystem.utils.isWideLayout
 import com.example.model.ProductCategory
+import com.example.designsystem.R as DS_R
 
 @Composable
 fun CartScreen(
@@ -57,7 +58,7 @@ fun CartScreen(
             .padding(bottom = innerPadding.calculateBottomPadding())
             .fillMaxSize(),
     ) {
-        DsTopBar.Secondary(title = stringResource(R.string.cart))
+        DsTopBar.Secondary(title = stringResource(DS_R.string.cart))
         when (val state = uiState) {
             CartUiState.Loading -> LoadingState()
             CartUiState.Empty -> EmptyState(onNavigateToMenu = onNavigateToMenu)
@@ -145,7 +146,7 @@ fun CartScreenContent(
             }
             DsButton.Filled(
                 text = stringResource(
-                    com.example.cart.ui.cart.R.string.proceed_to_checkout,
+                    R.string.proceed_to_checkout,
                     cartUiState.cart.totalPriceFormatted,
                 ),
                 onClick = onNavigateToCheckout,
@@ -184,7 +185,7 @@ private fun EmptyState(
         BoxWithConstraints(modifier = Modifier) {
             val isLandscape = maxWidth > maxHeight
             Image(
-                painter = painterResource(R.drawable.empty_cart),
+                painter = painterResource(DS_R.drawable.empty_cart),
                 contentDescription = "Empty Cart",
                 modifier = Modifier.size(
                     if (isLandscape) 128.dp else 256.dp,
@@ -203,7 +204,7 @@ private fun EmptyState(
         )
         Spacer(Modifier.height(16.dp))
         DsButton.Filled(
-            text = stringResource(com.example.cart.ui.cart.R.string.start_ordering),
+            text = stringResource(R.string.start_ordering),
             onClick = onNavigateToMenu,
         )
     }
@@ -221,7 +222,7 @@ private fun ErrorState(errorMessage: String) {
         BoxWithConstraints(modifier = Modifier) {
             val isLandscape = maxWidth > maxHeight
             Image(
-                painter = painterResource(R.drawable.error),
+                painter = painterResource(DS_R.drawable.error),
                 contentDescription = null,
                 modifier = Modifier.size(
                     if (isLandscape) 128.dp else 256.dp,
