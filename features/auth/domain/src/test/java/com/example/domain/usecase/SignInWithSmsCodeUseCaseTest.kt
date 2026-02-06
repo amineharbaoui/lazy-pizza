@@ -1,7 +1,8 @@
 package com.example.domain.usecase
 
-import com.example.domain.model.AuthUser
-import com.example.domain.repository.PhoneAuthRepository
+import com.example.auth.domain.model.AuthUser
+import com.example.auth.domain.repository.PhoneAuthRepository
+import com.example.auth.domain.usecase.SignInWithSmsCodeUseCase
 import io.mockk.bdd.coGiven
 import io.mockk.bdd.coThen
 import io.mockk.impl.annotations.InjectMockKs

@@ -1,6 +1,7 @@
 package com.example.domain.usecase
 
-import com.example.domain.repository.SessionRepository
+import com.example.auth.domain.repository.SessionRepository
+import com.example.auth.domain.usecase.GetCurrentUserUidUseCase
 import io.mockk.bdd.coGiven
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK

@@ -1,8 +1,8 @@
 package com.example.auth.ui.login
 
 import app.cash.turbine.test
-import com.example.domain.model.AuthUser
-import com.example.domain.usecase.SignInWithSmsCodeUseCase
+import com.example.auth.domain.model.AuthUser
+import com.example.auth.domain.usecase.SignInWithSmsCodeUseCase
 import com.example.domain.usecase.TransferGuestCartToUserUseCase
 import com.example.testing.MainDispatcherExtension
 import io.mockk.Runs

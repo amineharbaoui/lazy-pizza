@@ -1,7 +1,8 @@
 package com.example.domain.usecase
 
 import app.cash.turbine.test
-import com.example.domain.repository.SessionRepository
+import com.example.auth.domain.repository.SessionRepository
+import com.example.auth.domain.usecase.ObserveIsSignedInUseCase
 import io.mockk.bdd.given
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK

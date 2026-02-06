@@ -1,6 +1,6 @@
-package com.example.domain.usecase
+package com.example.auth.domain.usecase
 
-import com.example.domain.repository.SessionRepository
+import com.example.auth.domain.repository.SessionRepository
 import javax.inject.Inject
 
 class GetCurrentUserUidUseCase @Inject constructor(
