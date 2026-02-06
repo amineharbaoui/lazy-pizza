@@ -57,6 +57,7 @@ junit = "6.0.2"
 mockk = "1.14.7"
 turbine = "1.2.1"
 assertJ = "3.27.6"
+kover = "0.9.5"
 
 # --- Tooling ---
 dependencyAnalysis = "3.5.1"
@@ -128,6 +129,7 @@ mockk-bdd = { module = "io.mockk:mockk-bdd", version.ref = "mockk" }
 assertj = { module = "org.assertj:assertj-core", version.ref = "assertJ" }
 turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine" }
 kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinxCoroutinesCore" }
+kover = { module = "org.jetbrains.kotlinx:kover-gradle-plugin", version.ref = "kover"}
 
 android-gradle-plugin = { module = "com.android.tools.build:gradle", version.ref = "agp" }
 kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
@@ -160,6 +162,8 @@ google-services = { id = "com.google.gms.google-services", version.ref = "google
 
 dependency-analysis = { id = "com.autonomousapps.dependency-analysis", version.ref = "dependencyAnalysis" }
 
+kover = { id = "org.jetbrains.kotlinx.kover", version.ref = "kover" }
+
 custom-compose = { id = "custom-compose" }
 custom-hilt = { id = "custom-hilt" }
 custom-android-application = { id = "custom-android-application" }
@@ -167,3 +171,4 @@ custom-android-module = { id = "custom-android-module" }
 custom-kotlin-module = { id = "custom-kotlin-module" }
 custom-room = { id = "custom-room" }
 custom-testing = { id = "custom-testing" }
+custom-code-coverage = { id = "custom-code-coverage" }
