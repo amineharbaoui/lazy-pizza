@@ -1,7 +1,7 @@
-package com.example.data.repository
+package com.example.auth.data.repository
 
-import com.example.data.datasource.PhoneAuthDataSource
-import com.example.data.model.RemoteUser
+import com.example.auth.data.datasource.PhoneAuthDataSource
+import com.example.auth.data.model.RemoteUser
 import com.example.domain.model.AuthUser
 import io.mockk.Runs
 import io.mockk.bdd.coGiven

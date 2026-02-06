@@ -1,6 +1,6 @@
-package com.example.data.datasource
+package com.example.auth.data.datasource
 
-import com.example.data.model.RemoteUser
+import com.example.auth.data.model.RemoteUser
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.PhoneAuthCredential
 import com.google.firebase.auth.PhoneAuthProvider

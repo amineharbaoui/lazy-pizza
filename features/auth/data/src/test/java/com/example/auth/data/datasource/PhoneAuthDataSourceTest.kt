@@ -1,4 +1,4 @@
-package com.example.data.datasource
+package com.example.auth.data.datasource
 
 import com.google.android.gms.tasks.OnSuccessListener
 import com.google.android.gms.tasks.Task
