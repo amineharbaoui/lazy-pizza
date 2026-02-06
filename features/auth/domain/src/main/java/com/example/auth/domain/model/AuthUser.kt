@@ -1,4 +1,4 @@
-package com.example.domain.model
+package com.example.auth.domain.model
 
 data class AuthUser(
     val uid: String,

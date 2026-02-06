@@ -3,7 +3,7 @@ package com.example.checkout.ui.past.orders
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.domain.usecase.GetCurrentUserUidUseCase
+import com.example.auth.domain.usecase.GetCurrentUserUidUseCase
 import com.example.domain.usecase.ObserveOrdersUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow

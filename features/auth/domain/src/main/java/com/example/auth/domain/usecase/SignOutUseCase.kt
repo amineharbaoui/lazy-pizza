@@ -1,6 +1,6 @@
-package com.example.domain.usecase
+package com.example.auth.domain.usecase
 
-import com.example.domain.repository.PhoneAuthRepository
+import com.example.auth.domain.repository.PhoneAuthRepository
 import javax.inject.Inject
 
 class SignOutUseCase @Inject constructor(

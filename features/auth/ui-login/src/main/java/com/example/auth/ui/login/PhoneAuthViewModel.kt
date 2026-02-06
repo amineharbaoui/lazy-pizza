@@ -2,7 +2,7 @@ package com.example.auth.ui.login
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.domain.usecase.SignInWithSmsCodeUseCase
+import com.example.auth.domain.usecase.SignInWithSmsCodeUseCase
 import com.example.domain.usecase.TransferGuestCartToUserUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job

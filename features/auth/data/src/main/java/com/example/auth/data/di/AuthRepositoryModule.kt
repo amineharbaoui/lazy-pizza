@@ -2,8 +2,8 @@ package com.example.auth.data.di
 
 import com.example.auth.data.repository.PhoneAuthRepositoryImpl
 import com.example.auth.data.repository.SessionRepositoryImpl
-import com.example.domain.repository.PhoneAuthRepository
-import com.example.domain.repository.SessionRepository
+import com.example.auth.domain.repository.PhoneAuthRepository
+import com.example.auth.domain.repository.SessionRepository
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn

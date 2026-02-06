@@ -1,6 +1,7 @@
 package com.example.domain.usecase
 
-import com.example.domain.repository.PhoneAuthRepository
+import com.example.auth.domain.repository.PhoneAuthRepository
+import com.example.auth.domain.usecase.SignOutUseCase
 import io.mockk.Runs
 import io.mockk.bdd.coGiven
 import io.mockk.bdd.coThen

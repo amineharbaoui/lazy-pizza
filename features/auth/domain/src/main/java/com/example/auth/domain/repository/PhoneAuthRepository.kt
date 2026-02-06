@@ -1,6 +1,6 @@
-package com.example.domain.repository
+package com.example.auth.domain.repository
 
-import com.example.domain.model.AuthUser
+import com.example.auth.domain.model.AuthUser
 
 interface PhoneAuthRepository {
     suspend fun signInWithCode(
