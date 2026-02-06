@@ -1,4 +1,4 @@
-package com.example.data.model
+package com.example.auth.data.model
 
 data class RemoteUser(
     val uid: String,

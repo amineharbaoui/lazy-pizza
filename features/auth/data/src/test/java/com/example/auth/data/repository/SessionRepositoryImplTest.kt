@@ -1,7 +1,8 @@
-package com.example.data.repository
+package com.example.auth.data.repository
 
 import app.cash.turbine.test
-import com.example.data.datasource.PhoneAuthDataSource
+import com.example.auth.data.datasource.PhoneAuthDataSource
+import com.example.auth.data.model.RemoteUser
 import io.mockk.bdd.given
 import io.mockk.bdd.then
 import io.mockk.every
@@ -58,7 +59,7 @@ class SessionRepositoryImplTest {
     suspend fun `currentUserUid when called then returns current user uid from phone auth data source`() {
         // Given
         val mockUid = "user-id-123"
-        val mockRemoteUser = mockk<com.example.data.model.RemoteUser> {
+        val mockRemoteUser = mockk<RemoteUser> {
             given { uid } returns mockUid
         }
         given { phoneAuthDataSource.getCurrentUser() } returns mockRemoteUser
