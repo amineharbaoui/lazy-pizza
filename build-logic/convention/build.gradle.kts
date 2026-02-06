@@ -10,6 +10,7 @@ dependencies {
     compileOnly(libs.kotlin.gradle.plugin)
     compileOnly(libs.ksp.gradle.plugin)
     compileOnly(libs.room.gradle.plugin)
+    implementation(libs.kover)
 
     gradle.serviceOf<DependenciesAccessors>().classes.asFiles.forEach {
         compileOnly(files(it.absolutePath))
@@ -45,6 +46,10 @@ gradlePlugin {
         register("Test") {
             id = libs.plugins.custom.testing.get().pluginId
             implementationClass = "TestConventionPlugin"
+        }
+        register("CodeCoverage") {
+            id = libs.plugins.custom.code.coverage.get().pluginId
+            implementationClass = "CodeCoverageConventionPlugin"
         }
     }
 }

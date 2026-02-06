@@ -38,6 +38,10 @@ fun DependencyHandler.ksp(notation: Any) {
     add("ksp", notation)
 }
 
+fun DependencyHandler.kover(notation: Any) {
+    add("kover", notation)
+}
+
 fun Project.configureKotlin() {
     extensions.configure<KotlinProjectExtension>("kotlin") {
         val compilerOptions = when (this) {

@@ -10,6 +10,7 @@ plugins {
     alias(libs.plugins.jetbrains.kotlin.jvm) apply false
     alias(libs.plugins.dependency.analysis)
     alias(libs.plugins.room) apply false
+    alias(libs.plugins.custom.code.coverage)
 }
 
 subprojects {
