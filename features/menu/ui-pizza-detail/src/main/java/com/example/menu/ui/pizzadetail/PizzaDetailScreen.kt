@@ -1,4 +1,4 @@
-package com.example.menu.detail
+package com.example.menu.ui.pizzadetail
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibilityScope

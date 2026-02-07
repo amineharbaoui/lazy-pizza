@@ -1,4 +1,4 @@
-package com.example.data.model
+package com.example.order.data.model
 
 data class OrderDto(
     val orderNumber: String = "",

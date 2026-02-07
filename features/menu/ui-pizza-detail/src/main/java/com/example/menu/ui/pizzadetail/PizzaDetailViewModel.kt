@@ -1,12 +1,12 @@
-package com.example.menu.detail
+package com.example.menu.ui.pizzadetail
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.cart.domain.model.CartItem
 import com.example.cart.domain.usecase.AddCartItemUseCase
 import com.example.cart.domain.usecase.ObserveCartItemUseCase
-import com.example.menu.detail.mapper.PizzaDetailDomainToUiMapper
 import com.example.menu.domain.usecase.ObservePizzaDetailUseCase
+import com.example.menu.ui.pizzadetail.mapper.PizzaDetailDomainToUiMapper
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
