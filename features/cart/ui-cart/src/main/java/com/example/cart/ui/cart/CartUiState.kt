@@ -1,4 +1,4 @@
-package com.example.cart.screen
+package com.example.cart.ui.cart
 
 sealed interface CartUiState {
     object Loading : CartUiState

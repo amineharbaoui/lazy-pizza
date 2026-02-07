@@ -1,4 +1,4 @@
-package com.example.cart.screen.components
+package com.example.cart.ui.cart.components
 
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
@@ -16,7 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import coil3.compose.rememberAsyncImagePainter
-import com.example.cart.screen.RecommendedItemDisplayModel
+import com.example.cart.ui.cart.RecommendedItemDisplayModel
 import com.example.designsystem.R
 import com.example.designsystem.components.card.DsCardItem
 import com.example.designsystem.theme.AppColors
