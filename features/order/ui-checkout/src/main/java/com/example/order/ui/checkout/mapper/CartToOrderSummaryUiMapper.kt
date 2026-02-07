@@ -1,10 +1,10 @@
-package com.example.ui.checkout.mapper
+package com.example.order.ui.checkout.mapper
 
 import com.example.cart.domain.model.Cart
 import com.example.cart.domain.model.CartItem
 import com.example.menu.utils.formatting.CurrencyFormatter
-import com.example.ui.checkout.OrderLineUi
-import com.example.ui.checkout.OrderSummaryUi
+import com.example.order.ui.checkout.OrderLineUi
+import com.example.order.ui.checkout.OrderSummaryUi
 import javax.inject.Inject
 
 class CartToOrderSummaryUiMapper @Inject constructor(

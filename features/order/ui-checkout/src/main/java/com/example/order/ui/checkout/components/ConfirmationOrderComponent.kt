@@ -1,4 +1,4 @@
-package com.example.ui.checkout.components
+package com.example.order.ui.checkout.components
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
@@ -28,7 +28,7 @@ import com.example.designsystem.theme.AppTypography
 import com.example.designsystem.theme.LazyPizzaThemePreview
 import com.example.designsystem.utils.PreviewPhoneTablet
 import com.example.designsystem.utils.isWideLayout
-import com.example.ui.checkout.R
+import com.example.orders.ui.checkout.R
 import com.example.designsystem.R as DSR
 
 @Composable

@@ -1,4 +1,4 @@
-package com.example.ui.checkout
+package com.example.order.ui.checkout
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -8,8 +8,8 @@ import com.example.cart.domain.usecase.ObserveCartUseCase
 import com.example.menu.utils.formatting.formatOrderNumber
 import com.example.menu.utils.formatting.toPickupDisplayLabel
 import com.example.order.domain.usecase.PlaceOrderUseCase
-import com.example.ui.checkout.mapper.CartToOrderMapper
-import com.example.ui.checkout.mapper.CheckoutUiStateFactory
+import com.example.order.ui.checkout.mapper.CartToOrderMapper
+import com.example.order.ui.checkout.mapper.CheckoutUiStateFactory
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
