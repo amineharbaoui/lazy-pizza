@@ -4,12 +4,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.auth.domain.usecase.ObserveIsSignedInUseCase
 import com.example.auth.domain.usecase.SignOutUseCase
-import com.example.domain.usecase.AddCartItemUseCase
-import com.example.domain.usecase.ClearCartUseCase
-import com.example.domain.usecase.ObserveCartUseCase
+import com.example.cart.domain.usecase.AddCartItemUseCase
+import com.example.cart.domain.usecase.ClearCartUseCase
+import com.example.cart.domain.usecase.ObserveCartUseCase
+import com.example.cart.domain.usecase.RemoveCartItemUseCase
+import com.example.cart.domain.usecase.UpdateCartItemQuantityUseCase
 import com.example.domain.usecase.ObserveMenuUseCase
-import com.example.domain.usecase.RemoveCartItemUseCase
-import com.example.domain.usecase.UpdateCartItemQuantityUseCase
 import com.example.menu.home.mapper.MenuDomainToUiMapper
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow

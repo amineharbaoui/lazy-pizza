@@ -1,7 +1,7 @@
 package com.example.menu.home.mapper
 
-import com.example.domain.model.Cart
-import com.example.domain.model.CartItem
+import com.example.cart.domain.model.Cart
+import com.example.cart.domain.model.CartItem
 import com.example.domain.model.MenuItem
 import com.example.domain.model.MenuSection
 import com.example.menu.home.MenuContentUiState

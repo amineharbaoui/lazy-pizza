@@ -1,6 +1,6 @@
-package com.example.domain.usecase
+package com.example.cart.domain.usecase
 
-import com.example.domain.repository.CartRepository
+import com.example.cart.domain.repository.CartRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject

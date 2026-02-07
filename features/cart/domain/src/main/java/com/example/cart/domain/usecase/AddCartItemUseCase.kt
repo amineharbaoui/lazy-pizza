@@ -1,7 +1,7 @@
-package com.example.domain.usecase
+package com.example.cart.domain.usecase
 
-import com.example.domain.model.CartItem
-import com.example.domain.repository.CartRepository
+import com.example.cart.domain.model.CartItem
+import com.example.cart.domain.repository.CartRepository
 import javax.inject.Inject
 
 class AddCartItemUseCase @Inject constructor(private val repository: CartRepository) {

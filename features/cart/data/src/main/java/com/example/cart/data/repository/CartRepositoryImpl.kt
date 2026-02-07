@@ -3,9 +3,9 @@ package com.example.cart.data.repository
 import com.example.auth.domain.repository.SessionRepository
 import com.example.cart.data.datasource.CartLocalDataSource
 import com.example.cart.data.datasource.CartTransferLocalDataSource
-import com.example.domain.model.Cart
-import com.example.domain.model.CartItem
-import com.example.domain.repository.CartRepository
+import com.example.cart.domain.model.Cart
+import com.example.cart.domain.model.CartItem
+import com.example.cart.domain.repository.CartRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flatMapLatest

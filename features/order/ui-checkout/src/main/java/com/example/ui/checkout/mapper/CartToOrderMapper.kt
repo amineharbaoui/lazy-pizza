@@ -2,9 +2,9 @@ package com.example.ui.checkout.mapper
 
 import CheckoutUiState
 import PickupOption
-import com.example.domain.model.Cart
-import com.example.domain.model.CartItem
-import com.example.domain.model.CartTopping
+import com.example.cart.domain.model.Cart
+import com.example.cart.domain.model.CartItem
+import com.example.cart.domain.model.CartTopping
 import com.example.domain.model.Order
 import com.example.domain.model.OrderItem
 import com.example.domain.model.OrderTopping

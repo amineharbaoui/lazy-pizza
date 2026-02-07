@@ -6,8 +6,8 @@ import PickupOption
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.auth.domain.usecase.GetCurrentUserUidUseCase
-import com.example.domain.usecase.ClearCartUseCase
-import com.example.domain.usecase.ObserveCartUseCase
+import com.example.cart.domain.usecase.ClearCartUseCase
+import com.example.cart.domain.usecase.ObserveCartUseCase
 import com.example.domain.usecase.PlaceOrderUseCase
 import com.example.menu.utils.formatting.formatOrderNumber
 import com.example.menu.utils.formatting.toPickupDisplayLabel

@@ -1,7 +1,7 @@
 package com.example.menu.detail.mapper
 
-import com.example.domain.model.CartItem
-import com.example.domain.model.CartTopping
+import com.example.cart.domain.model.CartItem
+import com.example.cart.domain.model.CartTopping
 import com.example.domain.model.PizzaDetail
 import com.example.domain.model.Topping
 import com.example.menu.detail.PizzaDetailDisplayModel
