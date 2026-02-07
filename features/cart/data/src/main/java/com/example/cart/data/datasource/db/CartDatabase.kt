@@ -1,12 +1,12 @@
-package com.example.data.datasource.db
+package com.example.cart.data.datasource.db
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
-import com.example.data.datasource.db.dao.CartDao
-import com.example.data.datasource.db.dao.CartMetadataDao
-import com.example.data.datasource.db.entity.CartItemEntity
-import com.example.data.datasource.db.entity.CartMetadataEntity
-import com.example.data.datasource.db.entity.CartToppingEntity
+import com.example.cart.data.datasource.db.dao.CartDao
+import com.example.cart.data.datasource.db.dao.CartMetadataDao
+import com.example.cart.data.datasource.db.entity.CartItemEntity
+import com.example.cart.data.datasource.db.entity.CartMetadataEntity
+import com.example.cart.data.datasource.db.entity.CartToppingEntity
 
 @Database(
     entities = [

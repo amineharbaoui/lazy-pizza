@@ -1,7 +1,7 @@
-package com.example.data.mapper
+package com.example.cart.data.mapper
 
-import com.example.data.datasource.db.entity.CartItemEntity
-import com.example.data.datasource.db.entity.CartToppingEntity
+import com.example.cart.data.datasource.db.entity.CartItemEntity
+import com.example.cart.data.datasource.db.entity.CartToppingEntity
 import com.example.domain.model.CartItem
 import com.example.domain.model.CartTopping
 import javax.inject.Inject

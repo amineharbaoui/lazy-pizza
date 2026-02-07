@@ -1,6 +1,6 @@
-package com.example.data.di
+package com.example.cart.data.di
 
-import com.example.data.repository.CartRepositoryImpl
+import com.example.cart.data.repository.CartRepositoryImpl
 import com.example.domain.repository.CartRepository
 import dagger.Binds
 import dagger.Module

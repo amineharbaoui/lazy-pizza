@@ -1,10 +1,10 @@
-package com.example.data.di
+package com.example.cart.data.di
 
 import android.content.Context
 import androidx.room.Room
-import com.example.data.datasource.db.CartDatabase
-import com.example.data.datasource.db.dao.CartDao
-import com.example.data.datasource.db.dao.CartMetadataDao
+import com.example.cart.data.datasource.db.CartDatabase
+import com.example.cart.data.datasource.db.dao.CartDao
+import com.example.cart.data.datasource.db.dao.CartMetadataDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

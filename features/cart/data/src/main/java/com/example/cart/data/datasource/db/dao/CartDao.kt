@@ -1,4 +1,4 @@
-package com.example.data.datasource.db.dao
+package com.example.cart.data.datasource.db.dao
 
 import androidx.room.Dao
 import androidx.room.Insert
@@ -6,9 +6,9 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Update
-import com.example.data.datasource.db.entity.CartItemEntity
-import com.example.data.datasource.db.entity.CartLineWithToppings
-import com.example.data.datasource.db.entity.CartToppingEntity
+import com.example.cart.data.datasource.db.entity.CartItemEntity
+import com.example.cart.data.datasource.db.entity.CartLineWithToppings
+import com.example.cart.data.datasource.db.entity.CartToppingEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao

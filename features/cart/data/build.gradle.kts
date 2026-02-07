@@ -7,11 +7,8 @@ plugins {
 android {
     namespace = "com.example.cart.data"
 
-    defaultConfig {
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        consumerProguardFiles("consumer-rules.pro")
-    }
     buildFeatures { buildConfig = true }
+
     buildTypes {
         debug {
             buildConfigField("long", "CART_TTL_SECONDS", "1800")
