@@ -1,13 +1,13 @@
-package com.example.menu.home.mapper
+package com.example.menu.ui.home.mapper
 
 import com.example.cart.domain.model.Cart
 import com.example.cart.domain.model.CartItem
 import com.example.menu.domain.model.MenuItem
 import com.example.menu.domain.model.MenuSection
-import com.example.menu.home.MenuContentUiState
-import com.example.menu.home.MenuItemDisplayModel
-import com.example.menu.home.MenuSectionDisplayModel
-import com.example.menu.home.MenuTag
+import com.example.menu.ui.home.MenuContentUiState
+import com.example.menu.ui.home.MenuItemDisplayModel
+import com.example.menu.ui.home.MenuSectionDisplayModel
+import com.example.menu.ui.home.MenuTag
 import com.example.menu.utils.formatting.CurrencyFormatter
 import com.example.model.ProductCategory
 import javax.inject.Inject

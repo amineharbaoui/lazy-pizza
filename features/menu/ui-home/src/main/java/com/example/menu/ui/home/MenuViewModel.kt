@@ -1,4 +1,4 @@
-package com.example.menu.home
+package com.example.menu.ui.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -10,7 +10,7 @@ import com.example.cart.domain.usecase.ObserveCartUseCase
 import com.example.cart.domain.usecase.RemoveCartItemUseCase
 import com.example.cart.domain.usecase.UpdateCartItemQuantityUseCase
 import com.example.menu.domain.usecase.ObserveMenuUseCase
-import com.example.menu.home.mapper.MenuDomainToUiMapper
+import com.example.menu.ui.home.mapper.MenuDomainToUiMapper
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted

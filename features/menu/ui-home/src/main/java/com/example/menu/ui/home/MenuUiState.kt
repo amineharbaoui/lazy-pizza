@@ -1,4 +1,4 @@
-package com.example.menu.home
+package com.example.menu.ui.home
 
 data class MenuUiState(
     val isLoggedIn: Boolean,

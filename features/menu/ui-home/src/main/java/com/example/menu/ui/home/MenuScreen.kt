@@ -1,4 +1,4 @@
-package com.example.menu.home
+package com.example.menu.ui.home
 
 import android.content.Context
 import android.content.Intent
@@ -64,8 +64,7 @@ import com.example.designsystem.theme.AppTypography
 import com.example.designsystem.theme.LazyPizzaThemePreview
 import com.example.designsystem.utils.PreviewPhoneTablet
 import com.example.designsystem.utils.isWideLayout
-import com.example.menu.home.components.ProductCard
-import com.example.menu.ui.home.R
+import com.example.menu.ui.home.components.ProductCard
 import com.example.model.ProductCategory
 import kotlinx.coroutines.launch
 import com.example.designsystem.R as DsR

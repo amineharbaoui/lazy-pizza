@@ -1,4 +1,4 @@
-package com.example.menu.home.components
+package com.example.menu.ui.home.components
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibilityScope
@@ -11,7 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import coil3.compose.rememberAsyncImagePainter
 import com.example.designsystem.components.card.DsCardRow
-import com.example.menu.home.MenuItemDisplayModel
+import com.example.menu.ui.home.MenuItemDisplayModel
 
 @Composable
 fun ProductCard(
