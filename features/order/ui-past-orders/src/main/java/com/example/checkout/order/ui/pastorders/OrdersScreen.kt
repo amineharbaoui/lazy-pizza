@@ -1,4 +1,4 @@
-package com.example.checkout.ui.past.orders
+package com.example.checkout.order.ui.pastorders
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -149,23 +149,23 @@ private fun NotLoggedInState(
             val isLandscape = maxWidth > maxHeight
             Image(
                 painter = painterResource(R.drawable.not_logged_in),
-                contentDescription = stringResource(com.example.checkout.ui.past.orders.R.string.not_signed_in_image_description),
+                contentDescription = stringResource(com.example.checkout.ui.pastorders.R.string.not_signed_in_image_description),
                 modifier = Modifier.size(if (isLandscape) 128.dp else 256.dp),
             )
         }
         Text(
-            text = stringResource(com.example.checkout.ui.past.orders.R.string.not_signed_in_title),
+            text = stringResource(com.example.checkout.ui.pastorders.R.string.not_signed_in_title),
             style = AppTypography.Title1SemiBold,
             color = AppColors.TextPrimary,
         )
         Text(
-            text = stringResource(com.example.checkout.ui.past.orders.R.string.not_signed_in_message),
+            text = stringResource(com.example.checkout.ui.pastorders.R.string.not_signed_in_message),
             style = AppTypography.Body3Regular,
             color = AppColors.TextSecondary,
         )
         Spacer(Modifier.height(16.dp))
         DsButton.Filled(
-            text = stringResource(com.example.checkout.ui.past.orders.R.string.sign_in),
+            text = stringResource(com.example.checkout.ui.pastorders.R.string.sign_in),
             onClick = onSignInClick,
         )
     }
