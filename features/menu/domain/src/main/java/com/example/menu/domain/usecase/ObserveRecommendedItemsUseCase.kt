@@ -1,6 +1,6 @@
-package com.example.domain.usecase
+package com.example.menu.domain.usecase
 
-import com.example.domain.repository.RecommendedItemsRepository
+import com.example.menu.domain.repository.RecommendedItemsRepository
 import javax.inject.Inject
 
 class ObserveRecommendedItemsUseCase @Inject constructor(private val recommendedItemsRepository: RecommendedItemsRepository) {

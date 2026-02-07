@@ -1,7 +1,7 @@
-package com.example.domain.usecase
+package com.example.menu.domain.usecase
 
-import com.example.domain.model.MenuSection
-import com.example.domain.repository.MenuRepository
+import com.example.menu.domain.model.MenuSection
+import com.example.menu.domain.repository.MenuRepository
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 

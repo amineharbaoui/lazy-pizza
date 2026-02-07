@@ -7,7 +7,7 @@ import com.example.cart.domain.usecase.ObserveCartUseCase
 import com.example.cart.domain.usecase.RemoveCartItemUseCase
 import com.example.cart.domain.usecase.UpdateCartItemQuantityUseCase
 import com.example.cart.ui.cart.mapper.CartDomainToUiMapper
-import com.example.domain.usecase.ObserveRecommendedItemsUseCase
+import com.example.menu.domain.usecase.ObserveRecommendedItemsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted

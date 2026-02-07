@@ -6,7 +6,7 @@ import com.example.cart.ui.cart.CartDisplayModel
 import com.example.cart.ui.cart.CartLineDisplayModel
 import com.example.cart.ui.cart.CartUiState
 import com.example.cart.ui.cart.RecommendedItemDisplayModel
-import com.example.domain.model.MenuItem
+import com.example.menu.domain.model.MenuItem
 import com.example.menu.utils.formatting.CurrencyFormatter
 import javax.inject.Inject
 

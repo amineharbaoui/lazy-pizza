@@ -1,11 +1,11 @@
 package com.example.menu.data.repository
 
-import com.example.domain.model.MenuItem
-import com.example.domain.model.MenuSection
-import com.example.domain.model.Topping
-import com.example.domain.repository.MenuRepository
 import com.example.menu.data.datasource.ProductRemoteDataSource
 import com.example.menu.data.mapper.ProductDtoToDomainMapper
+import com.example.menu.domain.model.MenuItem
+import com.example.menu.domain.model.MenuSection
+import com.example.menu.domain.model.Topping
+import com.example.menu.domain.repository.MenuRepository
 import com.example.model.ProductCategory
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
