@@ -1,9 +1,5 @@
 package com.example.ui.checkout.components
 
-import PickupDayUiModel
-import PickupSelectionUiModel
-import PickupTimeSlotUiModel
-import SchedulePickupUiModel
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -37,6 +33,10 @@ import com.example.designsystem.theme.AppColors
 import com.example.designsystem.theme.AppTypography
 import com.example.designsystem.theme.LazyPizzaThemePreview
 import com.example.designsystem.utils.PreviewPhoneTablet
+import com.example.ui.checkout.PickupDayUiModel
+import com.example.ui.checkout.PickupSelectionUiModel
+import com.example.ui.checkout.PickupTimeSlotUiModel
+import com.example.ui.checkout.SchedulePickupUiModel
 
 @Composable
 fun SchedulePickUpContent(

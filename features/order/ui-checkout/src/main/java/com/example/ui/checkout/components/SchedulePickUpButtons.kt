@@ -1,7 +1,5 @@
 package com.example.ui.checkout.components
 
-import PickupOption
-import PickupOptionCardUiModel
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -23,6 +21,8 @@ import com.example.designsystem.theme.AppTypography
 import com.example.designsystem.theme.LazyPizzaThemePreview
 import com.example.designsystem.utils.PreviewPhoneTablet
 import com.example.designsystem.utils.isWideLayout
+import com.example.ui.checkout.PickupOption
+import com.example.ui.checkout.PickupOptionCardUiModel
 
 @Composable
 fun SchedulePickUpButtons(

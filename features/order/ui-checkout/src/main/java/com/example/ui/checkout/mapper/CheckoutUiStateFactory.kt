@@ -1,14 +1,14 @@
 package com.example.ui.checkout.mapper
 
-import CheckoutUiState
-import PickupDayUiModel
-import PickupOption
-import PickupOptionCardUiModel
-import PickupSelectionUiModel
-import PickupTimeSlotUiModel
-import PickupUiState
-import SchedulePickupUiModel
 import com.example.cart.domain.model.Cart
+import com.example.ui.checkout.CheckoutUiState
+import com.example.ui.checkout.PickupDayUiModel
+import com.example.ui.checkout.PickupOption
+import com.example.ui.checkout.PickupOptionCardUiModel
+import com.example.ui.checkout.PickupSelectionUiModel
+import com.example.ui.checkout.PickupTimeSlotUiModel
+import com.example.ui.checkout.PickupUiState
+import com.example.ui.checkout.SchedulePickupUiModel
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter

@@ -1,13 +1,5 @@
 package com.example.ui.checkout
 
-import CheckoutUiState
-import OrderLineUi
-import OrderSummaryUi
-import PickupOption
-import PickupOptionCardUiModel
-import PickupSelectionUiModel
-import PickupUiState
-import SchedulePickupUiModel
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues

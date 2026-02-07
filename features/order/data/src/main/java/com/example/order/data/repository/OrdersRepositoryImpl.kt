@@ -1,10 +1,10 @@
 package com.example.order.data.repository
 
-import com.example.domain.model.Order
-import com.example.domain.repository.OrdersRepository
 import com.example.order.data.datasource.OrdersRemoteDataSource
 import com.example.order.data.mapper.OrderDomainToDtoMapper
 import com.example.order.data.mapper.OrderDtoToDomainMapper
+import com.example.order.domain.model.Order
+import com.example.order.domain.repository.OrdersRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject

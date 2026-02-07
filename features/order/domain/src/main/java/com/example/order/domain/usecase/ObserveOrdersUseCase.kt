@@ -1,8 +1,8 @@
-package com.example.domain.usecase
+package com.example.order.domain.usecase
 
-import com.example.domain.model.Order
-import com.example.domain.repository.OrdersRepository
 import com.example.model.OrderStatus
+import com.example.order.domain.model.Order
+import com.example.order.domain.repository.OrdersRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import java.time.Instant

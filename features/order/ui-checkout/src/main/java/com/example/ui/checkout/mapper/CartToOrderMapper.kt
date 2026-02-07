@@ -1,15 +1,15 @@
 package com.example.ui.checkout.mapper
 
-import CheckoutUiState
-import PickupOption
 import com.example.cart.domain.model.Cart
 import com.example.cart.domain.model.CartItem
 import com.example.cart.domain.model.CartTopping
-import com.example.domain.model.Order
-import com.example.domain.model.OrderItem
-import com.example.domain.model.OrderTopping
-import com.example.domain.model.PickupType
 import com.example.model.OrderStatus
+import com.example.order.domain.model.Order
+import com.example.order.domain.model.OrderItem
+import com.example.order.domain.model.OrderTopping
+import com.example.order.domain.model.PickupType
+import com.example.ui.checkout.CheckoutUiState
+import com.example.ui.checkout.PickupOption
 import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalTime

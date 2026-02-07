@@ -1,16 +1,13 @@
 package com.example.ui.checkout
 
-import CheckoutUiState
-import PickupConfirmationUiModel
-import PickupOption
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.auth.domain.usecase.GetCurrentUserUidUseCase
 import com.example.cart.domain.usecase.ClearCartUseCase
 import com.example.cart.domain.usecase.ObserveCartUseCase
-import com.example.domain.usecase.PlaceOrderUseCase
 import com.example.menu.utils.formatting.formatOrderNumber
 import com.example.menu.utils.formatting.toPickupDisplayLabel
+import com.example.order.domain.usecase.PlaceOrderUseCase
 import com.example.ui.checkout.mapper.CartToOrderMapper
 import com.example.ui.checkout.mapper.CheckoutUiStateFactory
 import dagger.hilt.android.lifecycle.HiltViewModel

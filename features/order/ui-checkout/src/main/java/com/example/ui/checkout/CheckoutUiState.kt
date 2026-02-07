@@ -1,3 +1,5 @@
+package com.example.ui.checkout
+
 sealed interface CheckoutUiState {
 
     data object Loading : CheckoutUiState
