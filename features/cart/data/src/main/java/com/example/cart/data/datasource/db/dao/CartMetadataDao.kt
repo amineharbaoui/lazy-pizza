@@ -1,10 +1,10 @@
-package com.example.data.datasource.db.dao
+package com.example.cart.data.datasource.db.dao
 
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import com.example.data.datasource.db.entity.CartMetadataEntity
+import com.example.cart.data.datasource.db.entity.CartMetadataEntity
 
 @Dao
 interface CartMetadataDao {
