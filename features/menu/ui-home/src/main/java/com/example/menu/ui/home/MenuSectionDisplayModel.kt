@@ -1,4 +1,4 @@
-package com.example.menu.home
+package com.example.menu.ui.home
 
 import com.example.menu.utils.formatting.toFormattedCurrency
 import com.example.model.ProductCategory

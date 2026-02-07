@@ -19,7 +19,7 @@ import com.example.cart.ui.cart.CartScreen
 import com.example.checkout.ui.past.orders.OrdersScreen
 import com.example.menu.detail.PizzaDetailArgs
 import com.example.menu.detail.PizzaDetailScreen
-import com.example.menu.home.MenuScreen
+import com.example.menu.ui.home.MenuScreen
 import com.example.ui.checkout.CheckoutScreen
 
 @Composable
