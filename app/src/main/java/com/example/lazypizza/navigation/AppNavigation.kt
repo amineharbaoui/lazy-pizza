@@ -20,7 +20,7 @@ import com.example.checkout.ui.past.orders.OrdersScreen
 import com.example.menu.ui.home.MenuScreen
 import com.example.menu.ui.pizzadetail.PizzaDetailArgs
 import com.example.menu.ui.pizzadetail.PizzaDetailScreen
-import com.example.ui.checkout.CheckoutScreen
+import com.example.order.ui.checkout.CheckoutScreen
 
 @Composable
 fun AppNavigation(

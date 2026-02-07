@@ -1,4 +1,4 @@
-package com.example.ui.checkout.mapper
+package com.example.order.ui.checkout.mapper
 
 import com.example.cart.domain.model.Cart
 import com.example.cart.domain.model.CartItem
@@ -8,8 +8,8 @@ import com.example.order.domain.model.Order
 import com.example.order.domain.model.OrderItem
 import com.example.order.domain.model.OrderTopping
 import com.example.order.domain.model.PickupType
-import com.example.ui.checkout.CheckoutUiState
-import com.example.ui.checkout.PickupOption
+import com.example.order.ui.checkout.CheckoutUiState
+import com.example.order.ui.checkout.PickupOption
 import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalTime

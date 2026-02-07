@@ -1,4 +1,4 @@
-package com.example.ui.checkout
+package com.example.order.ui.checkout
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -37,10 +37,10 @@ import com.example.designsystem.theme.AppColors
 import com.example.designsystem.theme.AppTypography
 import com.example.designsystem.theme.LazyPizzaThemePreview
 import com.example.designsystem.utils.PreviewPhoneTablet
-import com.example.ui.checkout.components.ConfirmationOrderComponent
-import com.example.ui.checkout.components.OrderSummaryContent
-import com.example.ui.checkout.components.SchedulePickUpButtons
-import com.example.ui.checkout.components.SchedulePickUpContent
+import com.example.order.ui.checkout.components.ConfirmationOrderComponent
+import com.example.order.ui.checkout.components.OrderSummaryContent
+import com.example.order.ui.checkout.components.SchedulePickUpButtons
+import com.example.order.ui.checkout.components.SchedulePickUpContent
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

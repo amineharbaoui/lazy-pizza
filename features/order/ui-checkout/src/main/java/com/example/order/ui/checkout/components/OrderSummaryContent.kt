@@ -1,4 +1,4 @@
-package com.example.ui.checkout.components
+package com.example.order.ui.checkout.components
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement

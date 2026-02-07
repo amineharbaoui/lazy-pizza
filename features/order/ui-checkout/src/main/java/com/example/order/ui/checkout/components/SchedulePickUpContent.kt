@@ -1,4 +1,4 @@
-package com.example.ui.checkout.components
+package com.example.order.ui.checkout.components
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
@@ -33,10 +33,10 @@ import com.example.designsystem.theme.AppColors
 import com.example.designsystem.theme.AppTypography
 import com.example.designsystem.theme.LazyPizzaThemePreview
 import com.example.designsystem.utils.PreviewPhoneTablet
-import com.example.ui.checkout.PickupDayUiModel
-import com.example.ui.checkout.PickupSelectionUiModel
-import com.example.ui.checkout.PickupTimeSlotUiModel
-import com.example.ui.checkout.SchedulePickupUiModel
+import com.example.order.ui.checkout.PickupDayUiModel
+import com.example.order.ui.checkout.PickupSelectionUiModel
+import com.example.order.ui.checkout.PickupTimeSlotUiModel
+import com.example.order.ui.checkout.SchedulePickupUiModel
 
 @Composable
 fun SchedulePickUpContent(

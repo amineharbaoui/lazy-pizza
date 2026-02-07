@@ -1,4 +1,4 @@
-package com.example.ui.checkout
+package com.example.order.ui.checkout
 
 sealed interface CheckoutUiState {
 
