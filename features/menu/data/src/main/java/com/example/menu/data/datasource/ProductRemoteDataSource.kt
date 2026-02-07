@@ -1,6 +1,6 @@
-package com.example.data.datasource
+package com.example.menu.data.datasource
 
-import com.example.data.model.ProductDto
+import com.example.menu.data.model.ProductDto
 import com.example.model.ProductCategory
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.channels.awaitClose

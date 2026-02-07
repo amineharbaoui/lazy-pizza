@@ -1,4 +1,4 @@
-package com.example.data.model
+package com.example.menu.data.model
 
 import com.google.firebase.firestore.Exclude
 

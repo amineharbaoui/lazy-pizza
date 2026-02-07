@@ -1,9 +1,9 @@
-package com.example.data.repository
+package com.example.menu.data.repository
 
-import com.example.data.datasource.ProductRemoteDataSource
-import com.example.data.mapper.ProductDtoToDomainMapper
 import com.example.domain.model.MenuItem
 import com.example.domain.repository.RecommendedItemsRepository
+import com.example.menu.data.datasource.ProductRemoteDataSource
+import com.example.menu.data.mapper.ProductDtoToDomainMapper
 import com.example.model.ProductCategory
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
