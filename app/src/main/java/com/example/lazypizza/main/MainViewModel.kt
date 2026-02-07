@@ -2,8 +2,8 @@ package com.example.lazypizza.main
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.cart.domain.usecase.ObserveCartItemCountUseCase
 import com.example.common.NetworkMonitor
-import com.example.domain.usecase.ObserveCartItemCountUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow

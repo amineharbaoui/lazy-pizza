@@ -8,7 +8,7 @@ import PickupSelectionUiModel
 import PickupTimeSlotUiModel
 import PickupUiState
 import SchedulePickupUiModel
-import com.example.domain.model.Cart
+import com.example.cart.domain.model.Cart
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter

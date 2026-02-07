@@ -2,9 +2,9 @@ package com.example.menu.detail
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.domain.model.CartItem
-import com.example.domain.usecase.AddCartItemUseCase
-import com.example.domain.usecase.ObserveCartItemUseCase
+import com.example.cart.domain.model.CartItem
+import com.example.cart.domain.usecase.AddCartItemUseCase
+import com.example.cart.domain.usecase.ObserveCartItemUseCase
 import com.example.domain.usecase.ObservePizzaDetailUseCase
 import com.example.menu.detail.mapper.PizzaDetailDomainToUiMapper
 import dagger.hilt.android.lifecycle.HiltViewModel

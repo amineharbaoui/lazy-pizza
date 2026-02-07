@@ -7,8 +7,8 @@ import com.example.cart.data.di.CartTouchThrottle
 import com.example.cart.data.di.CartTtl
 import com.example.cart.data.mapper.CartDomainToEntityMapper
 import com.example.cart.data.mapper.CartEntityToDomainMapper
-import com.example.domain.model.Cart
-import com.example.domain.model.CartItem
+import com.example.cart.domain.model.Cart
+import com.example.cart.domain.model.CartItem
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow

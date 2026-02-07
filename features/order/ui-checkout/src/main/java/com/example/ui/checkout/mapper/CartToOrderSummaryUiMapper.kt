@@ -2,8 +2,8 @@ package com.example.ui.checkout.mapper
 
 import OrderLineUi
 import OrderSummaryUi
-import com.example.domain.model.Cart
-import com.example.domain.model.CartItem
+import com.example.cart.domain.model.Cart
+import com.example.cart.domain.model.CartItem
 import com.example.menu.utils.formatting.CurrencyFormatter
 import javax.inject.Inject
 

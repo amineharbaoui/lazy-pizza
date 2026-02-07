@@ -2,12 +2,12 @@ package com.example.cart.screen
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.cart.domain.usecase.AddCartItemUseCase
+import com.example.cart.domain.usecase.ObserveCartUseCase
+import com.example.cart.domain.usecase.RemoveCartItemUseCase
+import com.example.cart.domain.usecase.UpdateCartItemQuantityUseCase
 import com.example.cart.screen.mapper.CartDomainToUiMapper
-import com.example.domain.usecase.AddCartItemUseCase
-import com.example.domain.usecase.ObserveCartUseCase
 import com.example.domain.usecase.ObserveRecommendedItemsUseCase
-import com.example.domain.usecase.RemoveCartItemUseCase
-import com.example.domain.usecase.UpdateCartItemQuantityUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted

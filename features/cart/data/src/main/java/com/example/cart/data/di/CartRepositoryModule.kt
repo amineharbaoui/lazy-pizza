@@ -1,7 +1,7 @@
 package com.example.cart.data.di
 
 import com.example.cart.data.repository.CartRepositoryImpl
-import com.example.domain.repository.CartRepository
+import com.example.cart.domain.repository.CartRepository
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn

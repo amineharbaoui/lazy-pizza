@@ -2,8 +2,8 @@ package com.example.cart.data.mapper
 
 import com.example.cart.data.datasource.db.entity.CartLineWithToppings
 import com.example.cart.data.datasource.db.entity.CartToppingEntity
-import com.example.domain.model.CartItem
-import com.example.domain.model.CartTopping
+import com.example.cart.domain.model.CartItem
+import com.example.cart.domain.model.CartTopping
 import com.example.model.ProductCategory
 import javax.inject.Inject
 
