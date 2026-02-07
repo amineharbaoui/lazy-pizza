@@ -1,8 +1,8 @@
-package com.example.domain.repository
+package com.example.menu.domain.repository
 
-import com.example.domain.model.MenuItem
-import com.example.domain.model.MenuSection
-import com.example.domain.model.Topping
+import com.example.menu.domain.model.MenuItem
+import com.example.menu.domain.model.MenuSection
+import com.example.menu.domain.model.Topping
 import kotlinx.coroutines.flow.Flow
 
 interface MenuRepository {

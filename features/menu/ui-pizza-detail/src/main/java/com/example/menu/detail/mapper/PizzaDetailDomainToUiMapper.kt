@@ -2,11 +2,11 @@ package com.example.menu.detail.mapper
 
 import com.example.cart.domain.model.CartItem
 import com.example.cart.domain.model.CartTopping
-import com.example.domain.model.PizzaDetail
-import com.example.domain.model.Topping
 import com.example.menu.detail.PizzaDetailDisplayModel
 import com.example.menu.detail.PizzaDetailUiState
 import com.example.menu.detail.ToppingDisplayModel
+import com.example.menu.domain.model.PizzaDetail
+import com.example.menu.domain.model.Topping
 import com.example.menu.utils.formatting.CurrencyFormatter
 import com.example.model.ProductCategory
 import java.util.UUID

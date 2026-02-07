@@ -1,4 +1,4 @@
-package com.example.domain.model
+package com.example.menu.domain.model
 
 data class PizzaDetail(
     val pizza: MenuItem.PizzaItem,
