@@ -4,7 +4,7 @@ import app.cash.turbine.test
 import com.example.auth.domain.model.AuthUser
 import com.example.auth.domain.usecase.SignInWithSmsCodeUseCase
 import com.example.cart.domain.usecase.TransferGuestCartToUserUseCase
-import com.example.testing.MainDispatcherExtension
+import com.example.core.testing.MainDispatcherExtension
 import io.mockk.Runs
 import io.mockk.bdd.coGiven
 import io.mockk.bdd.coThen

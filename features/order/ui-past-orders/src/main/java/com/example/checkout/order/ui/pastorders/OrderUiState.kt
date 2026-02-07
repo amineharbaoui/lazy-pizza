@@ -1,6 +1,6 @@
 package com.example.checkout.order.ui.pastorders
 
-import com.example.model.OrderStatus
+import com.example.core.model.OrderStatus
 
 sealed interface OrderUiState {
     object Loading : OrderUiState

@@ -2,7 +2,7 @@ package com.example.order.ui.checkout.mapper
 
 import com.example.cart.domain.model.Cart
 import com.example.cart.domain.model.CartItem
-import com.example.menu.utils.formatting.CurrencyFormatter
+import com.example.core.ui.utils.formatting.CurrencyFormatter
 import com.example.order.ui.checkout.OrderLineUi
 import com.example.order.ui.checkout.OrderSummaryUi
 import javax.inject.Inject

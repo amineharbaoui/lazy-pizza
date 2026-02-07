@@ -41,14 +41,14 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.rememberAsyncImagePainter
 import com.example.core.designsystem.R
-import com.example.designsystem.components.DsButton
-import com.example.designsystem.components.DsTopBar
-import com.example.designsystem.components.card.DsCardItem
-import com.example.designsystem.theme.AppColors
-import com.example.designsystem.theme.AppTypography
-import com.example.designsystem.theme.LazyPizzaThemePreview
-import com.example.designsystem.utils.PreviewPhoneTablet
-import com.example.designsystem.utils.isWideLayout
+import com.example.core.designsystem.components.DsButton
+import com.example.core.designsystem.components.DsTopBar
+import com.example.core.designsystem.components.card.DsCardItem
+import com.example.core.designsystem.theme.AppColors
+import com.example.core.designsystem.theme.AppTypography
+import com.example.core.designsystem.theme.LazyPizzaThemePreview
+import com.example.core.designsystem.utils.PreviewPhoneTablet
+import com.example.core.designsystem.utils.isWideLayout
 import java.util.UUID
 
 @Composable

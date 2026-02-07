@@ -1,7 +1,7 @@
 package com.example.order.data.mapper
 
-import com.example.model.OrderStatus
-import com.example.model.ProductCategory
+import com.example.core.model.OrderStatus
+import com.example.core.model.ProductCategory
 import com.example.order.data.model.OrderDto
 import com.example.order.domain.model.Order
 import com.example.order.domain.model.OrderItem

@@ -1,7 +1,7 @@
 package com.example.checkout.order.ui.pastorders
 
-import com.example.menu.utils.formatting.CurrencyFormatter
-import com.example.menu.utils.formatting.formatForOrderCard
+import com.example.core.ui.utils.formatting.CurrencyFormatter
+import com.example.core.ui.utils.formatting.formatForOrderCard
 import com.example.order.domain.model.Order
 import javax.inject.Inject
 

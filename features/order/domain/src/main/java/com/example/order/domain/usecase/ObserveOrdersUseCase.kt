@@ -1,6 +1,6 @@
 package com.example.order.domain.usecase
 
-import com.example.model.OrderStatus
+import com.example.core.model.OrderStatus
 import com.example.order.domain.model.Order
 import com.example.order.domain.repository.OrdersRepository
 import kotlinx.coroutines.flow.Flow

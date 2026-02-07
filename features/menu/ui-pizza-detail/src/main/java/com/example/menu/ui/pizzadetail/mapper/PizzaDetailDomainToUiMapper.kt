@@ -2,13 +2,13 @@ package com.example.menu.ui.pizzadetail.mapper
 
 import com.example.cart.domain.model.CartItem
 import com.example.cart.domain.model.CartTopping
+import com.example.core.model.ProductCategory
+import com.example.core.ui.utils.formatting.CurrencyFormatter
 import com.example.menu.domain.model.PizzaDetail
 import com.example.menu.domain.model.Topping
 import com.example.menu.ui.pizzadetail.PizzaDetailDisplayModel
 import com.example.menu.ui.pizzadetail.PizzaDetailUiState
 import com.example.menu.ui.pizzadetail.ToppingDisplayModel
-import com.example.menu.utils.formatting.CurrencyFormatter
-import com.example.model.ProductCategory
 import java.util.UUID
 import javax.inject.Inject
 

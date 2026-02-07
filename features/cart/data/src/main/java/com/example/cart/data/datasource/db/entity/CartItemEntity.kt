@@ -2,7 +2,7 @@ package com.example.cart.data.datasource.db.entity
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.example.model.ProductCategory
+import com.example.core.model.ProductCategory
 
 @Entity(tableName = "cart_items")
 data class CartItemEntity(

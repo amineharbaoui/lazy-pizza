@@ -1,6 +1,6 @@
 package com.example.order.data.mapper
 
-import com.example.model.OrderStatus
+import com.example.core.model.OrderStatus
 import com.example.order.data.model.OrderDto
 import com.example.order.data.model.OrderItemDto
 import com.example.order.data.model.OrderToppingDto

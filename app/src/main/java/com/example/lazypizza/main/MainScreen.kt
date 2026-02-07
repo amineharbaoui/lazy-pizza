@@ -14,8 +14,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation3.runtime.NavKey
-import com.example.designsystem.components.NoConnectionScreen
-import com.example.designsystem.utils.isWideLayout
+import com.example.core.designsystem.components.NoConnectionScreen
+import com.example.core.designsystem.utils.isWideLayout
 import com.example.lazypizza.navigation.AppNavigation
 import com.example.lazypizza.navigation.BottomBar
 import com.example.lazypizza.navigation.MenuRoute

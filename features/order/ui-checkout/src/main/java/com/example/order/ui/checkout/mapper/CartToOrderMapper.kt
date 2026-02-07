@@ -3,7 +3,7 @@ package com.example.order.ui.checkout.mapper
 import com.example.cart.domain.model.Cart
 import com.example.cart.domain.model.CartItem
 import com.example.cart.domain.model.CartTopping
-import com.example.model.OrderStatus
+import com.example.core.model.OrderStatus
 import com.example.order.domain.model.Order
 import com.example.order.domain.model.OrderItem
 import com.example.order.domain.model.OrderTopping

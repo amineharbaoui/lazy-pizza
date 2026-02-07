@@ -4,7 +4,7 @@ import com.example.cart.data.datasource.db.entity.CartLineWithToppings
 import com.example.cart.data.datasource.db.entity.CartToppingEntity
 import com.example.cart.domain.model.CartItem
 import com.example.cart.domain.model.CartTopping
-import com.example.model.ProductCategory
+import com.example.core.model.ProductCategory
 import javax.inject.Inject
 
 class CartEntityToDomainMapper @Inject constructor() {

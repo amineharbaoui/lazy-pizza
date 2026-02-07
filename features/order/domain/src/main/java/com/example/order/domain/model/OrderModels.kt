@@ -1,7 +1,7 @@
 package com.example.order.domain.model
 
-import com.example.model.OrderStatus
-import com.example.model.ProductCategory
+import com.example.core.model.OrderStatus
+import com.example.core.model.ProductCategory
 import java.time.Instant
 
 data class Order(
