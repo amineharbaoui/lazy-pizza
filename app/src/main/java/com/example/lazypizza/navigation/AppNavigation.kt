@@ -17,9 +17,9 @@ import androidx.navigation3.runtime.NavKey
 import com.example.auth.ui.login.PhoneAuthScreen
 import com.example.cart.ui.cart.CartScreen
 import com.example.checkout.ui.past.orders.OrdersScreen
-import com.example.menu.detail.PizzaDetailArgs
-import com.example.menu.detail.PizzaDetailScreen
 import com.example.menu.ui.home.MenuScreen
+import com.example.menu.ui.pizzadetail.PizzaDetailArgs
+import com.example.menu.ui.pizzadetail.PizzaDetailScreen
 import com.example.ui.checkout.CheckoutScreen
 
 @Composable

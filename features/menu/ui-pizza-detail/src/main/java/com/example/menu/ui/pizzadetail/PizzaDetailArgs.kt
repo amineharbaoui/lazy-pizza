@@ -1,4 +1,4 @@
-package com.example.menu.detail
+package com.example.menu.ui.pizzadetail
 
 sealed interface PizzaDetailArgs {
     val productId: String
