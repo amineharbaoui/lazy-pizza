@@ -16,7 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation3.runtime.NavKey
 import com.example.auth.ui.login.PhoneAuthScreen
 import com.example.cart.ui.cart.CartScreen
-import com.example.checkout.ui.past.orders.OrdersScreen
+import com.example.checkout.order.ui.pastorders.OrdersScreen
 import com.example.menu.ui.home.MenuScreen
 import com.example.menu.ui.pizzadetail.PizzaDetailArgs
 import com.example.menu.ui.pizzadetail.PizzaDetailScreen

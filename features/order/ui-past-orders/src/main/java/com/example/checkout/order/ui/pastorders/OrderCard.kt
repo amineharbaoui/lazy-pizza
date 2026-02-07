@@ -1,4 +1,4 @@
-package com.example.checkout.ui.past.orders
+package com.example.checkout.order.ui.pastorders
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

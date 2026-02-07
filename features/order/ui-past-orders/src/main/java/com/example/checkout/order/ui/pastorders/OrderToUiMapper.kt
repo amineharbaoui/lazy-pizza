@@ -1,4 +1,4 @@
-package com.example.checkout.ui.past.orders
+package com.example.checkout.order.ui.pastorders
 
 import com.example.menu.utils.formatting.CurrencyFormatter
 import com.example.menu.utils.formatting.formatForOrderCard
