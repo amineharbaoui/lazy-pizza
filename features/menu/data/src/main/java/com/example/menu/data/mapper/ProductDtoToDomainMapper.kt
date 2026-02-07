@@ -1,9 +1,9 @@
 package com.example.menu.data.mapper
 
+import com.example.core.model.ProductCategory
 import com.example.menu.data.model.ProductDto
 import com.example.menu.domain.model.MenuItem
 import com.example.menu.domain.model.Topping
-import com.example.model.ProductCategory
 import javax.inject.Inject
 
 class ProductDtoToDomainMapper @Inject constructor() {

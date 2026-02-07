@@ -1,7 +1,7 @@
 package com.example.menu.ui.home
 
-import com.example.menu.utils.formatting.toFormattedCurrency
-import com.example.model.ProductCategory
+import com.example.core.model.ProductCategory
+import com.example.core.ui.utils.formatting.toFormattedCurrency
 
 data class MenuSectionDisplayModel(
     val category: ProductCategory,

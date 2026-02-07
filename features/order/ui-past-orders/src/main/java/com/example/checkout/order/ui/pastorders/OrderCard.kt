@@ -18,12 +18,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.example.designsystem.components.DsStatusPill
-import com.example.designsystem.theme.AppColors
-import com.example.designsystem.theme.AppTypography
-import com.example.designsystem.theme.LazyPizzaTheme
-import com.example.designsystem.utils.PreviewPhoneTablet
-import com.example.model.OrderStatus
+import com.example.core.designsystem.components.DsStatusPill
+import com.example.core.designsystem.theme.AppColors
+import com.example.core.designsystem.theme.AppTypography
+import com.example.core.designsystem.theme.LazyPizzaTheme
+import com.example.core.designsystem.utils.PreviewPhoneTablet
+import com.example.core.model.OrderStatus
 
 @Composable
 fun OrderCard(

@@ -2,14 +2,14 @@ package com.example.menu.ui.home.mapper
 
 import com.example.cart.domain.model.Cart
 import com.example.cart.domain.model.CartItem
+import com.example.core.model.ProductCategory
+import com.example.core.ui.utils.formatting.CurrencyFormatter
 import com.example.menu.domain.model.MenuItem
 import com.example.menu.domain.model.MenuSection
 import com.example.menu.ui.home.MenuContentUiState
 import com.example.menu.ui.home.MenuItemDisplayModel
 import com.example.menu.ui.home.MenuSectionDisplayModel
 import com.example.menu.ui.home.MenuTag
-import com.example.menu.utils.formatting.CurrencyFormatter
-import com.example.model.ProductCategory
 import javax.inject.Inject
 
 class MenuDomainToUiMapper @Inject constructor(

@@ -1,10 +1,10 @@
 package com.example.menu.data.repository
 
+import com.example.core.model.ProductCategory
 import com.example.menu.data.datasource.ProductRemoteDataSource
 import com.example.menu.data.mapper.ProductDtoToDomainMapper
 import com.example.menu.domain.model.MenuItem
 import com.example.menu.domain.repository.RecommendedItemsRepository
-import com.example.model.ProductCategory
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import javax.inject.Inject

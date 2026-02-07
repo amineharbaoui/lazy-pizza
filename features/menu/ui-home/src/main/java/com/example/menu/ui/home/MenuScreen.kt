@@ -55,17 +55,17 @@ import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.example.designsystem.components.DsButton
-import com.example.designsystem.components.DsDialog
-import com.example.designsystem.components.DsTextField
-import com.example.designsystem.components.DsTopBar
-import com.example.designsystem.theme.AppColors
-import com.example.designsystem.theme.AppTypography
-import com.example.designsystem.theme.LazyPizzaThemePreview
-import com.example.designsystem.utils.PreviewPhoneTablet
-import com.example.designsystem.utils.isWideLayout
+import com.example.core.designsystem.components.DsButton
+import com.example.core.designsystem.components.DsDialog
+import com.example.core.designsystem.components.DsTextField
+import com.example.core.designsystem.components.DsTopBar
+import com.example.core.designsystem.theme.AppColors
+import com.example.core.designsystem.theme.AppTypography
+import com.example.core.designsystem.theme.LazyPizzaThemePreview
+import com.example.core.designsystem.utils.PreviewPhoneTablet
+import com.example.core.designsystem.utils.isWideLayout
+import com.example.core.model.ProductCategory
 import com.example.menu.ui.home.components.ProductCard
-import com.example.model.ProductCategory
 import kotlinx.coroutines.launch
 import com.example.core.designsystem.R as DsR
 

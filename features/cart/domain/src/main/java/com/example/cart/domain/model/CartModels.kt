@@ -1,6 +1,6 @@
 package com.example.cart.domain.model
 
-import com.example.model.ProductCategory
+import com.example.core.model.ProductCategory
 
 data class CartTopping(
     val id: String,

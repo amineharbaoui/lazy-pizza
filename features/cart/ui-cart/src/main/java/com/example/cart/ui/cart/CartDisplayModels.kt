@@ -1,6 +1,6 @@
 package com.example.cart.ui.cart
 
-import com.example.model.ProductCategory
+import com.example.core.model.ProductCategory
 
 data class CartLineDisplayModel(
     val lineId: String,

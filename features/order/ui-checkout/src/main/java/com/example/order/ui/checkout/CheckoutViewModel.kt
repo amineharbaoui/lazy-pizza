@@ -5,8 +5,8 @@ import androidx.lifecycle.viewModelScope
 import com.example.auth.domain.usecase.GetCurrentUserUidUseCase
 import com.example.cart.domain.usecase.ClearCartUseCase
 import com.example.cart.domain.usecase.ObserveCartUseCase
-import com.example.menu.utils.formatting.formatOrderNumber
-import com.example.menu.utils.formatting.toPickupDisplayLabel
+import com.example.core.ui.utils.formatting.formatOrderNumber
+import com.example.core.ui.utils.formatting.toPickupDisplayLabel
 import com.example.order.domain.usecase.PlaceOrderUseCase
 import com.example.order.ui.checkout.mapper.CartToOrderMapper
 import com.example.order.ui.checkout.mapper.CheckoutUiStateFactory

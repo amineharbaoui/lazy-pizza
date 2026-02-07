@@ -18,12 +18,12 @@ import androidx.compose.ui.unit.dp
 import coil3.compose.rememberAsyncImagePainter
 import com.example.cart.ui.cart.RecommendedItemDisplayModel
 import com.example.core.designsystem.R
-import com.example.designsystem.components.card.DsCardItem
-import com.example.designsystem.theme.AppColors
-import com.example.designsystem.theme.AppTypography
-import com.example.designsystem.theme.LazyPizzaThemePreview
-import com.example.designsystem.utils.PreviewPhoneTablet
-import com.example.model.ProductCategory
+import com.example.core.designsystem.components.card.DsCardItem
+import com.example.core.designsystem.theme.AppColors
+import com.example.core.designsystem.theme.AppTypography
+import com.example.core.designsystem.theme.LazyPizzaThemePreview
+import com.example.core.designsystem.utils.PreviewPhoneTablet
+import com.example.core.model.ProductCategory
 
 @Composable
 fun RecommendationsSection(

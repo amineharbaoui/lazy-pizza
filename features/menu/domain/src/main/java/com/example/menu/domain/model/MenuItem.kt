@@ -1,6 +1,6 @@
 package com.example.menu.domain.model
 
-import com.example.model.ProductCategory
+import com.example.core.model.ProductCategory
 
 sealed interface MenuItem {
     val id: String

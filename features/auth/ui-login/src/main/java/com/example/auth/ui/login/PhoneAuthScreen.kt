@@ -22,11 +22,11 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.core.designsystem.R
-import com.example.designsystem.components.DsButton
-import com.example.designsystem.components.DsTextField
-import com.example.designsystem.components.DsTopBar
-import com.example.designsystem.theme.AppColors
-import com.example.designsystem.theme.AppTypography
+import com.example.core.designsystem.components.DsButton
+import com.example.core.designsystem.components.DsTextField
+import com.example.core.designsystem.components.DsTopBar
+import com.example.core.designsystem.theme.AppColors
+import com.example.core.designsystem.theme.AppTypography
 import com.google.firebase.auth.FirebaseAuth
 
 @Composable

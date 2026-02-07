@@ -28,11 +28,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.designsystem.components.DsButton
-import com.example.designsystem.theme.AppColors
-import com.example.designsystem.theme.AppTypography
-import com.example.designsystem.theme.LazyPizzaThemePreview
-import com.example.designsystem.utils.PreviewPhoneTablet
+import com.example.core.designsystem.components.DsButton
+import com.example.core.designsystem.theme.AppColors
+import com.example.core.designsystem.theme.AppTypography
+import com.example.core.designsystem.theme.LazyPizzaThemePreview
+import com.example.core.designsystem.utils.PreviewPhoneTablet
 import com.example.order.ui.checkout.PickupDayUiModel
 import com.example.order.ui.checkout.PickupSelectionUiModel
 import com.example.order.ui.checkout.PickupTimeSlotUiModel
