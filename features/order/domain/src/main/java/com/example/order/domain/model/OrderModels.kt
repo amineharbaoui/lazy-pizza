@@ -1,4 +1,4 @@
-package com.example.domain.model
+package com.example.order.domain.model
 
 import com.example.model.OrderStatus
 import com.example.model.ProductCategory

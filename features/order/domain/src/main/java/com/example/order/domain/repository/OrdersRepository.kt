@@ -1,6 +1,6 @@
-package com.example.domain.repository
+package com.example.order.domain.repository
 
-import com.example.domain.model.Order
+import com.example.order.domain.model.Order
 import kotlinx.coroutines.flow.Flow
 
 interface OrdersRepository {

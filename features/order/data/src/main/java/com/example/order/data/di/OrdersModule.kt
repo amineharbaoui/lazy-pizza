@@ -1,7 +1,7 @@
 package com.example.order.data.di
 
-import com.example.domain.repository.OrdersRepository
 import com.example.order.data.repository.OrdersRepositoryImpl
+import com.example.order.domain.repository.OrdersRepository
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn

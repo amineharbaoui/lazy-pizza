@@ -1,7 +1,7 @@
-package com.example.domain.usecase
+package com.example.order.domain.usecase
 
-import com.example.domain.model.Order
-import com.example.domain.repository.OrdersRepository
+import com.example.order.domain.model.Order
+import com.example.order.domain.repository.OrdersRepository
 import javax.inject.Inject
 
 class PlaceOrderUseCase @Inject constructor(

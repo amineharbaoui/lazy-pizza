@@ -1,8 +1,8 @@
 package com.example.checkout.ui.past.orders
 
-import com.example.domain.model.Order
 import com.example.menu.utils.formatting.CurrencyFormatter
 import com.example.menu.utils.formatting.formatForOrderCard
+import com.example.order.domain.model.Order
 import javax.inject.Inject
 
 class OrderToUiMapper @Inject constructor(
