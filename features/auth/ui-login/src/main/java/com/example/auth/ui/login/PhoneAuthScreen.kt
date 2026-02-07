@@ -21,7 +21,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.example.designsystem.R
+import com.example.core.designsystem.R
 import com.example.designsystem.components.DsButton
 import com.example.designsystem.components.DsTextField
 import com.example.designsystem.components.DsTopBar

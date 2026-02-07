@@ -4,7 +4,7 @@ import android.content.Context
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
-import com.example.designsystem.R
+import com.example.core.designsystem.R
 
 object PhoneCountryProvider {
 

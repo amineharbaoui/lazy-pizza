@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.orders.ui.checkout"
+    namespace = "com.example.order.ui.checkout"
 
     defaultConfig {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"

@@ -3,7 +3,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.menu"
+    namespace = "com.example.core.ui"
 }
 
 dependencies {
