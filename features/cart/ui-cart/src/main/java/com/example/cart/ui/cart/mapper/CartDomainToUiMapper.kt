@@ -1,11 +1,11 @@
-package com.example.cart.screen.mapper
+package com.example.cart.ui.cart.mapper
 
 import com.example.cart.domain.model.Cart
 import com.example.cart.domain.model.CartItem
-import com.example.cart.screen.CartDisplayModel
-import com.example.cart.screen.CartLineDisplayModel
-import com.example.cart.screen.CartUiState
-import com.example.cart.screen.RecommendedItemDisplayModel
+import com.example.cart.ui.cart.CartDisplayModel
+import com.example.cart.ui.cart.CartLineDisplayModel
+import com.example.cart.ui.cart.CartUiState
+import com.example.cart.ui.cart.RecommendedItemDisplayModel
 import com.example.domain.model.MenuItem
 import com.example.menu.utils.formatting.CurrencyFormatter
 import javax.inject.Inject

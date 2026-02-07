@@ -1,4 +1,4 @@
-package com.example.cart.screen
+package com.example.cart.ui.cart
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -29,8 +29,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.rememberAsyncImagePainter
-import com.example.cart.screen.components.RecommendationsSection
-import com.example.cart.ui.cart.R
+import com.example.cart.ui.cart.components.RecommendationsSection
 import com.example.designsystem.components.DsButton
 import com.example.designsystem.components.DsTopBar
 import com.example.designsystem.components.card.DsCardRow
