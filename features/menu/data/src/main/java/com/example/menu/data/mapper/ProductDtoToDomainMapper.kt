@@ -1,8 +1,8 @@
-package com.example.data.mapper
+package com.example.menu.data.mapper
 
-import com.example.data.model.ProductDto
 import com.example.domain.model.MenuItem
 import com.example.domain.model.Topping
+import com.example.menu.data.model.ProductDto
 import com.example.model.ProductCategory
 import javax.inject.Inject
 
