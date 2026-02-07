@@ -67,7 +67,7 @@ import com.example.designsystem.utils.isWideLayout
 import com.example.menu.ui.home.components.ProductCard
 import com.example.model.ProductCategory
 import kotlinx.coroutines.launch
-import com.example.designsystem.R as DsR
+import com.example.core.designsystem.R as DsR
 
 @Composable
 fun MenuScreen(

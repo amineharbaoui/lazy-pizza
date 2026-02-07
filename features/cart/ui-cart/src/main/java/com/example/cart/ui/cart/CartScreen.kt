@@ -39,7 +39,7 @@ import com.example.designsystem.theme.LazyPizzaThemePreview
 import com.example.designsystem.utils.PreviewPhoneTablet
 import com.example.designsystem.utils.isWideLayout
 import com.example.model.ProductCategory
-import com.example.designsystem.R as DS_R
+import com.example.core.designsystem.R as DS_R
 
 @Composable
 fun CartScreen(

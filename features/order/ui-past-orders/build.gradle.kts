@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.checkout.ui.pastorders"
+    namespace = "com.example.order.checkout.ui.pastorders"
 }
 
 dependencies {

@@ -28,8 +28,8 @@ import com.example.designsystem.theme.AppTypography
 import com.example.designsystem.theme.LazyPizzaThemePreview
 import com.example.designsystem.utils.PreviewPhoneTablet
 import com.example.designsystem.utils.isWideLayout
-import com.example.orders.ui.checkout.R
-import com.example.designsystem.R as DSR
+import com.example.order.ui.checkout.R
+import com.example.core.designsystem.R as DSR
 
 @Composable
 fun ConfirmationOrderComponent(

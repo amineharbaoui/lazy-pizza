@@ -17,7 +17,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import coil3.compose.rememberAsyncImagePainter
 import com.example.cart.ui.cart.RecommendedItemDisplayModel
-import com.example.designsystem.R
+import com.example.core.designsystem.R
 import com.example.designsystem.components.card.DsCardItem
 import com.example.designsystem.theme.AppColors
 import com.example.designsystem.theme.AppTypography

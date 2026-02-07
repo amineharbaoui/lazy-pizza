@@ -30,7 +30,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.designsystem.R
+import com.example.core.designsystem.R
 import com.example.designsystem.components.DsButton
 import com.example.designsystem.theme.AppColors
 import com.example.designsystem.theme.AppTypography

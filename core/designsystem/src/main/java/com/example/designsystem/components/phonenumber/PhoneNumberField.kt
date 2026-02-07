@@ -37,7 +37,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import com.example.designsystem.R
+import com.example.core.designsystem.R
 import com.example.designsystem.components.DsTextField
 import com.example.designsystem.theme.AppColors
 import com.example.designsystem.theme.AppTypography
