@@ -32,12 +32,6 @@ class CodeCoverageConventionPlugin : Plugin<Project> {
             reports {
                 filters {
                     excludes {
-                        // UI (major noise)
-                        packages(
-                            "com.example.core.ui..*",
-                            "com.example.core.designsystem..*",
-                        )
-
                         // Compose generated
                         classes(
                             "*Preview*",
@@ -76,7 +70,7 @@ class CodeCoverageConventionPlugin : Plugin<Project> {
                             "*\$DefaultImpls",
                         )
 
-                        // Room / DB plumbing (optional)
+                        // DB: Room
                         packages(
                             "com.example..data.datasource.db..*",
                             "com.example..dao..*",
