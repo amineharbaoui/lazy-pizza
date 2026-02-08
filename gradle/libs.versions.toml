@@ -57,7 +57,7 @@ junit = "6.0.2"
 mockk = "1.14.7"
 turbine = "1.2.1"
 assertJ = "3.27.6"
-kover = "0.9.5"
+kover = "0.9.6"
 
 # --- Tooling ---
 dependencyAnalysis = "3.5.1"
