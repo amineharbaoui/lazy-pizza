@@ -6,7 +6,10 @@ import org.gradle.kotlin.dsl.getByType
 
 class CodeCoverageConventionPlugin : Plugin<Project> {
 
-    val excludedProjects = listOf(
+    val excludedModules = listOf(
+        ":app",
+        ":core",
+        ":features",
         ":app",
         ":core:common",
         ":core:designsystem",
@@ -17,15 +20,16 @@ class CodeCoverageConventionPlugin : Plugin<Project> {
     )
 
     override fun apply(target: Project) = with(target) {
+        val coveredModules = subprojects.filterNot { it.path in excludedModules }
+
         check(this == rootProject) {
             "CodeCoverageConventionPlugin must be applied only to the root project."
         }
 
         pluginManager.alias(libs.plugins.kover)
 
-        subprojects {
-            if (path in excludedProjects) return@subprojects
-            pluginManager.alias(this@with.libs.plugins.kover)
+        coveredModules.forEach { subProject ->
+            subProject.pluginManager.alias(this@with.libs.plugins.kover)
         }
 
         extensions.getByType<KoverProjectExtension>().apply {
@@ -93,10 +97,8 @@ class CodeCoverageConventionPlugin : Plugin<Project> {
         }
 
         dependencies {
-            subprojects {
-                if (path !in excludedProjects) {
-                    kover(project(path))
-                }
+            coveredModules.forEach { subProject ->
+                kover(project(subProject.path))
             }
         }
     }
