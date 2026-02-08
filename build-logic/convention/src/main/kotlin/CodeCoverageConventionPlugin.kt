@@ -6,11 +6,10 @@ import org.gradle.kotlin.dsl.getByType
 
 class CodeCoverageConventionPlugin : Plugin<Project> {
 
-    val excludedModules = listOf(
+    private val excludedModules = setOf(
         ":app",
         ":core",
         ":features",
-        ":app",
         ":core:common",
         ":core:designsystem",
         ":core:model",
@@ -20,11 +19,11 @@ class CodeCoverageConventionPlugin : Plugin<Project> {
     )
 
     override fun apply(target: Project) = with(target) {
-        val coveredModules = subprojects.filterNot { it.path in excludedModules }
-
         check(this == rootProject) {
             "CodeCoverageConventionPlugin must be applied only to the root project."
         }
+
+        val coveredModules = subprojects.filterNot { it.path in excludedModules }
 
         pluginManager.alias(libs.plugins.kover)
 
@@ -40,7 +39,6 @@ class CodeCoverageConventionPlugin : Plugin<Project> {
                         classes(
                             "*Preview*",
                             "ComposableSingletons*",
-                            "*\$*",
                         )
                         annotatedBy(
                             "androidx.compose.runtime.Composable",
@@ -76,9 +74,9 @@ class CodeCoverageConventionPlugin : Plugin<Project> {
 
                         // DB: Room
                         packages(
-                            "com.example..data.datasource.db..*",
-                            "com.example..dao..*",
-                            "com.example..entity..*",
+                            "**.data.datasource.db.**",
+                            "**.dao.**",
+                            "**.entity.**",
                         )
                         classes(
                             "*_Impl*",
@@ -86,8 +84,8 @@ class CodeCoverageConventionPlugin : Plugin<Project> {
 
                         // Tests / fakes / mocks
                         classes(
-                            "*Test*",
-                            "*Tests*",
+                            "*Test",
+                            "*Tests",
                             "*Fake*",
                             "*Mock*",
                         )
