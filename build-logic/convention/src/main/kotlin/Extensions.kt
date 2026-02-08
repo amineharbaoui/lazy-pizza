@@ -54,8 +54,6 @@ fun Project.configureKotlin() {
             jvmTarget.set(JvmTarget.JVM_17)
             allWarningsAsErrors.set(false)
             freeCompilerArgs.addAll(
-                "-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi",
-                "-opt-in=kotlinx.coroutines.FlowPreview",
                 "-Xannotation-default-target=param-property",
             )
         }
