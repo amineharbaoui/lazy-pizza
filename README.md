@@ -126,12 +126,12 @@ VM -->|"Uses"| UC
 ## 🚦 Getting Started
 
 1. **Prerequisites:**
-    - Android Studio Ladybug (or newer)
+    - Android Studio
     - JDK 17+
 
 2. **Clone & Run:**
     ```bash
-    git clone https://github.com/<your-username>/LazyPizza.git
+    git clone https://github.com/amineharbaoui/lazy-pizza.git
     cd LazyPizza
     ```
     - Open in Android Studio
@@ -142,6 +142,9 @@ VM -->|"Uses"| UC
 > If you want to use your own Firebase project, replace `app/google-services.json` with yours
 > (enable **Authentication** and **Cloud Firestore**).
 
+> [!NOTE]
+> 🔐 **Demo login:** Phone verification code is **111111**
+>
 ## 📦 Modules
 
 | Module | Description |
@@ -193,20 +196,20 @@ Custom Gradle convention plugins in `build-logic/convention/`:
 ## 🗺 TODOs
 
 ### CI/CD (GitHub Actions)
-- Run unit tests on PRs
-- Generate Kover coverage report + upload as artifact
-- Assemble debug/release builds
+- [ ] Run unit tests on PRs
+- [ ] Generate Kover coverage report + upload as artifact
+- [ ] Assemble debug/release builds
 ### Code quality
-- Add **Detekt** for static analysis
-- Add **Ktlint** for formatting + auto-fix
+- [ ] Add **Detekt** for static analysis
+- [ ] Add **Ktlint** for formatting + auto-fix
 ### Testing
-- Expand unit tests across all modules
-- Add **UI tests** for key flows (menu → detail → cart → checkout)
+- [ ] Expand unit tests across all modules
+- [ ] Add **UI tests** for key flows (menu → detail → cart → checkout)
 ### UI/UX
-- Add Dark Mode
+- [ ] Add Dark Mode
 
 
-### 📄 License
+## 📄 License
 ```
 Copyright 2025 amineharbaoui
 
