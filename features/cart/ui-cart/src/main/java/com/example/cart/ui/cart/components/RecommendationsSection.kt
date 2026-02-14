@@ -13,8 +13,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalInspectionMode
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import coil3.compose.rememberAsyncImagePainter
@@ -25,6 +23,7 @@ import com.example.core.designsystem.theme.AppColors
 import com.example.core.designsystem.theme.AppTypography
 import com.example.core.designsystem.theme.LazyPizzaThemePreview
 import com.example.core.designsystem.utils.PreviewPhoneTablet
+import com.example.core.designsystem.utils.rememberImagePainterPreviewAware
 import com.example.core.model.ProductCategory
 
 @Composable
@@ -50,11 +49,10 @@ fun RecommendationsSection(
         ) {
             Spacer(modifier = Modifier.width(8.dp))
             recommendedItems.forEach { item ->
-                val image = if (LocalInspectionMode.current) {
-                    painterResource(R.drawable.drink)
-                } else {
-                    rememberAsyncImagePainter(item.imageUrl)
-                }
+                val image = rememberImagePainterPreviewAware(
+                    previewDrawableResId = R.drawable.drink,
+                    painterProvider = { rememberAsyncImagePainter(item.imageUrl) }
+                )
                 DsCardItem.ExtraItem(
                     title = item.name,
                     price = item.unitPriceFormatted,

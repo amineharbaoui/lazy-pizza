@@ -22,10 +22,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -39,6 +37,7 @@ import com.example.core.designsystem.theme.AppTypography
 import com.example.core.designsystem.theme.LazyPizzaThemePreview
 import com.example.core.designsystem.utils.PreviewPhoneTablet
 import com.example.core.designsystem.utils.isWideLayout
+import com.example.core.designsystem.utils.rememberImagePainterPreviewAware
 import com.example.core.model.ProductCategory
 import com.example.core.designsystem.R as DS_R
 
@@ -251,11 +250,10 @@ private fun CartItemsSection(
             .fillMaxWidth(),
     ) {
         items.forEach { item ->
-            val image = if (LocalInspectionMode.current) {
-                painterResource(DS_R.drawable.pizza)
-            } else {
-                rememberAsyncImagePainter(item.imageUrl)
-            }
+            val image = rememberImagePainterPreviewAware(
+                previewDrawableResId = DS_R.drawable.pizza,
+                painterProvider = { rememberAsyncImagePainter(item.imageUrl) }
+            )
             DsCardRow.CartItem(
                 title = item.name,
                 subtitleLines = item.subtitleLines,
