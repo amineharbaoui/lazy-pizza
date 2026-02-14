@@ -183,7 +183,6 @@ private fun TimeRangeRow(
 }
 
 @PreviewPhoneTablet
-@Preview
 @Composable
 private fun SchedulePickUpPreview() {
     val availableTimeSlots = listOf(

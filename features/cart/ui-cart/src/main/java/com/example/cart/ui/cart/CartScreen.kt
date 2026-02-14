@@ -22,6 +22,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -250,12 +251,17 @@ private fun CartItemsSection(
             .fillMaxWidth(),
     ) {
         items.forEach { item ->
+            val image = if (LocalInspectionMode.current) {
+                painterResource(DS_R.drawable.pizza)
+            } else {
+                rememberAsyncImagePainter(item.imageUrl)
+            }
             DsCardRow.CartItem(
                 title = item.name,
                 subtitleLines = item.subtitleLines,
                 unitPriceText = item.unitPriceFormatted,
                 totalPriceText = item.lineTotalFormatted,
-                image = rememberAsyncImagePainter(item.imageUrl),
+                image = image,
                 quantity = item.quantity,
                 onQuantityChange = { newQty -> onLineQuantityChange(item, newQty) },
                 onRemove = { onRemove(item.lineId) },
@@ -266,7 +272,6 @@ private fun CartItemsSection(
 }
 
 @PreviewPhoneTablet
-@Preview
 @Composable
 private fun CartScreenPreview() {
     LazyPizzaThemePreview {
@@ -334,7 +339,6 @@ private fun CartScreenPreview() {
 }
 
 @PreviewPhoneTablet
-@Preview
 @Composable
 private fun EmptyCartPreview() {
     LazyPizzaThemePreview {
@@ -343,7 +347,6 @@ private fun EmptyCartPreview() {
 }
 
 @PreviewPhoneTablet
-@Preview
 @Composable
 private fun ErrorCartPreview() {
     LazyPizzaThemePreview {
