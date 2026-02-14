@@ -35,6 +35,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -154,7 +155,11 @@ private fun PhoneDetailLayout(
                         animatedVisibilityScope = animatedVisibilityScope,
                     )
             },
-            painter = rememberAsyncImagePainter(uiState.pizza.imageUrl),
+            painter = if (LocalInspectionMode.current) {
+                painterResource(R.drawable.pizza)
+            } else {
+                rememberAsyncImagePainter(uiState.pizza.imageUrl)
+            },
             contentDescription = null,
             contentScale = ContentScale.Fit,
         )
@@ -358,7 +363,11 @@ private fun ExtraToppingsContent(
             DsCardItem.AddonCard(
                 title = item.name,
                 priceText = item.unitPriceFormatted,
-                image = rememberAsyncImagePainter(item.imageUrl),
+                image = if (LocalInspectionMode.current) {
+                    painterResource(R.drawable.topping)
+                } else {
+                    rememberAsyncImagePainter(item.imageUrl)
+                },
                 quantity = qty,
                 onQuantityChange = { newQty ->
                     onToppingQuantityChange(item.id, newQty)

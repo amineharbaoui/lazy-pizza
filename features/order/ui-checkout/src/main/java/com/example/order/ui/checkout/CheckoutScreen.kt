@@ -249,7 +249,6 @@ private fun CheckoutScreenContent(
 }
 
 @PreviewPhoneTablet
-@Preview
 @Composable
 private fun CheckoutScreenContentPreview() {
     LazyPizzaThemePreview {
