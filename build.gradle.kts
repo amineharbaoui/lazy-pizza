@@ -11,10 +11,12 @@ plugins {
     alias(libs.plugins.dependency.analysis)
     alias(libs.plugins.room) apply false
     alias(libs.plugins.custom.code.coverage)
+    alias(libs.plugins.ktlint)
 }
 
 subprojects {
     apply(plugin = "com.autonomousapps.dependency-analysis")
+    apply(plugin = rootProject.libs.plugins.ktlint.get().pluginId)
 }
 
 dependencyAnalysis {
