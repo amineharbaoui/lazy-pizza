@@ -1,0 +1,81 @@
+name: ktlint
+
+on:
+    pull_request:
+    workflow_dispatch:
+
+permissions:
+    contents: read
+    pull-requests: write
+    checks: write
+
+jobs:
+    ktlint:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
+
+            - name: Detect Added/Modified Kotlin files
+              id: changed
+              run: |
+                  BASE_SHA="${{ github.event.pull_request.base.sha }}"
+                  HEAD_SHA="${{ github.event.pull_request.head.sha }}"
+
+                  mapfile -t FILES < <(
+                    git diff --name-only "$BASE_SHA" "$HEAD_SHA" -- '*.kt' '*.kts'
+                  )
+
+                  echo "Found ${#FILES[@]} changed Kotlin file(s)."
+                  printf '%s\n' "${FILES[@]}"
+
+                  {
+                    echo "files<<EOF"
+                    printf '%s\n' "${FILES[@]}"
+                    echo "EOF"
+                    echo "count=${#FILES[@]}"
+                  } >> "$GITHUB_OUTPUT"
+
+            - name: Install ktlint CLI
+              if: steps.changed.outputs.count != '0'
+              run: |
+                  KTLINT_VERSION="1.8.0"
+                  curl -sSLO "https://github.com/pinterest/ktlint/releases/download/${KTLINT_VERSION}/ktlint"
+                  chmod +x ktlint
+                  sudo mv ktlint /usr/local/bin/ktlint
+
+            - name: Run ktlint + generate checkstyle report
+              if: steps.changed.outputs.count != '0'
+              run: |
+                  mkdir -p build
+                  mapfile -t files <<< "${{ steps.changed.outputs.files }}"
+
+                  echo "Linting ${#files[@]} file(s):"
+                  printf '%s\n' "${files[@]}"
+
+                  ktlint --relative \
+                    --reporter=checkstyle,output=build/ktlint-checkstyle.xml \
+                    "${files[@]}"
+
+            - name: Install reviewdog
+              if: always() && steps.changed.outputs.count != '0'
+              uses: reviewdog/action-setup@v1
+              with:
+                  reviewdog_version: latest
+
+            - name: Post inline review comments (reviewdog)
+              if: always() && steps.changed.outputs.count != '0'
+              env:
+                  REVIEWDOG_GITHUB_API_TOKEN: ${{ github.token }}
+              run: |
+                  test -f build/ktlint-checkstyle.xml || exit 0
+
+                  reviewdog -f=checkstyle \
+                    -name="ktlint" \
+                    -reporter=github-pr-review \
+                    -filter-mode=diff_context \
+                    -level=warning \
+                    -fail-level=any < build/ktlint-checkstyle.xml
