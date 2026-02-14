@@ -2,10 +2,11 @@ name: ktlint
 
 on:
     pull_request:
-    workflow_dispatch:
 
 permissions:
     contents: read
+    pull-requests: write
+    checks: write
 
 jobs:
     ktlint:
@@ -14,8 +15,6 @@ jobs:
         steps:
             - name: Checkout
               uses: actions/checkout@v4
-              with:
-                  fetch-depth: 0
 
             - name: Set up JDK
               uses: actions/setup-java@v4
@@ -23,8 +22,37 @@ jobs:
                   distribution: temurin
                   java-version: 17
 
-            - name: Gradle cache
-              uses: gradle/actions/setup-gradle@v3
+            - name: Setup Gradle
+              uses: gradle/actions/setup-gradle@v4
 
-            - name: Run ktlint
+            # We WANT this to fail (to keep violations), but we still want the next steps to run.
+            - name: Run ktlintCheck
+              id: ktlint
+              continue-on-error: true
               run: ./gradlew ktlintCheck --no-daemon
+
+            # Collect all ktlint checkstyle reports from all modules.
+            - name: Collect ktlint checkstyle reports
+              if: always()
+              run: |
+                  mkdir -p build/ktlint-reports
+                  find . -path "*/build/reports/ktlint/*/*.xml" -print -exec cp {} build/ktlint-reports/ \;
+                  echo "Reports copied:"
+                  ls -la build/ktlint-reports || true
+
+            # Post inline comments on the PR diff.
+            - name: Reviewdog (checkstyle)
+              if: always()
+              uses: reviewdog/action-checkstyle@v1
+              with:
+                  github_token: ${{ secrets.GITHUB_TOKEN }}
+                  reporter: github-pr-review
+                  filter_mode: diff_context
+                  fail_on_error: "true"
+                  level: warning
+                  checkstyle_input: "build/ktlint-reports/*.xml"
+
+            # Fail the job if ktlintCheck failed (so the PR is blocked)
+            - name: Fail if ktlintCheck failed
+              if: steps.ktlint.outcome != 'success'
+              run: exit 1

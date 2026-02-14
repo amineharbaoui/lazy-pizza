@@ -1,4 +1,5 @@
-// Top-level build file where you can add configuration options common to all sub-projects/modules.
+import org.jlleitschuh.gradle.ktlint.reporter.ReporterType
+
 plugins {
     alias(libs.plugins.android.application) apply false
     alias(libs.plugins.kotlin.android) apply false
@@ -17,6 +18,12 @@ plugins {
 subprojects {
     apply(plugin = "com.autonomousapps.dependency-analysis")
     apply(plugin = rootProject.libs.plugins.ktlint.get().pluginId)
+
+    ktlint {
+        reporters {
+            reporter(ReporterType.CHECKSTYLE)
+        }
+    }
 }
 
 dependencyAnalysis {
