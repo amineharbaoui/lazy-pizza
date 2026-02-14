@@ -72,6 +72,7 @@ private fun ConnectivityManager.isDeviceOnline(): Boolean = allNetworks.any { ne
 
 private fun NetworkCapabilities.hasInternetValidated(): Boolean =
     hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) &&
+
     hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED)
 
 private fun NetworkCapabilities.hasRealTransport(): Boolean =
