@@ -11,20 +11,17 @@ import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalInspectionMode
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
-import coil3.annotation.ExperimentalCoilApi
 import coil3.compose.rememberAsyncImagePainter
+import com.example.core.designsystem.R
 import com.example.core.designsystem.components.card.DsCardRow
 import com.example.core.designsystem.theme.LazyPizzaThemePreview
 import com.example.core.designsystem.utils.PreviewPhoneTablet
+import com.example.core.designsystem.utils.rememberImagePainterPreviewAware
 import com.example.core.model.ProductCategory
 import com.example.menu.ui.home.MenuItemDisplayModel
-import com.example.core.designsystem.R as DsR
 
 @Composable
 fun ProductCard(
@@ -36,11 +33,6 @@ fun ProductCard(
     sharedTransitionScope: SharedTransitionScope,
     animatedVisibilityScope: AnimatedVisibilityScope,
 ) {
-    val image = if (LocalInspectionMode.current) {
-        painterResource(product.category.toPreviewDrawableRes())
-    } else {
-        rememberAsyncImagePainter(product.imageUrl)
-    }
     when (product) {
         is MenuItemDisplayModel.Pizza -> {
             val sharedKey = "pizza-image-${product.id}"
@@ -55,7 +47,10 @@ fun ProductCard(
                 title = product.name,
                 description = product.description,
                 price = product.unitPriceFormatted,
-                image = image,
+                image = rememberImagePainterPreviewAware(
+                    previewDrawableResId = R.drawable.pizza,
+                    painterProvider = { rememberAsyncImagePainter(product.imageUrl) }
+                ),
                 onClick = { onPizzaClick(product) },
 
                 )
@@ -74,7 +69,10 @@ fun ProductCard(
                         modifier = modifier,
                         title = product.name,
                         price = product.unitPriceFormatted,
-                        image = image,
+                        image = rememberImagePainterPreviewAware(
+                            previewDrawableResId = R.drawable.ice_cream,
+                            painterProvider = { rememberAsyncImagePainter(product.imageUrl) }
+                        ),
                         onAddToCart = { onOtherItemAddClick(product) },
                     )
                 } else {
@@ -84,7 +82,10 @@ fun ProductCard(
                         quantity = product.quantity,
                         unitPriceText = product.unitPriceFormatted,
                         totalPriceText = product.totalPriceFormatted,
-                        image = image,
+                        image = rememberImagePainterPreviewAware(
+                            previewDrawableResId = R.drawable.drink,
+                            painterProvider = { rememberAsyncImagePainter(product.imageUrl) }
+                        ),
                         onQuantityChange = { newQty ->
                             onOtherItemQuantityChange(product, newQty)
                         },
@@ -98,7 +99,6 @@ fun ProductCard(
     }
 }
 
-@OptIn(ExperimentalCoilApi::class)
 @PreviewPhoneTablet
 @Composable
 private fun ProductCardPreview(
@@ -154,12 +154,4 @@ private class ProductCardPreviewProvider : PreviewParameterProvider<MenuItemDisp
         ),
     )
     override fun getDisplayName(index: Int): String = values.elementAt(index).category.name
-}
-
-private fun ProductCategory.toPreviewDrawableRes(): Int = when (this) {
-    ProductCategory.PIZZA -> DsR.drawable.pizza
-    ProductCategory.DRINK -> DsR.drawable.drink
-    ProductCategory.SAUCE -> DsR.drawable.sauce
-    ProductCategory.ICE_CREAM -> DsR.drawable.ice_cream
-    ProductCategory.TOPPING -> DsR.drawable.topping
 }

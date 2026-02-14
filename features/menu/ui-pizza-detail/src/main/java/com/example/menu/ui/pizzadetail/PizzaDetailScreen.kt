@@ -35,7 +35,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -50,6 +49,7 @@ import com.example.core.designsystem.theme.AppTypography
 import com.example.core.designsystem.theme.LazyPizzaThemePreview
 import com.example.core.designsystem.utils.PreviewPhoneTablet
 import com.example.core.designsystem.utils.isWideLayout
+import com.example.core.designsystem.utils.rememberImagePainterPreviewAware
 import java.util.UUID
 
 @Composable
@@ -155,11 +155,10 @@ private fun PhoneDetailLayout(
                         animatedVisibilityScope = animatedVisibilityScope,
                     )
             },
-            painter = if (LocalInspectionMode.current) {
-                painterResource(R.drawable.pizza)
-            } else {
-                rememberAsyncImagePainter(uiState.pizza.imageUrl)
-            },
+            painter = rememberImagePainterPreviewAware(
+                previewDrawableResId = R.drawable.pizza,
+                painterProvider = { rememberAsyncImagePainter(uiState.pizza.imageUrl) }
+            ),
             contentDescription = null,
             contentScale = ContentScale.Fit,
         )
@@ -363,11 +362,10 @@ private fun ExtraToppingsContent(
             DsCardItem.AddonCard(
                 title = item.name,
                 priceText = item.unitPriceFormatted,
-                image = if (LocalInspectionMode.current) {
-                    painterResource(R.drawable.topping)
-                } else {
-                    rememberAsyncImagePainter(item.imageUrl)
-                },
+                image = rememberImagePainterPreviewAware(
+                    previewDrawableResId = R.drawable.topping,
+                    painterProvider = { rememberAsyncImagePainter(item.imageUrl) }
+                ),
                 quantity = qty,
                 onQuantityChange = { newQty ->
                     onToppingQuantityChange(item.id, newQty)
