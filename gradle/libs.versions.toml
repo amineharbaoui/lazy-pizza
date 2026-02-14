@@ -57,10 +57,11 @@ junit = "6.0.2"
 mockk = "1.14.7"
 turbine = "1.2.1"
 assertJ = "3.27.6"
-kover = "0.9.6"
 
 # --- Tooling ---
 dependencyAnalysis = "3.5.1"
+kover = "0.9.6"
+ktlint = "14.0.1"
 
 [libraries]
 # --- AndroidX Core ---
@@ -163,6 +164,8 @@ google-services = { id = "com.google.gms.google-services", version.ref = "google
 dependency-analysis = { id = "com.autonomousapps.dependency-analysis", version.ref = "dependencyAnalysis" }
 
 kover = { id = "org.jetbrains.kotlinx.kover", version.ref = "kover" }
+
+ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlint" }
 
 custom-compose = { id = "custom-compose" }
 custom-hilt = { id = "custom-hilt" }
