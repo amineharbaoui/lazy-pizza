@@ -1,6 +1,3 @@
-[*.{kt,kts}]
-ktlint_code_style = intellij_idea
-
 root = true
 
 [*]
@@ -9,9 +6,10 @@ indent_size = 4
 insert_final_newline = true
 charset = utf-8
 trim_trailing_whitespace = true
-
 max_line_length = 140
 
+[*.{kt,kts}]
+ktlint_code_style = intellij_idea
 ktlint_standard_class-signature = disabled
 ktlint_standard_blank-line-between-when-conditions = disabled
 ktlint_function_signature_rule_force_multiline_when_parameter_count_greater_or_equal_than = 2

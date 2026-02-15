@@ -1,0 +1,90 @@
+name: ktlint
+
+on:
+    pull_request:
+
+permissions:
+    contents: read
+    pull-requests: write
+    checks: write
+
+jobs:
+    ktlint:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
+
+            - name: Get Added/Modified Kotlin files
+              id: kotlin_files
+              shell: bash
+              run: |
+                  FILES="$(git diff --name-only \
+                    ${{ github.event.pull_request.base.sha }} \
+                    ${{ github.event.pull_request.head.sha }} \
+                    -- '*.kt' '*.kts')"
+
+                  echo "Changed Kotlin files:"
+                  echo "$FILES"
+
+                  {
+                    echo "files<<EOF"
+                    echo "$FILES"
+                    echo "EOF"
+                  } >> "$GITHUB_OUTPUT"
+
+            # Install ktlint CLI (pin a version)
+            - name: Install ktlint
+              if: steps.kotlin_files.outputs.files != ''
+              shell: bash
+              run: |
+                  KTLINT_VERSION="1.8.0"
+                  curl -sSLO "https://github.com/pinterest/ktlint/releases/download/${KTLINT_VERSION}/ktlint"
+                  chmod +x ktlint
+                  sudo mv ktlint /usr/local/bin/ktlint
+                  ktlint --version
+
+            # Run ktlint ONLY on the changed files + generate checkstyle report
+            - name: Run ktlint on changed files
+              if: steps.kotlin_files.outputs.files != ''
+              continue-on-error: true
+              shell: bash
+              run: |
+                  mkdir -p build
+
+                  # turn the multiline output into a bash array safely
+                  mapfile -t files <<< "${{ steps.kotlin_files.outputs.files }}"
+
+                  echo "Linting ${#files[@]} files:"
+                  printf '%s\n' "${files[@]}"
+
+                  # --relative makes paths relative to repo root (nice for annotations)
+                  # checkstyle report written to build/ktlint-checkstyle.xml
+                  ktlint --relative \
+                    --reporter=checkstyle,output=build/ktlint-checkstyle.xml \
+                    "${files[@]}"
+
+            # Optional: Post results with reviewdog
+            - name: Install reviewdog
+              if: always() && steps.kotlin_files.outputs.files != ''
+              uses: reviewdog/action-setup@v1
+              with:
+                  reviewdog_version: latest
+
+            - name: Reviewdog (inline review comments)
+              if: always() && steps.kotlin_files.outputs.files != ''
+              env:
+                  REVIEWDOG_GITHUB_API_TOKEN: ${{ github.token }}
+              shell: bash
+              run: |
+                  test -f build/ktlint-checkstyle.xml || exit 0
+
+                  reviewdog -f=checkstyle \
+                    -name="ktlint" \
+                    -reporter=github-pr-review \
+                    -filter-mode=diff_context \
+                    -level=warning \
+                    -fail-level=any < build/ktlint-checkstyle.xml
