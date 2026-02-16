@@ -36,3 +36,20 @@ dependencyAnalysis {
         }
     }
 }
+
+val unitTestAll = tasks.register("unitTestAll") {
+    group = "verification"
+    description = "Runs all unit tests across all modules (JVM :test + Android :testDebugUnitTest)."
+}
+
+subprojects {
+    plugins.withId(rootProject.libs.plugins.android.application.get().pluginId) {
+        unitTestAll.configure { dependsOn(tasks.named("testDebugUnitTest")) }
+    }
+    plugins.withId(rootProject.libs.plugins.android.library.get().pluginId) {
+        unitTestAll.configure { dependsOn(tasks.named("testDebugUnitTest")) }
+    }
+    plugins.withId(rootProject.libs.plugins.jetbrains.kotlin.jvm.get().pluginId) {
+        unitTestAll.configure { dependsOn(tasks.named("test")) }
+    }
+}
