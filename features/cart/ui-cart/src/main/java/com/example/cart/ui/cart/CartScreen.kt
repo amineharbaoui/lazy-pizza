@@ -4,7 +4,6 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -177,20 +176,16 @@ private fun EmptyState(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .padding(16.dp),
+            .padding(16.dp)
+            .verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        BoxWithConstraints(modifier = Modifier) {
-            val isLandscape = maxWidth > maxHeight
-            Image(
-                painter = painterResource(DS_R.drawable.empty_cart),
-                contentDescription = "Empty Cart",
-                modifier = Modifier.size(
-                    if (isLandscape) 128.dp else 256.dp,
-                ),
-            )
-        }
+        Image(
+            painter = painterResource(DS_R.drawable.empty_cart),
+            contentDescription = "Empty Cart",
+            modifier = Modifier.size(172.dp),
+        )
         Text(
             text = "Your Cart Is Empty",
             style = AppTypography.Title1SemiBold,
@@ -214,20 +209,16 @@ private fun ErrorState(errorMessage: String) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp),
+            .padding(16.dp)
+            .verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        BoxWithConstraints(modifier = Modifier) {
-            val isLandscape = maxWidth > maxHeight
-            Image(
-                painter = painterResource(DS_R.drawable.error),
-                contentDescription = null,
-                modifier = Modifier.size(
-                    if (isLandscape) 128.dp else 256.dp,
-                ),
-            )
-        }
+        Image(
+            painter = painterResource(DS_R.drawable.error),
+            contentDescription = null,
+            modifier = Modifier.size(172.dp),
+        )
         Text(
             text = errorMessage,
             style = AppTypography.Body1Medium,

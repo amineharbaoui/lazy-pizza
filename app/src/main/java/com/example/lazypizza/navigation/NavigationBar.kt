@@ -1,6 +1,9 @@
 package com.example.lazypizza.navigation
 
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.navigation3.runtime.NavKey
 import com.example.core.designsystem.R
@@ -18,17 +21,19 @@ fun BottomBar(
     onRouteSelect: (NavKey) -> Unit,
     badgeCount: Int,
 ) {
-    DsNavigationBar.BubbleNotchBottomBar(
-        menuItems = TopLevelRoutes.map { destination ->
-            DsNavigationBar.NavItem(
-                icon = painterResource(destination.toIcon()),
-                badgeCount = if (destination == CartRoute) badgeCount else 0,
-                label = destination.toLabel(),
-                isSelected = (destination == currentRoute),
-                onClick = { onRouteSelect(destination) },
-            )
-        },
-    )
+    Box(Modifier.navigationBarsPadding()) {
+        DsNavigationBar.BubbleNotchBottomBar(
+            menuItems = TopLevelRoutes.map { destination ->
+                DsNavigationBar.NavItem(
+                    icon = painterResource(destination.toIcon()),
+                    badgeCount = if (destination == CartRoute) badgeCount else 0,
+                    label = destination.toLabel(),
+                    isSelected = (destination == currentRoute),
+                    onClick = { onRouteSelect(destination) },
+                )
+            },
+        )
+    }
 }
 
 @Composable

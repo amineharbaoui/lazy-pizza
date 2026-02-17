@@ -36,6 +36,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults.windowInsets
 import androidx.compose.runtime.Composable
@@ -422,14 +423,15 @@ private fun MenuScreenErrorState() {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp),
+            .padding(16.dp)
+            .verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Image(
             painter = painterResource(DsR.drawable.error),
             contentDescription = null,
-            modifier = Modifier.size(256.dp),
+            modifier = Modifier.size(172.dp),
         )
         Text(
             text = "Something went wrong. Please try again later.",
@@ -447,14 +449,11 @@ fun NoProductsFound(modifier: Modifier = Modifier) {
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        BoxWithConstraints {
-            val isLandscape = maxWidth > maxHeight
-            Image(
-                painter = painterResource(DsR.drawable.no_result),
-                contentDescription = stringResource(R.string.no_orders_yet),
-                modifier = Modifier.size(if (isLandscape) 128.dp else 256.dp),
-            )
-        }
+        Image(
+            painter = painterResource(DsR.drawable.no_result),
+            contentDescription = stringResource(R.string.no_orders_yet),
+            modifier = Modifier.size(172.dp),
+        )
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
