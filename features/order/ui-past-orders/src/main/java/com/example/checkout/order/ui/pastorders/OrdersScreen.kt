@@ -19,12 +19,15 @@ import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults.windowInsets
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -141,18 +144,16 @@ private fun NotLoggedInState(
 ) {
     Column(
         modifier = modifier
-            .fillMaxSize(),
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        BoxWithConstraints {
-            val isLandscape = maxWidth > maxHeight
-            Image(
-                painter = painterResource(R.drawable.not_logged_in),
-                contentDescription = stringResource(com.example.order.checkout.ui.pastorders.R.string.not_signed_in_image_description),
-                modifier = Modifier.size(if (isLandscape) 128.dp else 256.dp),
-            )
-        }
+        Image(
+            painter = painterResource(R.drawable.not_logged_in),
+            contentDescription = stringResource(com.example.order.checkout.ui.pastorders.R.string.not_signed_in_image_description),
+            modifier = Modifier.size(172.dp),
+        )
         Text(
             text = stringResource(com.example.order.checkout.ui.pastorders.R.string.not_signed_in_title),
             style = AppTypography.Title1SemiBold,
@@ -175,18 +176,16 @@ private fun NotLoggedInState(
 private fun NoOrders(modifier: Modifier = Modifier) {
     Column(
         modifier = modifier
-            .fillMaxSize(),
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        BoxWithConstraints {
-            val isLandscape = maxWidth > maxHeight
-            Image(
-                painter = painterResource(R.drawable.no_orders_yet),
-                contentDescription = "No Orders Yet",
-                modifier = Modifier.size(if (isLandscape) 128.dp else 256.dp),
-            )
-        }
+        Image(
+            modifier = Modifier.size(172.dp),
+            painter = painterResource(R.drawable.no_orders_yet),
+            contentDescription = "No Orders Yet",
+        )
         Text(
             text = "No Orders Yet",
             style = AppTypography.Title1SemiBold,
@@ -210,20 +209,16 @@ private fun ErrorState(errorMessage: String) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp),
+            .padding(16.dp)
+            .verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        BoxWithConstraints(modifier = Modifier) {
-            val isLandscape = maxWidth > maxHeight
-            Image(
-                painter = painterResource(R.drawable.error),
-                contentDescription = null,
-                modifier = Modifier.size(
-                    if (isLandscape) 128.dp else 256.dp,
-                ),
-            )
-        }
+        Image(
+            painter = painterResource(R.drawable.error),
+            contentDescription = null,
+            modifier = Modifier.size(172.dp),
+        )
         Text(
             text = errorMessage,
             style = AppTypography.Body1Medium,
@@ -316,7 +311,6 @@ private fun EmptyOrderStatePreview() {
 }
 
 @PreviewPhoneTablet
-@Preview
 @Composable
 private fun ErrorCartPreview() {
     LazyPizzaThemePreview {
@@ -325,7 +319,6 @@ private fun ErrorCartPreview() {
 }
 
 @PreviewPhoneTablet
-@Preview
 @Composable
 private fun NotLoggedInStatePreview() {
     LazyPizzaThemePreview {
