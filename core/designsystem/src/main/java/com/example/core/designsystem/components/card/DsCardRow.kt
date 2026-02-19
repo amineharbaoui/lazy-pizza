@@ -35,6 +35,7 @@ import com.example.core.designsystem.components.DsButton
 import com.example.core.designsystem.theme.AppColors
 import com.example.core.designsystem.theme.AppTypography
 import com.example.core.designsystem.theme.LazyPizzaThemePreview
+import com.example.core.designsystem.utils.PreviewPhoneTablet
 
 object DsCardRow {
 
@@ -240,7 +241,7 @@ object DsCardRow {
             modifier = modifier
                 .fillMaxWidth(),
             shape = RoundedCornerShape(radius),
-            colors = CardDefaults.cardColors(containerColor = Color.White),
+            colors = CardDefaults.cardColors(containerColor = AppColors.SurfaceHigher),
             elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
             onClick = onClick,
         ) {
@@ -283,7 +284,7 @@ object DsCardRow {
     }
 }
 
-@Preview(showBackground = true)
+@PreviewPhoneTablet
 @Composable
 private fun PizzaCardPreview() {
     LazyPizzaThemePreview {
