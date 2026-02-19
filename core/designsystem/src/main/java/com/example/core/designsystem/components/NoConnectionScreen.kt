@@ -33,7 +33,7 @@ fun NoConnectionScreen(modifier: Modifier = Modifier) {
         Image(
             painter = painterResource(R.drawable.no_connection),
             contentDescription = null,
-            modifier = Modifier.size(256.dp),
+            modifier = Modifier.size(128.dp),
         )
         Text(
             text = stringResource(R.string.whooops),

@@ -431,7 +431,7 @@ private fun MenuScreenErrorState() {
         Image(
             painter = painterResource(DsR.drawable.error),
             contentDescription = null,
-            modifier = Modifier.size(172.dp),
+            modifier = Modifier.size(128.dp),
         )
         Text(
             text = "Something went wrong. Please try again later.",
@@ -452,7 +452,7 @@ fun NoProductsFound(modifier: Modifier = Modifier) {
         Image(
             painter = painterResource(DsR.drawable.no_result),
             contentDescription = stringResource(R.string.no_orders_yet),
-            modifier = Modifier.size(172.dp),
+            modifier = Modifier.size(128.dp),
         )
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,

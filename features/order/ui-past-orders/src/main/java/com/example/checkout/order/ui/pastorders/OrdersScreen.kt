@@ -152,7 +152,7 @@ private fun NotLoggedInState(
         Image(
             painter = painterResource(R.drawable.not_logged_in),
             contentDescription = stringResource(com.example.order.checkout.ui.pastorders.R.string.not_signed_in_image_description),
-            modifier = Modifier.size(172.dp),
+            modifier = Modifier.size(128.dp),
         )
         Text(
             text = stringResource(com.example.order.checkout.ui.pastorders.R.string.not_signed_in_title),
@@ -182,7 +182,7 @@ private fun NoOrders(modifier: Modifier = Modifier) {
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Image(
-            modifier = Modifier.size(172.dp),
+            modifier = Modifier.size(128.dp),
             painter = painterResource(R.drawable.no_orders_yet),
             contentDescription = "No Orders Yet",
         )
@@ -217,7 +217,7 @@ private fun ErrorState(errorMessage: String) {
         Image(
             painter = painterResource(R.drawable.error),
             contentDescription = null,
-            modifier = Modifier.size(172.dp),
+            modifier = Modifier.size(128.dp),
         )
         Text(
             text = errorMessage,
