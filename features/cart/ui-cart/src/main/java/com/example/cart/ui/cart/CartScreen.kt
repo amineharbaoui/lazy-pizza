@@ -184,7 +184,7 @@ private fun EmptyState(
         Image(
             painter = painterResource(DS_R.drawable.empty_cart),
             contentDescription = "Empty Cart",
-            modifier = Modifier.size(172.dp),
+            modifier = Modifier.size(128.dp),
         )
         Text(
             text = "Your Cart Is Empty",
@@ -217,7 +217,7 @@ private fun ErrorState(errorMessage: String) {
         Image(
             painter = painterResource(DS_R.drawable.error),
             contentDescription = null,
-            modifier = Modifier.size(172.dp),
+            modifier = Modifier.size(128.dp),
         )
         Text(
             text = errorMessage,

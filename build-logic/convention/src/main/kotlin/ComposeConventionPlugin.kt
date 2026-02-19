@@ -14,7 +14,7 @@ class ComposeConventionPlugin : Plugin<Project> {
                 implementation(platform(libs.androidx.compose.bom))
                 implementation(libs.bundles.compose.core)
                 implementation(libs.androidx.compose.ui.tooling.preview)
-                debugImplementation(libs.androidx.compose.ui.tooling)
+                implementation(libs.androidx.compose.ui.tooling)
             }
         }
     }

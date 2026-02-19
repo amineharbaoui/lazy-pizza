@@ -48,7 +48,7 @@ fun ConfirmationOrderComponent(
             Image(
                 painter = painterResource(DSR.drawable.loading),
                 contentDescription = null,
-                modifier = Modifier.size(256.dp),
+                modifier = Modifier.size(128.dp),
             )
             OrderDetails(
                 orderNumber = orderNumber,
@@ -66,7 +66,7 @@ fun ConfirmationOrderComponent(
             Image(
                 painter = painterResource(DSR.drawable.loading),
                 contentDescription = null,
-                modifier = Modifier.size(256.dp),
+                modifier = Modifier.size(128.dp),
             )
             OrderDetails(
                 orderNumber = orderNumber,

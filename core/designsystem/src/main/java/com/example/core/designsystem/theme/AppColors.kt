@@ -62,7 +62,7 @@ object AppColors {
 
     val PrimaryGradientBrush: Brush
         @Composable get() = Brush.linearGradient(
-            colors = listOf(palette.gradientStart, palette.gradientEnd)
+            colors = listOf(palette.gradientStart, palette.gradientEnd),
         )
 
     val PrimaryShadow: Color
