@@ -1,36 +1,59 @@
 package com.example.core.designsystem.theme
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Typography
+import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 
-val LightColorScheme: ColorScheme = lightColorScheme(
-    primary = AppColors.Primary,
-    onPrimary = AppColors.TextOnPrimary,
-
-    background = AppColors.Bg,
-    onBackground = AppColors.TextPrimary,
-
-    surface = AppColors.SurfaceHigher,
-    onSurface = AppColors.TextPrimary,
-
-    surfaceVariant = AppColors.SurfaceHighest,
-    onSurfaceVariant = AppColors.TextSecondary,
-
-    outline = AppColors.Outline,
-    outlineVariant = AppColors.Outline_50,
-
-    secondary = AppColors.TextSecondary,
-    onSecondary = Color.White,
-    tertiary = AppColors.Primary,
-    onTertiary = Color.White,
-)
+fun colorSchemeFrom(
+    p: AppPalette,
+    dark: Boolean,
+): ColorScheme = if (dark) {
+    darkColorScheme(
+        primary = p.primary,
+        onPrimary = p.textOnPrimary,
+        background = p.bg,
+        onBackground = p.textPrimary,
+        surface = p.surfaceHigher,
+        onSurface = p.textPrimary,
+        surfaceVariant = p.surfaceHighest,
+        onSurfaceVariant = p.textSecondary,
+        outline = p.outline,
+        outlineVariant = p.outline50,
+        secondary = p.textSecondary,
+        onSecondary = Color.Black,
+        tertiary = p.primary,
+        onTertiary = p.textOnPrimary,
+    )
+} else {
+    lightColorScheme(
+        primary = p.primary,
+        onPrimary = p.textOnPrimary,
+        background = p.bg,
+        onBackground = p.textPrimary,
+        surface = p.surfaceHigher,
+        onSurface = p.textPrimary,
+        surfaceVariant = p.surfaceHighest,
+        onSurfaceVariant = p.textSecondary,
+        outline = p.outline,
+        outlineVariant = p.outline50,
+        secondary = p.textSecondary,
+        onSecondary = Color.White,
+        tertiary = p.primary,
+        onTertiary = Color.White,
+    )
+}
 
 val Typography = Typography(
     titleLarge = AppTypography.Title1SemiBold,
@@ -45,29 +68,45 @@ val Typography = Typography(
     bodySmall = AppTypography.Body4Regular,
 )
 
+val LocalAppPalette = staticCompositionLocalOf { LightPalette }
+
 @Composable
-fun LazyPizzaTheme(content: @Composable () -> Unit) {
-    MaterialTheme(
-        colorScheme = LightColorScheme,
-        typography = Typography,
-        content = content,
-    )
+fun LazyPizzaTheme(
+    darkTheme: Boolean = isSystemInDarkTheme(),
+    content: @Composable () -> Unit,
+) {
+    val palette = if (darkTheme) DarkPalette else LightPalette
+    val colorScheme = colorSchemeFrom(palette, darkTheme)
+
+    CompositionLocalProvider(LocalAppPalette provides palette) {
+        MaterialTheme(
+            colorScheme = colorScheme,
+            typography = Typography,
+            content = content,
+        )
+    }
 }
 
 @Composable
 fun LazyPizzaThemePreview(
     modifier: Modifier = Modifier,
+    darkTheme: Boolean = isSystemInDarkTheme(),
     content: @Composable () -> Unit,
 ) {
-    MaterialTheme(
-        colorScheme = LightColorScheme,
-        typography = Typography,
-    ) {
-        Box(
-            modifier = modifier
-                .fillMaxSize(),
+    val palette = if (darkTheme) DarkPalette else LightPalette
+    val colorScheme = colorSchemeFrom(palette, darkTheme)
+    CompositionLocalProvider(LocalAppPalette provides palette) {
+        MaterialTheme(
+            colorScheme = colorScheme,
+            typography = Typography,
         ) {
-            content()
+            Surface(
+                modifier = modifier
+                    .background(MaterialTheme.colorScheme.background)
+                    .fillMaxSize(),
+            ) {
+                content()
+            }
         }
     }
 }

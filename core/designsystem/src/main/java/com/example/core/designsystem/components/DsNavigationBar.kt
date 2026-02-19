@@ -66,6 +66,7 @@ import com.example.core.designsystem.R
 import com.example.core.designsystem.theme.AppColors
 import com.example.core.designsystem.theme.AppTypography
 import com.example.core.designsystem.theme.LazyPizzaThemePreview
+import com.example.core.designsystem.utils.PreviewPhoneTablet
 
 object DsNavigationBar {
 
@@ -161,7 +162,7 @@ object DsNavigationBar {
                     .height(notchHeight)
                     .align(Alignment.TopStart)
                     .zIndex(0f),
-                color = AppColors.Overlay.copy(alpha = 0.1f),
+                color = AppColors.Overlay,
             )
 
             Box(
@@ -209,15 +210,18 @@ object DsNavigationBar {
             animationSpec = moveSpec,
             label = "iconOffset",
         )
+        val textSecondaryColor = AppColors.TextSecondary
+        val textPrimaryColor = AppColors.TextPrimary
+        val surfaceHigherColor = AppColors.SurfaceHigher
 
         val transition = updateTransition(targetState = isSelected, label = "itemTransition")
         val iconTint by transition.animateColor(
             transitionSpec = {
                 keyframes {
                     durationMillis = durationMs
-                    AppColors.TextSecondary at 0
-                    AppColors.TextPrimary at durationMs / 2
-                    AppColors.SurfaceHigher at durationMs
+                    textSecondaryColor at 0
+                    textPrimaryColor at durationMs / 2
+                    surfaceHigherColor at durationMs
                 }
             },
             label = "iconTint",
@@ -404,12 +408,7 @@ object DsNavigationBar {
     )
 }
 
-@Preview(
-    name = "P1 - Phone",
-    device = Devices.PHONE,
-    showSystemUi = true,
-    showBackground = true,
-)
+@PreviewPhoneTablet
 @Composable
 private fun BubbleNotchBottomBarPreview() {
     LazyPizzaThemePreview {

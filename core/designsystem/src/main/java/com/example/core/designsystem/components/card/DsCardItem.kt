@@ -1,5 +1,6 @@
 package com.example.core.designsystem.components.card
 
+import android.content.res.Configuration
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.fadeIn
@@ -45,6 +46,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.core.designsystem.R
@@ -113,7 +115,7 @@ object DsCardItem {
                 .width(160.dp)
                 .height(260.dp),
             shape = RoundedCornerShape(radius),
-            colors = CardDefaults.cardColors(containerColor = Color.White),
+            colors = CardDefaults.cardColors(containerColor = AppColors.SurfaceHigher),
             elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
         ) {
             Column(modifier = Modifier.fillMaxSize()) {
@@ -290,7 +292,15 @@ object DsCardItem {
     }
 }
 
-@Preview(showBackground = true)
+@Preview(
+    name = "P1 - Phone",
+    showBackground = true,
+)
+@Preview(
+    name = "P1 - Phone (Dark)",
+    uiMode = Configuration.UI_MODE_NIGHT_YES,
+    showBackground = true,
+)
 @Composable
 private fun AddonCardPreview() {
     LazyPizzaThemePreview {

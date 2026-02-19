@@ -1,8 +1,10 @@
 package com.example.lazypizza.navigation
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.navigation3.runtime.NavKey
@@ -73,11 +75,16 @@ private fun NavKey.toLabel(): String = when (this) {
 @Composable
 private fun BottomBarPreview() {
     LazyPizzaThemePreview {
-        BottomBar(
-            currentRoute = MenuRoute,
-            onRouteSelect = {},
-            badgeCount = 3,
-        )
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.BottomCenter,
+        ) {
+            BottomBar(
+                currentRoute = MenuRoute,
+                onRouteSelect = {},
+                badgeCount = 3,
+            )
+        }
     }
 }
 
