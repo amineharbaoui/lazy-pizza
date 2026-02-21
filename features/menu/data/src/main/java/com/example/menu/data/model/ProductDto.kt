@@ -1,7 +1,9 @@
 package com.example.menu.data.model
 
+import androidx.annotation.Keep
 import com.google.firebase.firestore.Exclude
 
+@Keep
 data class ProductDto(
     @get:Exclude @set:Exclude
     var id: String = "",
