@@ -18,13 +18,24 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    signingConfigs {
+        create("release") {
+            storeFile = file(providers.gradleProperty("LAZYPIZZA_STORE_FILE").get())
+            storePassword = providers.gradleProperty("LAZYPIZZA_STORE_PASSWORD").get()
+            keyAlias = providers.gradleProperty("LAZYPIZZA_KEY_ALIAS").get()
+            keyPassword = providers.gradleProperty("LAZYPIZZA_KEY_PASSWORD").get()
+        }
+    }
+
     buildTypes {
+        debug {
+            applicationIdSuffix = ".debug"
+            versionNameSuffix = "-debug"
+        }
         release {
-            isMinifyEnabled = true
-            proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro",
-            )
+            isMinifyEnabled = false
+            isShrinkResources = false
+            signingConfig = signingConfigs.getByName("release")
         }
     }
 }

@@ -15,7 +15,6 @@ android {
             buildConfigField("long", "CART_TOUCH_THROTTLE_SECONDS", "60")
         }
         release {
-            isMinifyEnabled = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
 
             buildConfigField("long", "CART_TTL_SECONDS", "60")
