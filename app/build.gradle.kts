@@ -20,11 +20,11 @@ android {
     }
 
     signingConfigs {
-        create("release") {
-            storeFile = file(providers.gradleProperty("LAZYPIZZA_STORE_FILE").get())
-            storePassword = providers.gradleProperty("LAZYPIZZA_STORE_PASSWORD").get()
-            keyAlias = providers.gradleProperty("LAZYPIZZA_KEY_ALIAS").get()
-            keyPassword = providers.gradleProperty("LAZYPIZZA_KEY_PASSWORD").get()
+        register("release") {
+            storeFile = providers.gradleProperty("LAZYPIZZA_STORE_FILE").orNull?.let(::file)
+            storePassword = providers.gradleProperty("LAZYPIZZA_STORE_PASSWORD").orNull
+            keyAlias = providers.gradleProperty("LAZYPIZZA_KEY_ALIAS").orNull
+            keyPassword = providers.gradleProperty("LAZYPIZZA_KEY_PASSWORD").orNull
         }
     }
 
@@ -40,7 +40,7 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro",
             )
-            signingConfig = signingConfigs.getByName("release")
+            signingConfig = signingConfigs.findByName("release")
         }
     }
 }
