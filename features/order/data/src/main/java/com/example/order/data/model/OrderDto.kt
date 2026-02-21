@@ -1,5 +1,8 @@
 package com.example.order.data.model
 
+import androidx.annotation.Keep
+
+@Keep
 data class OrderDto(
     val orderNumber: String = "",
     val userId: String = "",
@@ -12,6 +15,7 @@ data class OrderDto(
     val items: List<OrderItemDto> = emptyList(),
 )
 
+@Keep
 data class OrderItemDto(
     val productId: String = "",
     val name: String = "",
@@ -21,6 +25,7 @@ data class OrderItemDto(
     val toppings: List<OrderToppingDto> = emptyList(),
 )
 
+@Keep
 data class OrderToppingDto(
     val id: String = "",
     val name: String = "",
