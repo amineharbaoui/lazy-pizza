@@ -20,11 +20,16 @@ android {
     }
 
     signingConfigs {
-        register("release") {
-            storeFile = providers.gradleProperty("LAZYPIZZA_STORE_FILE").orNull?.let(::file)
-            storePassword = providers.gradleProperty("LAZYPIZZA_STORE_PASSWORD").orNull
-            keyAlias = providers.gradleProperty("LAZYPIZZA_KEY_ALIAS").orNull
-            keyPassword = providers.gradleProperty("LAZYPIZZA_KEY_PASSWORD").orNull
+        create("release") {
+            val isReleaseBuild = gradle.startParameter.taskNames.any { it.contains("Release", ignoreCase = true) }
+            if (!isReleaseBuild) return@create
+            fun propOrEnv(name: String): String = providers.gradleProperty(name).orNull
+                ?: System.getenv(name)
+
+            storeFile = file(propOrEnv("LAZYPIZZA_STORE_FILE"))
+            storePassword = propOrEnv("LAZYPIZZA_STORE_PASSWORD")
+            keyAlias = propOrEnv("LAZYPIZZA_KEY_ALIAS")
+            keyPassword = propOrEnv("LAZYPIZZA_KEY_PASSWORD")
         }
     }
 
