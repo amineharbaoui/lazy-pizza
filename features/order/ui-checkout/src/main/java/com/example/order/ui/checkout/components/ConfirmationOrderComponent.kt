@@ -106,7 +106,7 @@ fun OrderDetails(
         Card(
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(12.dp),
-            colors = CardDefaults.cardColors(containerColor = AppColors.Bg),
+            colors = CardDefaults.cardColors(containerColor = AppColors.SurfaceHigher),
             border = BorderStroke(1.dp, AppColors.Outline),
         ) {
             Column(

@@ -49,7 +49,7 @@ fun colorSchemeFrom(
         outline = p.outline,
         outlineVariant = p.outline50,
         secondary = p.textSecondary,
-        onSecondary = Color.White,
+        onSecondary = p.textSecondary,
         tertiary = p.primary,
         onTertiary = Color.White,
     )

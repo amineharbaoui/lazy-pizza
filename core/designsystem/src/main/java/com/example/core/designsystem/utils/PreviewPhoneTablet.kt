@@ -7,32 +7,32 @@ import androidx.compose.ui.tooling.preview.Preview
 @Preview(
     name = "P1 - Phone",
     device = Devices.PHONE,
-//    showSystemUi = true,
+    showBackground = true,
+)
+@Preview(
+    name = "P1 - Phone",
+    device = "id:small_phone",
     showBackground = true,
 )
 @Preview(
     name = "P1 - Phone (Dark)",
     device = Devices.PHONE,
     uiMode = Configuration.UI_MODE_NIGHT_YES,
-//    showSystemUi = true,
     showBackground = true,
 )
 @Preview(
     name = "P2 - Tablet",
     device = "spec:width=1280dp,height=800dp,dpi=240,orientation=portrait",
-//    showSystemUi = true,
     showBackground = true,
 )
 @Preview(
     name = "P3 - Phone - Landscape",
     device = "spec:width=411dp,height=891dp,orientation=landscape,dpi=420",
-//    showSystemUi = true,
     showBackground = true,
 )
 @Preview(
     name = "P4 - Tablet - Landscape",
     device = "spec:width=1280dp,height=800dp,dpi=240",
-//    showSystemUi = true,
     showBackground = true,
 )
 @Target(
