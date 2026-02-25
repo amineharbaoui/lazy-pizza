@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -57,8 +58,6 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Devices
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
@@ -147,13 +146,13 @@ object DsNavigationBar {
             val bubbleCenterX = bubbleX + (bubbleSize / 2)
             val notchX = bubbleCenterX - (notchWidth / 2)
 
-            HorizontalDivider(color = AppColors.TextPrimary, thickness = 5.dp)
-
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(AppColors.SurfaceHigher),
+                    .background(AppColors.Bg),
             )
+
+            HorizontalDivider(color = AppColors.Overlay, thickness = 0.5.dp)
 
             NotchShape(
                 modifier = Modifier
@@ -271,6 +270,7 @@ object DsNavigationBar {
                 ) + fadeOut(animationSpec = tween(durationMs, easing = FastOutSlowInEasing)),
             ) {
                 Text(
+                    modifier = Modifier.padding(bottom = 4.dp),
                     text = item.label,
                     style = AppTypography.Label2SemiBold,
                     color = AppColors.TextPrimary,

@@ -240,7 +240,7 @@ object DsButton {
     showBackground = true,
 )
 @Composable
-private fun FilledPreview() {
+private fun PreviewsDsButtonPreview() {
     LazyPizzaTheme {
         Column(
             modifier = Modifier.padding(16.dp),

@@ -23,6 +23,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -194,6 +195,7 @@ private fun EmptyState(
         Text(
             text = "Looks like you haven't added any items to your cart yet.",
             style = AppTypography.Body3Regular,
+            textAlign = TextAlign.Center,
             color = AppColors.TextSecondary,
         )
         Spacer(Modifier.height(16.dp))
