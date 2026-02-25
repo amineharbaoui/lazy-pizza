@@ -1,4 +1,12 @@
-# LazyPizza 🍕
+# 🍕 LazyPizza
+
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+![Android](https://img.shields.io/badge/Android-API%2026%2B-3DDC84?logo=android)
+![Kotlin](https://img.shields.io/badge/Kotlin-2.2-blue?logo=kotlin)
+![Gradle](https://img.shields.io/badge/Gradle-8.13-02303A?logo=gradle)
+[![codecov](https://codecov.io/gh/amineharbaoui/lazy-pizza/branch/main/graph/badge.svg)](https://codecov.io/gh/amineharbaoui/lazy-pizza)
+[![Release](https://img.shields.io/github/v/release/amineharbaoui/lazy-pizza)](https://github.com/amineharbaoui/lazy-pizza/releases)
+
 
 <img width="1083" height="630" alt="Screenshot 2026-02-11 at 13 29 32" src="https://github.com/user-attachments/assets/f9860c4c-3ca3-45ce-9b7e-b220d8851bb8" /><br><br>
 
