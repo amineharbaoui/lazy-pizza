@@ -2,6 +2,8 @@ name: Code Coverage
 
 on:
     pull_request:
+    push:
+        branches: [ "main" ]
     workflow_dispatch:
 
 permissions:
@@ -24,14 +26,13 @@ jobs:
             - name: Setup Gradle
               uses: gradle/actions/setup-gradle@v5
 
-            - name: Generate Code Coverage Eeport
+            - name: Generate Code Coverage Report
               run: ./gradlew koverXmlReport
 
             - name: Upload coverage to Codecov
               uses: codecov/codecov-action@v5
               with:
+                  token: ${{ secrets.LAZYPIZZA_CODECOV_TOKEN }}
                   files: |
                       **/build/reports/kover/report.xml
                   fail_ci_if_error: true
-              env:
-                  CODECOV_TOKEN: ${{ secrets.LAZYPIZZA_CODECOV_TOKEN }}
