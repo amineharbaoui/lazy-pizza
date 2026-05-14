@@ -1,0 +1,68 @@
+# ============================================================
+# .coderabbit.yaml — lazy-pizza
+# Kotlin / Jetpack Compose / Multi-module Clean Architecture
+# CodeRabbit configuration
+# ============================================================
+
+language: "en-US"
+
+reviews:
+  profile: "assertive"
+  request_changes_workflow: true
+  high_level_summary: true
+  poem: false
+  review_status: true
+  collapse_walkthrough: false
+
+  # Ignore generated, DS_Store, and dependency-lock files
+  path_filters:
+    - "!**/.DS_Store"
+    - "!**/build/**"
+    - "!**/*.pb.kt"
+
+  path_instructions:
+    - path: "**/*.kt"
+      instructions: |
+        This is a Kotlin + Jetpack Compose multi-module Android project using Clean Architecture (MVVM).
+        Modules follow: core/*, features/*/data, features/*/domain, features/*/ui-*.
+
+        PRIORITIZE these issue classes:
+        - Jetpack Compose: unconditional calls to remember*/produceState/LaunchedEffect, unstable parameters causing recomposition, missing remember on lambdas in hot paths, derivedStateOf misuse.
+        - Coroutines: missing structured concurrency, wrong dispatcher (IO vs Default vs Main), leaked scopes, suspend functions on main thread, Flow collected outside lifecycle scope.
+        - Hilt/DI: wrong scope (@Singleton vs @ViewModelScoped vs @ActivityRetainedScoped), @Inject constructor on objects that should be modules, leaking Context.
+        - Gradle: missing proguardFiles on release, wrong dependency configuration (implementation vs api vs testImplementation), version catalog typos.
+        - Room/DataStore: missing migrations, blocking calls outside withContext, exposing mutable entities to the UI layer.
+        - Security: secrets/tokens in CI workflows, env-var exposure, network cleartext, logging PII.
+
+        DO NOT report:
+        - Style/naming nitpicks if Kotlin conventions are already followed.
+        - Suggestions to add KDoc on every public function.
+        - Generic "consider extracting this into a function" without a clear benefit.
+
+    - path: "**/*.kts"
+      instructions: |
+        Review Gradle build scripts for:
+        - Dependencies declared outside libs.versions.toml (version catalog must be the single source of truth).
+        - Wrong dependency configuration (api vs implementation vs runtimeOnly).
+        - Missing or incorrect proguardFiles on release build types.
+
+    - path: ".github/workflows/*.yml"
+      instructions: |
+        Review GitHub Actions workflows for:
+        - Secrets or tokens hardcoded in plain text.
+        - Missing permissions blocks.
+        - Unpinned action versions (prefer SHA pinning for third-party actions).
+        - Steps that could be cached but aren't.
+
+  auto_review:
+    enabled: true
+    drafts: false
+    base_branches:
+      - "main"
+    # Skip pure dependency-bump and WIP PRs
+    ignore_title_keywords:
+      - "WIP"
+      - "chore(deps)"
+
+chat:
+  auto_reply: true

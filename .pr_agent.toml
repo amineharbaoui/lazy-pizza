@@ -1,0 +1,71 @@
+# ============================================================
+# .pr_agent.toml — lazy-pizza
+# Kotlin / Jetpack Compose / Multi-module Clean Architecture
+# Qodo Merge v2 configuration
+# ============================================================
+
+[config]
+# Skip noise on dependency-bump PRs and draft branches
+ignore_pr_title = ["^chore\\(deps\\)", "^\\[WIP\\]", "^WIP:"]
+ignore_pr_source_branches = ["^dependabot/", "^renovate/"]
+# Skip generated code so the review focuses on what you wrote
+ignore_languages_frameworks = ["protobuf"]
+
+[github_app]
+pr_commands = [
+    "/agentic_describe",
+    "/agentic_review",
+]
+# Re-run review when you push new commits to the PR
+handle_push_trigger = true
+push_commands = ["/agentic_review"]
+
+[pr_description]
+publish_description_as_comment = false
+generate_ai_title = true
+publish_labels = true
+enable_pr_type = true
+add_original_user_description = false
+final_update_message = true
+
+[review_agent]
+# Inline comments on the diff + a summary at the top
+comments_location_policy = "both"
+
+# 3 = action_required only. Cuts noise hard.
+# Move to 2 if you want "remediation_recommended" suggestions too.
+inline_comments_severity_threshold = 3
+
+# This is the real lever — tune the reviewer to act like a Senior Android dev
+issues_user_guidelines = """
+This is a Kotlin + Jetpack Compose multi-module Android project using Clean Architecture (MVVM).
+Modules follow: core/*, features/*/data, features/*/domain, features/*/ui-*.
+
+PRIORITIZE these issue classes:
+- Jetpack Compose rules: unconditional calls to remember*/produceState/LaunchedEffect, stable/unstable parameters causing recomposition, missing remember on lambdas in hot paths, derivedStateOf misuse.
+- Coroutines: missing structured concurrency, wrong dispatcher (IO vs Default vs Main), leaked scopes, suspend functions blocking the main thread, Flow collected outside lifecycle scope.
+- Hilt/DI: wrong scope (@Singleton vs @ViewModelScoped vs @ActivityRetainedScoped), @Inject constructor on objects that should be modules, leaking Context.
+- Gradle: missing proguardFiles on release, dependency on wrong configuration (implementation vs api vs testImplementation), version catalog typos, custom plugin correctness.
+- Coverage tooling: Kover/JaCoCo wildcard correctness (** vs *), exclusion patterns actually matching.
+- Room/DataStore: missing migrations, blocking calls outside withContext, exposing mutable entities to the UI layer.
+- Security: secrets/tokens in CI workflows, env-var exposure, network cleartext, logging PII.
+
+DO NOT report:
+- Style/naming nitpicks if Kotlin conventions are already followed.
+- Suggestions to add KDoc on every public function.
+- Generic "consider extracting this into a function" without a clear benefit.
+"""
+
+compliance_user_guidelines = """
+- Every feature module must respect Clean Architecture boundaries: ui must not import data, domain must not import data or ui.
+- ViewModels must expose StateFlow/SharedFlow, never LiveData (project decision).
+- All side effects in Compose must use LaunchedEffect or rememberCoroutineScope, never raw GlobalScope.
+- New dependencies must be added via the version catalog (libs.versions.toml), not hardcoded in build.gradle.kts.
+"""
+
+[review_agent_ux]
+# How many findings shown before "View all" collapses the rest
+finding_overflow_count = 5
+expand_description = true
+expand_code = true
+expand_relevance = false
