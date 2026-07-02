@@ -10,15 +10,17 @@ const REPORT_PATH = 'build/ktlint-report.json';
 await main();
 
 async function main() {
-    await clearOldKtlintCommentsAndDismissReview();
+    await clearOldKtlintComments();
     if (!existsSync(REPORT_PATH)) {
         console.log('No ktlint report found.');
+        await dismissOldKtlintReview();
         return;
     }
 
     const ktLintIssues = parseJsonReport(REPORT_PATH);
     if (ktLintIssues.length === 0) {
         console.log('No ktlint issues found.');
+        await dismissOldKtlintReview();
         return;
     }
 
@@ -27,6 +29,7 @@ async function main() {
 
     if (comments.length === 0) {
         console.log('No ktlint issues fall within the PR diff.');
+        await dismissOldKtlintReview();
         return;
     }
 
@@ -140,7 +143,7 @@ async function postReview(comments) {
     });
 }
 
-async function clearOldKtlintCommentsAndDismissReview() {
+async function clearOldKtlintComments() {
     const {data: comments} = await octokit.rest.pulls.listReviewComments({
         owner,
         repo,
@@ -163,7 +166,10 @@ async function clearOldKtlintCommentsAndDismissReview() {
             comment_id: comment.id,
         });
     }
+    console.log('Old ktlint comments cleared.');
+}
 
+async function dismissOldKtlintReview() {
     const {data: reviews} = await octokit.rest.pulls.listReviews({
         owner,
         repo,
@@ -172,7 +178,7 @@ async function clearOldKtlintCommentsAndDismissReview() {
 
     const oldReview = reviews.find(review => review.body.startsWith('**ktlint**') && review.state !== 'DISMISSED');
     if (oldReview === undefined) {
-        console.log('No old ktlint Review found.');
+        console.log('No old ktlint review to dismiss.');
         return;
     }
     await octokit.rest.pulls.dismissReview({
@@ -182,4 +188,5 @@ async function clearOldKtlintCommentsAndDismissReview() {
         review_id: oldReview.id,
         message: 'Dismissed: ktlint issues have been re-evaluated.',
     });
+    console.log('Old ktlint review dismissed.');
 }
