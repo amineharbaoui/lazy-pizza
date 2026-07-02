@@ -17,7 +17,6 @@ import kotlin.coroutines.resumeWithException
 class PhoneAuthDataSource @Inject constructor(
     private val firebaseAuth: FirebaseAuth,
 ) {
-
     // TODO Unify userIdFlow and isSignedIn
     val userIdFlow: Flow<String?> = callbackFlow {
         val listener = FirebaseAuth.AuthStateListener { auth ->
