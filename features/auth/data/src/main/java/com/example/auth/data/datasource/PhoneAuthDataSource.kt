@@ -13,6 +13,7 @@ import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 
 
+
 class PhoneAuthDataSource @Inject constructor(
     private val firebaseAuth: FirebaseAuth,
 ) {
@@ -52,7 +53,7 @@ class PhoneAuthDataSource @Inject constructor(
         verificationId: String,
         smsCode: String,
     ): RemoteUser {
-        val credential = PhoneAuthProvider.getCredential(verificationId, smsCode)
+        val credential = PhoneAuthProvider.getCredential(verificationId, smsCode).also { println("                                            ") }
         val firebaseUser = signInWithCredential(credential)
         return RemoteUser(
             uid = firebaseUser.uid,
