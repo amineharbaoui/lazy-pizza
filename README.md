@@ -204,17 +204,17 @@ Custom Gradle convention plugins in `build-logic/convention/`:
 ## 🗺 TODOs
 
 ### CI/CD (GitHub Actions)
-- [ ] Run unit tests on PRs
-- [ ] Generate Kover coverage report + upload as artifact
-- [ ] Assemble debug/release builds
+- [X] Run unit tests on PRs
+- [X] Generate Kover coverage report + upload as artifact
+- [X] Assemble debug/release builds
 ### Code quality
 - [ ] Add **Detekt** for static analysis
-- [ ] Add **Ktlint** for formatting + auto-fix
+- [X] Add **Ktlint** for formatting + auto-fix
 ### Testing
 - [ ] Expand unit tests across all modules
 - [ ] Add **UI tests** for key flows (menu → detail → cart → checkout)
 ### UI/UX
-- [ ] Add Dark Mode
+- [X] Add Dark Mode
 
 
 ## 📄 License
