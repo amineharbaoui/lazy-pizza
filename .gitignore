@@ -8,6 +8,11 @@ local.properties
 
 # Log/OS Files
 *.log
+.DS_Store
+
+# Local tool state
+.hotswan/
+.claude/settings.local.json
 
 # Android Studio generated files and folders
 captures/
