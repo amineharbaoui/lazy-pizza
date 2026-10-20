@@ -1,0 +1,17 @@
+{
+    "permissions": {
+        "allow": [
+            "Bash(*)",
+            "Edit(*)"
+        ],
+        "deny": [
+            "Bash(git push*)",
+            "Bash(rm -rf*)",
+            "Bash(rm -fr*)"
+        ],
+        "additionalDirectories": [
+            "~/.gradle",
+            "~/Library/Android/sdk"
+        ]
+    }
+}
