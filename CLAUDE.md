@@ -1,416 +1,80 @@
 # LazyPizza – Project Development Guidelines
 
-Project-specific rules for building, testing, and extending LazyPizza.
+Multi-module Android app: Kotlin, Jetpack Compose (Material 3 + Adaptive), Hilt, Room, Firebase Auth & Firestore, Navigation 3. Feature-based, state-driven, strictly layered. Toolchain and SDK versions live in `gradle/libs.versions.toml`.
 
----
+## Project Purpose & Scale
 
-## 1. Project Overview
+LazyPizza simulates an **enterprise project at a big tech company**: a very large multi-module app, production-ready, serving millions of users, and developed in parallel by multiple squads. It is also a showcase of engineering skill and a playground for experimenting with AI-assisted development and new tooling.
 
-LazyPizza is a **multi-module Android application** built with:
+**Never treat it as a small project.** The current module count is not the constraint. Every decision must hold at enterprise scale:
 
-- Kotlin
-- Jetpack Compose (Material 3 + Adaptive)
-- Hilt for dependency injection
-- Room for local persistence
-- Firebase Auth & Firestore
-- AndroidX Navigation 3 (typed destinations)
-- Gradle Version Catalog
-- KSP for annotation processing
-- Typesafe Project Accessors
+- Never justify a shortcut with "the project is small" or "it's only N modules".
+- Open for scale: favor module isolation, clear ownership boundaries, and stable public APIs between modules so squads can work independently.
+- Easy to maintain: small reviewable diffs, no shared mutable global state, consistent conventions across features.
+- Build/CI must scale: affected-module builds and tests, build caching, parallelism.
+- Production-ready: offline resilience, retries with backoff, pagination, efficient Firestore reads/writes, graceful degradation, observability, crash-free rate, startup time, and backward-compatible migrations are first-class.
 
-The architecture is **feature-based**, **state-driven**, and **strictly layered**.
+Scale justifies boundaries and robustness, not speculative abstractions (see Simplicity & Naming).
 
----
+## Modules
 
-## 2. Module Structure
+Listed in `settings.gradle.kts`.
 
-Defined in `settings.gradle.kts`.
-
-### Core Modules
-
-- `:app`
-- `:core:{designsystem,ui,model,common,network,testing}`
-
-### Feature Modules (pattern)
-
-Each feature under `:features:<name>` contains:
-
-- `domain`
-- `data`
-- `ui-*`
-
-Current features:
-- `:features:menu:{domain,data,ui-home,ui-pizza-detail}`
-- `:features:cart:{domain,data,ui-cart}`
-- `:features:auth:{domain,data,ui-login}`
-- `:features:order:{domain,data,ui-checkout,ui-past-orders}`
-
----
+- Core: `:app`, `:core:{designsystem,ui,model,common,network,testing}`
+- Features: `:features:<name>:{domain,data,ui-*}`
 
 ## Commands
 
 - All unit tests: `./gradlew unitTestAll`
-- One module's tests: `./gradlew :features:cart:domain:test` (JVM) or `:features:cart:data:testDebugUnitTest` (Android)
+- One module: `./gradlew :features:cart:domain:test` (JVM) or `:features:cart:data:testDebugUnitTest` (Android)
 - Lint: `./gradlew ktlintCheck` / auto-fix: `./gradlew ktlintFormat`
 - Build: `./gradlew assembleDebug`
 - Coverage: `./gradlew koverXmlReport`
 
 Run `ktlintFormat` and the affected module tests before declaring work done.
 
----
+## Layers & Dependencies (Hard Constraints)
 
-## 3. Layer Responsibilities (Strict)
+- **Domain**: pure Kotlin (Hilt annotations allowed, nothing else from Android/Compose/Firebase/Room). Holds business models, use cases, business rules, repository interfaces. Single source of truth for behavior.
+- **Data**: implements domain interfaces; owns Room, Firebase, network, and data → domain mapping. Framework types never leave the module.
+- **UI**: Compose only. Renders state, forwards intents to ViewModels. No business logic.
+- **DI**: Hilt modules only, bindings only, no logic. Constructor injection by default.
 
-### Domain
+Allowed: UI → any feature's domain, Data → its own feature's domain, Domain → another feature's domain.
+Forbidden: UI → Data, Domain → UI, Domain → Data, Data → another feature's domain or data.
 
-- Pure Kotlin only
-- No Android, Compose, Firebase, Room, or framework dependencies (only Hilt allowed for dependency injection)
-- Contains:
-    - Business models
-    - Use cases
-    - Business rules
-    - Repository interfaces
-- Domain is the **single source of truth for behavior**
+A feature's domain module is its public API: **cross-feature dependencies go domain → domain only**, so cross-feature business rules live in a domain, never in a data layer. The feature dependency graph must stay acyclic; if two features need each other, move the shared concept into a core module.
 
-### Data
+Flow is strictly unidirectional: intents go up (UI → ViewModel → UseCase → Repository), state flows down. No bidirectional state ownership.
 
-- Implements domain interfaces
-- Handles:
-    - Room (DAOs, entities, migrations)
-    - Firebase / network / SDK integrations
-    - Data → domain mapping
-- May depend on Android APIs
-- Must **never leak framework types outside the module**
+## Error Modeling
 
-### UI
+- Domain errors are typed (sealed types or structured results), and mark retryable vs. non-retryable explicitly.
+- Framework exceptions are mapped to domain errors in the data layer and never reach the UI.
+- User-facing messages are mapped from typed errors in the ViewModel / UI mapping layer. Never show raw backend or exception strings.
 
-- Jetpack Compose only
-- Renders state and forwards user intents
-- No business logic
-- No direct access to the data layer
-- Communicates only via:
-    - ViewModels
-    - Use cases
-    - UI State / UI Events
+## Coroutines
 
-### DI
+- Domain never hardcodes dispatchers; the data layer owns threading.
+- ViewModels use `viewModelScope`. No blocking calls in ViewModels or composables.
 
-- Hilt modules only
-- Provides bindings for domain and data
-- No logic
+## Simplicity & Naming
 
----
+- Prefer the simplest working solution. No base classes, generic engines, or DSLs without a real, present need; indirection must pay for itself immediately.
+- When uncertain about boundaries, choose stricter separation.
+- Names reflect intent, not implementation. Avoid vague verbs (handle, process, manage) and vague classes (Utils, Helper, Manager).
+- Suffixes: `*UiState`, `*UiEvent`, `*UiAction`, `*UseCase`, `*Repository`, `*DataSource`.
+- Booleans read like a sentence: `isUserSignedIn`, `isPrimaryEnabled`.
+- One public class per file (small sealed hierarchies excepted).
 
-## 4. Dependency Rules (Hard Constraints)
+## Scoped Rules
 
-Allowed:
+These load automatically when you work on matching files:
 
-- UI → Domain
-- Data → Domain
+- `.claude/rules/ui.md`: ViewModels, UI state & events, design system, navigation
+- `.claude/rules/data.md`: Room, Firebase, threading, error mapping
+- `.claude/rules/gradle.md`: version catalog, build config, R8
+- `.claude/rules/cart-session.md`: guest vs. signed-in cart, session lifecycle
+- `.claude/rules/testing.md`: test stack and conventions. Read it before writing tests.
 
-Forbidden:
-
-- UI → Data
-- Domain → UI
-- Domain → Data
-- Feature-data → Feature-data
-
-Allowed cross-feature dependency:
-
-- Feature-data → other feature's **domain only**
-
-Shared logic must live in **core modules**.
-
----
-
-## 5. Build & Configuration
-
-### Toolchain
-
-- Kotlin: **2.2.20**
-- AGP: **8.13.0**
-- Gradle JVM: **17+ required**
-- Kotlin `jvmTarget = 17`
-- Java source/target = 17
-
-SDK:
-
-- compileSdk = 36
-- minSdk = 26
-- targetSdk = 36
-
----
-
-### Version Management
-
-- All versions are defined in `gradle/libs.versions.toml`
-- Always use `libs.*` aliases
-- Prefer BOMs (Compose, Firebase)
-
-Typesafe Project Accessors:
-
-- Enabled via `enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")`
-- Reference modules using `projects.*`
-
----
-
-### Compose
-
-- Enabled explicitly per UI module
-- Dependencies aligned via Compose BOM
-- Adaptive UI uses:
-    - `material3-adaptive`
-    - `material3-adaptive-navigation-suite`
-
----
-
-### Hilt
-
-- App module applies Hilt plugin
-- `@HiltAndroidApp` Application is mandatory
-- KSP is required in any module using Hilt
-- Use constructor injection by default
-- ViewModels obtained via `hiltViewModel()`
-
----
-
-### Room
-
-- Used in data modules only
-- Any schema change requires:
-    - Version bump
-    - Explicit migration (`@AutoMigration` or custom `Migration`)
-- DAOs and entities must never be accessed outside data modules
-
----
-
-### Firebase
-
-- Firebase BOM is used
-- `google-services.json` must exist in `:app` for runtime
-- Compilation may succeed without it, runtime will not
-- Firebase APIs must be wrapped in data sources
-
----
-
-### R8 / Proguard
-
-- Release builds use shrinking
-- Add rules if DI / Room / Firebase reflection breaks
-- Library modules should define `consumer-rules.pro` when needed
-
----
-
-## 6. ViewModel Rules
-
-- ViewModels must:
-    - Never receive Activity, Fragment, View, or Context
-    - Communicate only with use cases
-    - Own all screen logic and validation
-- ViewModels expose:
-    - One `StateFlow` for UI state
-    - One `SharedFlow` for UI events
-    - Never `LiveData`
-- ViewModels coordinate:
-    - Auth flows
-    - Cart/session transitions
-    - Error handling
-
----
-
-## 7. UI State & Events
-
-- UI state:
-    - Immutable
-    - Explicit
-    - Represented via sealed interfaces/classes
-- UI must:
-    - Render state only
-    - Never derive business logic
-    - Never validate inputs
-- UI events:
-    - One-shot
-    - Emitted only by ViewModel
-    - Collected via `LaunchedEffect`
-
----
-
-## 8. Design System Rules
-
-- All reusable UI components live in `:core:designsystem`
-- Components must:
-    - Be stateless
-    - Receive state via parameters
-    - Emit callbacks only
-- No navigation, ViewModel, or business logic allowed
-- Components should be **restricted and opinionated**, not generic
-
----
-
-## 9. Navigation (Navigation 3)
-
-- Use `androidx.navigation3`
-- Use typed destinations
-- Scope ViewModels correctly
-- Do not use legacy `navigation-compose`
-
----
-
-## 10. Cart & Session Rules
-
-- Guest users use a local cart
-- Authenticated users use a session-scoped cart
-- Cart transfer must:
-    - Be explicit
-    - Be atomic
-    - Be triggered via a domain use case
-- Signing out must clear session-scoped data
-- UI must not decide cart persistence rules
-
----
-
-## 11. Performance & Stability
-
-- Use `LazyColumn` / `LazyRow` for large lists
-- Avoid runtime resource reflection where possible
-- Avoid heavy recomposition logic
-- Memoize expensive computations
-- Move non-UI work out of composables
-
----
-
-## 12. Code Quality Rules
-
-- Single responsibility per class
-- Explicit naming over abstraction
-- Clarity over cleverness
-- No shortcuts that violate layer boundaries
-- Avoid vague names like Utils, Helper, Manager unless clearly scoped and justified
-- Prefer "one public class per file" (except small sealed hierarchies)
-- When uncertain, choose stricter separation
-
----
-
-## 13. Unidirectional Data Flow (UDF)
-
-LazyPizza follows strict UDF:
-
-- Events/Intents go up: UI → ViewModel → UseCase → Repository
-- State flows down: Repository/UseCase → ViewModel → UI
-
-Rules:
-
-- UI must not mutate domain/data state directly
-- Data layer must not push UI-specific behavior
-- No bidirectional state ownership
-
----
-
-## 14. Error Modeling Rules
-
-- Domain errors must be modeled explicitly (sealed types or structured results)
-- Framework exceptions (Room/Firebase/network) must not reach UI directly
-- UI must not interpret raw exceptions or build business meaning from strings
-- Mapping to user-facing error messages happens in the ViewModel / UI mapping layer
-
----
-
-## 15. Coroutines & Threading Rules
-
-- ViewModels use `viewModelScope`
-- UI must not launch long-running work
-- Domain must not hardcode dispatchers
-- Data layer controls threading and dispatchers internally
-- No blocking calls in composables or ViewModels
-
----
-
-## 16. Simplicity & Readability Rules
-
-- Prefer the simplest working solution over the most reusable/abstract one.
-- Avoid "framework-building" (base classes, generic engines, complex DSLs) unless a real need exists.
-- If a pattern adds indirection, it must pay for itself immediately in clarity or reuse.
-
----
-
-## 17. API & Naming Conventions
-
-- Names must reflect intent, not implementation.
-- Avoid ambiguous verbs: handle, process, manage, doThing.
-- Use consistent suffixes:
-    - `*UiState`, `*UiEvent`, `*UiAction`
-    - `*UseCase`
-    - `*Repository`, `*DataSource`
-- Booleans should read like a sentence: `isUserSignedIn`, `isPrimaryEnabled`.
-
----
-
-## 18. State Modeling Rules
-
-- UI State must be either:
-    - Sealed UI state (Loading / Content / Error), or
-    - Content state + separate one-shot events — never a "kitchen sink" state.
-- Do not mix screen content + transient flags + error strings in one class unless explicitly modeled.
-- If something is optional/nullable, it must be intentional and expressed by the type (sealed types > nullable).
-
----
-
-## 19. Navigation & Event Rules
-
-- ViewModel emits navigation events only after business rules succeed.
-- Navigation and snackbars must be one-shot and not replay on rotation.
-
----
-
-## 20. Error UX Rules
-
-- Every error shown to the user must map from a typed domain error (or a typed data error mapped to a domain).
-- Avoid showing raw backend/exception strings.
-- Error UI must be predictable: retryable vs. non-retryable should be explicit.
-
----
-
-## 21. ViewModel APIs represent actions / intents, not UI callbacks
-
-Public ViewModel functions must describe **what happens**, not **how the UI triggered it**.
-
-- Avoid UI-mechanic names:
-    - `onClick`, `onChange`, `onSelect`, `onTextChanged`
-
-- Prefer intent/action verbs:
-    - `updateSearchQuery`, `selectPickupOption`, `confirmSchedule`, `submitOrder`
-
-> ViewModels expose business intent. UI components expose callbacks.
-
-### UI callbacks keep the `onX` naming
-
-Composable parameters should use `onX` to represent user interaction callbacks.
-
-```kotlin
-SearchField(
-    value = state.query,
-    onValueChange = viewModel::updateSearchQuery
-)
-```
-
----
-
-## 22. Testing
-
-Testing rules live in `.claude/rules/testing.md` (auto-loaded when working on test files). Read it before writing tests.
-
----
-
-## 23. Code Review Priorities
-
-When reviewing changes, prioritize:
-
-- Compose: unconditional `remember*`/`produceState`/`LaunchedEffect` calls, unstable parameters causing recomposition, missing `remember` on lambdas in hot paths, `derivedStateOf` misuse.
-- Coroutines: broken structured concurrency, wrong dispatcher, leaked scopes, main-thread blocking, Flows collected outside lifecycle scope, `GlobalScope`.
-- Hilt: wrong scope (`@Singleton` vs `@ViewModelScoped` vs `@ActivityRetainedScoped`), leaking `Context`.
-- Gradle: dependencies outside `libs.versions.toml`, wrong configuration (`api` vs `implementation`), missing release `proguardFiles`, Kover exclusion patterns that don't match.
-- Room: missing migrations, blocking calls outside `withContext`, entities leaking out of data modules.
-- Security: secrets in CI, cleartext traffic, logging PII.
-- Layer boundary violations (section 4).
-
-Do not report: style nitpicks already covered by ktlint, missing KDoc, or "extract this into a function" without a clear benefit.
+Before reviewing code, read `docs/agents/review-checklist.md`.
