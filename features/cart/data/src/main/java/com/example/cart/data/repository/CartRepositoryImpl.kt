@@ -1,61 +1,53 @@
 package com.example.cart.data.repository
 
-import com.example.auth.domain.repository.SessionRepository
 import com.example.cart.data.datasource.CartLocalDataSource
 import com.example.cart.data.datasource.CartTransferLocalDataSource
+import com.example.cart.data.mapper.CartOwnerToKeyMapper
 import com.example.cart.domain.model.Cart
 import com.example.cart.domain.model.CartItem
+import com.example.cart.domain.model.CartOwner
 import com.example.cart.domain.repository.CartRepository
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
-@OptIn(ExperimentalCoroutinesApi::class)
 class CartRepositoryImpl @Inject constructor(
     private val localDataSource: CartLocalDataSource,
     private val transferLocalDataSource: CartTransferLocalDataSource,
-    private val sessionRepository: SessionRepository,
+    private val ownerToKeyMapper: CartOwnerToKeyMapper,
 ) : CartRepository {
 
-    companion object {
-        private const val PREFIX_USER = "user:"
-        private const val KEY_GUEST = "guest"
+    override fun observeCart(owner: CartOwner): Flow<Cart> = localDataSource.observeCart(ownerKey = ownerToKeyMapper.map(owner))
 
-        private fun getOwnerKey(userId: String?): String = if (userId == null) KEY_GUEST else "$PREFIX_USER$userId"
-    }
-
-    private suspend fun currentOwnerKey(): String = getOwnerKey(sessionRepository.currentUserUid())
-
-    override fun observeCart(): Flow<Cart> = sessionRepository.userIdFlow
-        .map { uid -> getOwnerKey(uid) }
-        .flatMapLatest { ownerKey -> localDataSource.observeCart(ownerKey) }
-
-    override suspend fun addItem(item: CartItem) {
-        localDataSource.addItem(ownerKey = currentOwnerKey(), item = item)
+    override suspend fun addItem(
+        owner: CartOwner,
+        item: CartItem,
+    ) {
+        localDataSource.addItem(ownerKey = ownerToKeyMapper.map(owner), item = item)
     }
 
     override suspend fun updateItemQuantity(
+        owner: CartOwner,
         lineId: String,
         quantity: Int,
     ) {
-        localDataSource.updateItemQuantity(ownerKey = currentOwnerKey(), lineId = lineId, quantity = quantity)
+        localDataSource.updateItemQuantity(ownerKey = ownerToKeyMapper.map(owner), lineId = lineId, quantity = quantity)
     }
 
-    override suspend fun removeItem(lineId: String) {
-        localDataSource.removeItem(ownerKey = currentOwnerKey(), lineId = lineId)
+    override suspend fun removeItem(
+        owner: CartOwner,
+        lineId: String,
+    ) {
+        localDataSource.removeItem(ownerKey = ownerToKeyMapper.map(owner), lineId = lineId)
     }
 
-    override suspend fun clear() {
-        localDataSource.clear(ownerKey = currentOwnerKey())
+    override suspend fun clear(owner: CartOwner) {
+        localDataSource.clear(ownerKey = ownerToKeyMapper.map(owner))
     }
 
-    override suspend fun transferGuestCartToUser(userId: String) {
-        transferLocalDataSource.transferGuestToUser(userKey = "user:$userId")
-    }
-
-    override suspend fun clearUserCart(userId: String) {
-        localDataSource.clear(ownerKey = "user:$userId")
+    override suspend fun transferGuestCart(to: CartOwner.User) {
+        transferLocalDataSource.transferCart(
+            fromOwnerKey = ownerToKeyMapper.map(CartOwner.Guest),
+            toOwnerKey = ownerToKeyMapper.map(to),
+        )
     }
 }

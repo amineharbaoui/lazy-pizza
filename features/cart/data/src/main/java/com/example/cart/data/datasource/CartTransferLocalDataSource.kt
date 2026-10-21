@@ -12,26 +12,25 @@ class CartTransferLocalDataSource @Inject constructor(
     private val cartDao: CartDao,
     private val metadataDao: CartMetadataDao,
 ) {
-    companion object {
-        private const val GUEST_KEY = "guest"
-    }
+    suspend fun transferCart(
+        fromOwnerKey: String,
+        toOwnerKey: String,
+    ) = db.withTransaction {
+        val sourceLines = cartDao.getCartLinesOnce(fromOwnerKey)
+        if (sourceLines.isEmpty()) return@withTransaction
 
-    suspend fun transferGuestToUser(userKey: String) = db.withTransaction {
-        val guestLines = cartDao.getCartLinesOnce(GUEST_KEY)
-        if (guestLines.isEmpty()) return@withTransaction
-
-        guestLines.forEach { line ->
-            cartDao.insertItem(line.item.copy(ownerKey = userKey))
-            cartDao.insertToppings(line.toppings.map { it.copy(ownerKey = userKey) })
+        sourceLines.forEach { line ->
+            cartDao.insertItem(line.item.copy(ownerKey = toOwnerKey))
+            cartDao.insertToppings(line.toppings.map { it.copy(ownerKey = toOwnerKey) })
         }
 
-        cartDao.clearToppings(ownerKey = GUEST_KEY)
-        cartDao.clearItems(ownerKey = GUEST_KEY)
-        metadataDao.clear(ownerKey = GUEST_KEY)
+        cartDao.clearToppings(ownerKey = fromOwnerKey)
+        cartDao.clearItems(ownerKey = fromOwnerKey)
+        metadataDao.clear(ownerKey = fromOwnerKey)
 
         metadataDao.upsert(
             CartMetadataEntity(
-                ownerKey = userKey,
+                ownerKey = toOwnerKey,
                 lastUpdatedAtMillis = System.currentTimeMillis(),
             ),
         )
