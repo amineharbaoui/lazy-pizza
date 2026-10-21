@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.custom.android.module)
     alias(libs.plugins.custom.hilt)
     alias(libs.plugins.custom.room)
+    alias(libs.plugins.custom.testing)
 }
 
 android {
@@ -25,7 +26,6 @@ android {
 
 dependencies {
     implementation(projects.features.cart.domain)
-    implementation(projects.features.auth.domain)
 
     implementation(projects.core.model)
 
