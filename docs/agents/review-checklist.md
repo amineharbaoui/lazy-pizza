@@ -3,7 +3,7 @@
 Read this before reviewing changes. Prioritize:
 
 - **Layer boundaries**: any violation of the dependency rules in `CLAUDE.md`.
-- **Compose**: unconditional `remember*`/`produceState`/`LaunchedEffect` calls, unstable parameters causing recomposition, missing `remember` on lambdas in hot paths, `derivedStateOf` misuse.
+- **Compose**: effects with wrong or missing keys (`LaunchedEffect`, `DisposableEffect`, `produceState`) that rerun or never restart, `remember` keyed so state goes stale or resets, unstable parameters causing recomposition, missing `remember` on lambdas in hot paths, `derivedStateOf` misuse.
 - **Coroutines**: broken structured concurrency, wrong dispatcher, leaked scopes, main-thread blocking, Flows collected outside lifecycle scope, `GlobalScope`.
 - **Hilt**: wrong scope (`@Singleton` vs `@ViewModelScoped` vs `@ActivityRetainedScoped`), leaking `Context`.
 - **Gradle**: dependencies outside `libs.versions.toml`, wrong configuration (`api` vs `implementation`), missing release `proguardFiles`, Kover exclusion patterns that don't match.

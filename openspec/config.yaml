@@ -22,7 +22,7 @@ rules:
     - "Always write the Contract section: sealed UiState, UiAction/UiEvent, use case and repository signatures, and an interface for every data source the change touches. Tests are written against it before any implementation."
     - Respect CLAUDE.md layer rules. Test source sets may depend on data modules and their testFixtures; production code may not.
   tasks:
-    - Use the six groups from the schema in order. Never merge writing a test and implementing it into one task.
+    - Use the seven groups from the schema in order. Never merge writing a test and implementing it into one task.
 
 operations:
   apply:
@@ -31,4 +31,4 @@ operations:
       - Keep test-plan.md rows in sync as tests turn green.
   archive:
     guidance:
-      - Archive only after verify.md says DECISION PASS and the developer approved the PR, as the last commit on the branch before merge, so the updated specs land with the code.
+      - Archive only after verify.md says DECISION PASS or PASS_WITH_WARNINGS and the developer approved the PR, as the last commit on the branch before merge, so the updated specs land with the code.

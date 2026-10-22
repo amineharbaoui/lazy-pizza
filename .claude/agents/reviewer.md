@@ -19,7 +19,7 @@ Change no files in this mode.
 
 ## Verify mode
 
-Read the change's specs, design, test-plan and tasks, then the diff (`git diff main...HEAD`).
+Read the change's specs, design, test-plan and tasks, then the diff (`git diff main...HEAD`). Run `git status --porcelain` first: if anything but verify.md is uncommitted, the diff misses it, so the decision is FAIL.
 
 Fill `openspec/changes/<change>/verify.md` from its template, with evidence for every item:
 - Run the gate command yourself; record the command and the pass/fail/skip counts.
