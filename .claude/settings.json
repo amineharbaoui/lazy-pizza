@@ -5,7 +5,12 @@
             "Edit(*)"
         ],
         "deny": [
-            "Bash(git push*)",
+            "Bash(git push)",
+            "Bash(git push origin)",
+            "Bash(git push * main)",
+            "Bash(git push * main *)",
+            "Bash(git push *:main)",
+            "Bash(git push *--force*)",
             "Bash(rm -rf*)",
             "Bash(rm -fr*)"
         ],

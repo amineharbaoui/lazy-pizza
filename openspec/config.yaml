@@ -15,7 +15,7 @@ rules:
     - State what is out of scope.
   specs:
     - "Prefix every scenario name with an id: `<CAP>-NN`, where CAP is the capability in upper case (AUTH, MENU, CART, ORDER, DS) and NN keeps counting within that capability across changes. Never reuse an id."
-    - "First bullet of every scenario is `- **Level**: acceptance | screenshot | journey | unit`. Default to acceptance; use journey only for flows that need a real device or real Firebase; screenshot for what a screen shows in a given state; unit only for an isolated domain rule."
+    - "First bullet of every scenario is `- **Level**: acceptance | screenshot | journey | unit`. Default to acceptance; use journey only for flows that cross screens or need a real device or real Firebase; screenshot for what a screen shows in a given state; unit only for an isolated domain rule."
     - Use GIVEN / WHEN / THEN bullets. THEN describes what the user sees or what the app emits, never internal calls.
     - Cover the error path of every requirement that can fail, with the user-facing outcome.
   design:

@@ -211,10 +211,17 @@ artifacts:
       specs/, and ask "Do you approve these specs?". Silence, or approval of
       something else, is not approval.
 
-      Once approved: commit the change folder as `spec(<change-name>): approved`
-      and put that commit's sha on the first line of test-plan.md as
-      `SPECS-APPROVED: <sha>`. That commit is the reference the reviewer diffs
-      the specs against.
+      Once approved: if you are not on the change branch yet, create
+      `feature/<change-name>` from the latest main (the uncommitted change
+      folder comes along). Commit the change folder as
+      `spec(<change-name>): approved` and put that commit's sha on the first
+      line of test-plan.md as `SPECS-APPROVED: <sha>`. That commit is the
+      reference the reviewer diffs the specs against.
+
+      Approval also means go. From here, do not ask the developer again:
+      write test-plan and tasks, then follow the apply workflow to the end
+      (verify, push, PR). The only reasons to come back to the developer are
+      a spec problem (apply rule 2) or a failure that repeats (apply rule 4).
 
       Delegate this artifact to the `test-writer` subagent
       (`.claude/agents/test-writer.md`). It reads only the change's specs/,
@@ -370,3 +377,10 @@ apply:
     7. When every task is done, produce `verify` via the reviewer subagent. If
        its DECISION is FAIL, fix the findings (back to group 3 or 4) and run
        verify again.
+    8. On PASS or PASS_WITH_WARNINGS: push the change branch
+       (`git push -u origin feature/<change-name>`, never main, never force)
+       and open a PR to main with `gh pr create`; if gh is not available,
+       give the developer the compare link instead. The PR body lists the
+       scenarios, links test-plan.md and verify.md, and repeats every
+       warning. Then stop: the developer reviews the PR, and archive comes
+       only after their approval.
