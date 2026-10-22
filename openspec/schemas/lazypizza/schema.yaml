@@ -157,6 +157,11 @@ artifacts:
       ```
 
       Specs should be testable - each scenario is a potential test case.
+
+      SPEC REVIEW: after the last spec file is written, delegate a review to
+      the `reviewer` subagent in spec-review mode (`.claude/agents/reviewer.md`).
+      Fix what it finds before showing the specs to the developer. Do not ask
+      the developer for approval here; that happens before test-plan.
     requires:
       - proposal
 
@@ -200,11 +205,16 @@ artifacts:
     description: Every spec scenario mapped to a named test, used as the red/green ledger
     template: test-plan.md
     instruction: |
-      APPROVAL GATE: the developer approves the specs by creating the git tag
-      `spec-lock/<change-name>` (`git tag spec-lock/<change-name>`). Check it with
-      `git tag -l "spec-lock/<change-name>"`. If the tag does not exist, STOP:
-      tell the developer the specs are ready for review and ask them to create
-      the tag. Never create, move or delete a `spec-lock/*` tag yourself.
+      APPROVAL GATE: never write this artifact before the developer has
+      explicitly approved the specs in the conversation. If they have not:
+      STOP, list the scenarios (id, Level, one line each) with the path to
+      specs/, and ask "Do you approve these specs?". Silence, or approval of
+      something else, is not approval.
+
+      Once approved: commit the change folder as `spec(<change-name>): approved`
+      and put that commit's sha on the first line of test-plan.md as
+      `SPECS-APPROVED: <sha>`. That commit is the reference the reviewer diffs
+      the specs against.
 
       Delegate this artifact to the `test-writer` subagent
       (`.claude/agents/test-writer.md`). It reads only the change's specs/,
@@ -297,6 +307,9 @@ artifacts:
     description: Evidence that the change matches its approved specs
     template: verify.md
     instruction: |
+      PRECHECK: only after apply is complete (every box in tasks.md checked
+      or explained). If tasks remain, STOP and run /opsx:apply instead.
+
       Written AFTER apply completes, by the `reviewer` subagent
       (`.claude/agents/reviewer.md`) with a fresh context. The reviewer may run
       commands and read everything, but changes no code.
@@ -306,9 +319,9 @@ artifacts:
       2. Ledger: every test-plan.md row exists as a real test and is 🟢 green.
       3. Lock integrity (BLOCKING): `git diff <LOCK sha> -- <every test file and support file in test-plan.md>`
          is empty, or each change is explained by an amended, re-approved spec
-         (the `spec-lock` tag was moved by the developer after the change).
-      4. Spec integrity (BLOCKING): `git diff spec-lock/<change-name> -- openspec/changes/<change-name>/specs`
-         is empty.
+         (a later `spec(<change-name>): approved` commit after the developer re-approved).
+      4. Spec integrity (BLOCKING): `git diff <SPECS-APPROVED sha> -- openspec/changes/<change-name>/specs`
+         is empty, or every difference was re-approved by the developer.
       5. Gate: the exact command from tasks group 5 and its result summary
          (tests passed / failed / skipped). Zero skipped or disabled tests.
       6. Journeys: each Maestro flow run and its result, or "none in scope".
@@ -330,7 +343,7 @@ apply:
   requires: [tasks]
   tracks: tasks.md
   instruction: |
-    GATE: the `spec-lock/<change-name>` tag must exist (see test-plan). If not, STOP.
+    GATE: test-plan.md must start with `SPECS-APPROVED: <sha>`. If not, STOP and get the developer's approval first.
 
     Work through tasks.md group by group. You are the implementer; the
     test-writer subagent owns group 2 and the reviewer subagent owns verify.
@@ -340,9 +353,11 @@ apply:
        its locked failing test exists.
     2. Locked tests are read-only. After the `LOCK:` commit, do not edit any
        test or support file listed in test-plan.md. If a test looks wrong, STOP that scenario
-       and explain why: the spec or the test is amended through the
-       developer, who moves the `spec-lock` tag. Changing an assertion to
-       match observed behavior is never allowed.
+       and explain why. Never edit an approved spec yourself: collect every
+       spec problem you found, ask the developer once with a proposed diff,
+       and after they approve, commit `spec(<change-name>): approved` again,
+       update `SPECS-APPROVED`, and let the test-writer adjust the affected
+       tests. Changing an assertion to match observed behavior is never allowed.
     3. Inner loop: run the narrowest test task that covers what you changed,
        read the failure, fix the cause (not the symptom), run again. Flip
        test-plan.md rows to 🟢 green as they pass.

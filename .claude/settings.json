@@ -7,10 +7,7 @@
         "deny": [
             "Bash(git push*)",
             "Bash(rm -rf*)",
-            "Bash(rm -fr*)",
-            "Bash(git tag spec-lock*)",
-            "Bash(git tag -f spec-lock*)",
-            "Bash(git tag -d spec-lock*)"
+            "Bash(rm -fr*)"
         ],
         "additionalDirectories": [
             "~/.gradle",
