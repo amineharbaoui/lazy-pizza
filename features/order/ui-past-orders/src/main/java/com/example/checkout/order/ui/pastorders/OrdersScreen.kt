@@ -2,7 +2,6 @@ package com.example.checkout.order.ui.pastorders
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
@@ -27,7 +26,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -48,6 +46,7 @@ import com.example.core.model.OrderStatus
 fun OrdersScreen(
     innerPadding: PaddingValues,
     onSignInClick: () -> Unit,
+    onNavigateToCart: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: OrdersViewModel = hiltViewModel(),
 ) {
@@ -232,6 +231,7 @@ private fun ErrorState(errorMessage: String) {
 private fun OrderScreenContentPreview() {
     val orders = listOf(
         OrderUi(
+            orderNumber = "123",
             orderNumberLabel = "Order #123",
             dateTimeLabel = "September 25, 12:15",
             items = listOf(
@@ -251,6 +251,7 @@ private fun OrderScreenContentPreview() {
             status = OrderStatus.COMPLETED,
         ),
         OrderUi(
+            orderNumber = "1234",
             orderNumberLabel = "Order #1234",
             dateTimeLabel = "September 25, 12:15",
             items = listOf(
@@ -273,6 +274,7 @@ private fun OrderScreenContentPreview() {
             status = OrderStatus.IN_PROGRESS,
         ),
         OrderUi(
+            orderNumber = "12346",
             orderNumberLabel = "Order #12346",
             dateTimeLabel = "September 25, 12:15",
             items = listOf(
@@ -324,4 +326,30 @@ private fun NotLoggedInStatePreview() {
     LazyPizzaThemePreview {
         NotLoggedInState(onSignInClick = {})
     }
+}
+
+// Screenshot previews for the order-again scenarios, captured by OrdersScreenScreenshotTest.
+
+@Preview
+@Composable
+internal fun OrdersScreenReadyMixedStatusesPreview() {
+    TODO()
+}
+
+@Preview
+@Composable
+internal fun OrdersScreenNotLoggedInPreview() {
+    TODO()
+}
+
+@Preview
+@Composable
+internal fun OrdersScreenSomeSkippedDialogPreview() {
+    TODO()
+}
+
+@Preview
+@Composable
+internal fun OrdersScreenNothingAvailableDialogPreview() {
+    TODO()
 }

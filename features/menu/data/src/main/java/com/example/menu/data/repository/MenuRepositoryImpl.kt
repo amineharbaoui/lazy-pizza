@@ -5,6 +5,7 @@ import com.example.menu.data.datasource.ProductRemoteDataSource
 import com.example.menu.data.mapper.ProductDtoToDomainMapper
 import com.example.menu.domain.model.MenuItem
 import com.example.menu.domain.model.MenuSection
+import com.example.menu.domain.model.MenuSnapshotResult
 import com.example.menu.domain.model.Topping
 import com.example.menu.domain.repository.MenuRepository
 import kotlinx.coroutines.flow.Flow
@@ -51,4 +52,6 @@ class MenuRepositoryImpl @Inject constructor(
     override fun observeToppings(): Flow<List<Topping>> = productRemoteDataSource
         .observeProductsByCategory(category = ProductCategory.TOPPING)
         .map(productMapper::mapListToToppings)
+
+    override suspend fun getMenuSnapshot(): MenuSnapshotResult = TODO()
 }

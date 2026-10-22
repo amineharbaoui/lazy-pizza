@@ -6,6 +6,7 @@ import com.example.cart.data.mapper.CartOwnerToKeyMapper
 import com.example.cart.domain.model.Cart
 import com.example.cart.domain.model.CartItem
 import com.example.cart.domain.model.CartOwner
+import com.example.cart.domain.model.CartWriteResult
 import com.example.cart.domain.repository.CartRepository
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
@@ -24,6 +25,11 @@ class CartRepositoryImpl @Inject constructor(
     ) {
         localDataSource.addItem(ownerKey = ownerToKeyMapper.map(owner), item = item)
     }
+
+    override suspend fun addItems(
+        owner: CartOwner,
+        items: List<CartItem>,
+    ): CartWriteResult = TODO()
 
     override suspend fun updateItemQuantity(
         owner: CartOwner,

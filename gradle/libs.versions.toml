@@ -34,6 +34,8 @@ nav3Core = "1.0.0"
 # --- Dependency Injection ---
 hilt = "2.57.2"
 hiltNavigationCompose = "1.3.0"
+roborazzi = "1.76.0"
+robolectric = "4.17"
 javaxInject = "1"
 
 # --- Coroutines & Collections ---
@@ -131,6 +133,11 @@ assertj = { module = "org.assertj:assertj-core", version.ref = "assertJ" }
 junit-jupiter = { module = "org.junit.jupiter:junit-jupiter", version.ref = "junit" }
 junit-jupiter-engine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "junit" }
 junit-params = { module = "org.junit.jupiter:junit-jupiter-params", version.ref = "junit" }
+junit-vintage-engine = { module = "org.junit.vintage:junit-vintage-engine", version.ref = "junit" }
+junit4 = { module = "junit:junit", version = "4.13.2" }
+robolectric = { module = "org.robolectric:robolectric", version.ref = "robolectric" }
+roborazzi = { module = "io.github.takahirom.roborazzi:roborazzi", version.ref = "roborazzi" }
+roborazzi-compose = { module = "io.github.takahirom.roborazzi:roborazzi-compose", version.ref = "roborazzi" }
 junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher", version.ref = "junit" }
 mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
 mockk-bdd = { module = "io.mockk:mockk-bdd", version.ref = "mockk" }
@@ -179,6 +186,7 @@ firebase-crashlytics = { id = "com.google.firebase.crashlytics", version.ref = "
 dependency-analysis = { id = "com.autonomousapps.dependency-analysis", version.ref = "dependencyAnalysis" }
 kover = { id = "org.jetbrains.kotlinx.kover", version.ref = "kover" }
 ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlint" }
+roborazzi = { id = "io.github.takahirom.roborazzi", version.ref = "roborazzi" }
 
 # --- Convention plugins (no version here; provided by build-logic / included build) ---
 custom-android-application = { id = "custom-android-application" }

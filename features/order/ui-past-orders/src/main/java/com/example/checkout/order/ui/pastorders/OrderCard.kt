@@ -128,6 +128,7 @@ private fun OrderCardPreview() {
     LazyPizzaTheme {
         OrderCard(
             orderUi = OrderUi(
+                orderNumber = "12346",
                 orderNumberLabel = "Order #12346",
                 dateTimeLabel = "September 25, 12:15",
                 items = listOf(

@@ -5,8 +5,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.auth.domain.usecase.GetCurrentUserUidUseCase
 import com.example.order.domain.usecase.ObserveOrdersUseCase
+import com.example.order.domain.usecase.ReorderUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
@@ -22,7 +25,11 @@ class OrdersViewModel @Inject constructor(
     private val getCurrentUserUidUseCase: GetCurrentUserUidUseCase,
     private val observeOrdersUseCase: ObserveOrdersUseCase,
     private val orderToUiMapper: OrderToUiMapper,
+    private val reorderUseCase: ReorderUseCase,
 ) : ViewModel() {
+
+    private val _events = MutableSharedFlow<OrdersUiEvent>()
+    val events: SharedFlow<OrdersUiEvent> = _events
 
     private val _uiState = MutableStateFlow<OrderUiState>(OrderUiState.Loading)
     val uiState: StateFlow<OrderUiState> = _uiState.onStart {
@@ -32,6 +39,20 @@ class OrdersViewModel @Inject constructor(
         started = SharingStarted.WhileSubscribed(5.seconds.inWholeMilliseconds),
         initialValue = OrderUiState.Loading,
     )
+
+    fun orderAgain(orderNumber: String) {
+        TODO()
+    }
+
+    /** Closes the skipped-items dialog and opens the cart. */
+    fun goToCartFromSkippedItems() {
+        TODO()
+    }
+
+    /** "Close" or back on the order-again dialog: stays on Orders. */
+    fun dismissOrderAgainDialog() {
+        TODO()
+    }
 
     private fun observeOrders() {
         viewModelScope.launch {

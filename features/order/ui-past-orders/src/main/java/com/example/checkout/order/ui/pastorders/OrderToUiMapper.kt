@@ -9,6 +9,7 @@ class OrderToUiMapper @Inject constructor(
     private val currencyFormatter: CurrencyFormatter,
 ) {
     fun map(order: Order): OrderUi = OrderUi(
+        orderNumber = order.orderNumber,
         orderNumberLabel = "Order #${order.orderNumber}",
         dateTimeLabel = formatForOrderCard(order.createdAt.toEpochMilli()),
         items = order.items.map { item ->
