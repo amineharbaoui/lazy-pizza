@@ -87,5 +87,6 @@ Screenshot and journey:
 - The fake cart and menu failures throw plain `Exception` subclasses, because Room/Firestore types are not available on the JVM. `CartRepositoryImpl` and `MenuRepositoryImpl` must therefore map any non-cancellation exception to their typed failure.
 - ORDER-03 is also exercised on a device by ORDER-22.
 - Extra preview `OrdersScreenOrderAgainInProgressPreview` (all buttons disabled) is recommended for ORDER-08's visual state. It needs no row.
+- Lock exception (approved by the developer on 2026-10-22): `OrdersScreenScreenshotTest` passes `ThresholdValidator(0.0001f)` to every capture. Baselines are recorded on macOS, and Linux CI rendered the two dialog previews with a 9e-7 pixel difference. No assertion or baseline changed.
 
 LOCK: cb54a226fc3fa3011e60b81d7c130a21874b62b2
