@@ -94,6 +94,9 @@ fun AppNavigation(
                         onSignInClick = {
                             backStack.add(AuthRoute)
                         },
+                        onNavigateToCart = {
+                            backStack.add(CartRoute)
+                        },
                     )
                 }
 

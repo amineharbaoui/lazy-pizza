@@ -1,0 +1,5 @@
+# Maestro workspace: runs every flow under flows/; shared subflows are excluded.
+flows:
+  - "flows/*"
+excludeTags:
+  - subflow

@@ -1,0 +1,21 @@
+# ORDER-22: a signed-in user reorders their most recent order from Orders and lands on a cart holding its items.
+appId: com.example.lazypizza.debug
+---
+- launchApp:
+    clearState: true
+- runFlow: ../common/login.yaml
+- runFlow: ../common/place-margherita-order.yaml
+- tapOn:
+    id: "nav_orders"
+# Orders are sorted newest first, so the first button belongs to the order just placed.
+- extendedWaitUntil:
+    visible:
+      id: "order_again_button"
+    timeout: 30000
+- tapOn:
+    id: "order_again_button"
+    index: 0
+- extendedWaitUntil:
+    visible:
+      id: "cart_item_Margherita"
+    timeout: 30000

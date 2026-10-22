@@ -25,7 +25,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -241,6 +241,7 @@ private fun CheckoutScreenContent(
                 enabled = state.canPlaceOrder && !isPlacingOrder,
                 onClick = onPlaceOrderClick,
                 modifier = Modifier
+                    .testTag("checkout_place_order_button")
                     .padding(horizontal = 12.dp)
                     .fillMaxWidth(),
             )

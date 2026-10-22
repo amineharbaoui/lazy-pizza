@@ -51,7 +51,7 @@ fun RecommendationsSection(
             recommendedItems.forEach { item ->
                 val image = rememberImagePainterPreviewAware(
                     previewDrawableResId = R.drawable.drink,
-                    painterProvider = { rememberAsyncImagePainter(item.imageUrl) }
+                    painterProvider = { rememberAsyncImagePainter(item.imageUrl) },
                 )
                 DsCardItem.ExtraItem(
                     title = item.name,
