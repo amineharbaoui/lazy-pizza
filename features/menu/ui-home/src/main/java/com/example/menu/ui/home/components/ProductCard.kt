@@ -49,11 +49,11 @@ fun ProductCard(
                 price = product.unitPriceFormatted,
                 image = rememberImagePainterPreviewAware(
                     previewDrawableResId = R.drawable.pizza,
-                    painterProvider = { rememberAsyncImagePainter(product.imageUrl) }
+                    painterProvider = { rememberAsyncImagePainter(product.imageUrl) },
                 ),
                 onClick = { onPizzaClick(product) },
 
-                )
+            )
         }
 
         is MenuItemDisplayModel.Other -> {
@@ -71,7 +71,7 @@ fun ProductCard(
                         price = product.unitPriceFormatted,
                         image = rememberImagePainterPreviewAware(
                             previewDrawableResId = R.drawable.ice_cream,
-                            painterProvider = { rememberAsyncImagePainter(product.imageUrl) }
+                            painterProvider = { rememberAsyncImagePainter(product.imageUrl) },
                         ),
                         onAddToCart = { onOtherItemAddClick(product) },
                     )
@@ -84,7 +84,7 @@ fun ProductCard(
                         totalPriceText = product.totalPriceFormatted,
                         image = rememberImagePainterPreviewAware(
                             previewDrawableResId = R.drawable.drink,
-                            painterProvider = { rememberAsyncImagePainter(product.imageUrl) }
+                            painterProvider = { rememberAsyncImagePainter(product.imageUrl) },
                         ),
                         onQuantityChange = { newQty ->
                             onOtherItemQuantityChange(product, newQty)
@@ -101,9 +101,7 @@ fun ProductCard(
 
 @PreviewPhoneTablet
 @Composable
-private fun ProductCardPreview(
-    @PreviewParameter(ProductCardPreviewProvider::class) product: MenuItemDisplayModel,
-) {
+private fun ProductCardPreview(@PreviewParameter(ProductCardPreviewProvider::class) product: MenuItemDisplayModel) {
     LazyPizzaThemePreview {
         SharedTransitionLayout {
             AnimatedContent(targetState = product, label = "productCardPreview") { targetProduct ->
@@ -119,7 +117,6 @@ private fun ProductCardPreview(
             }
         }
     }
-
 }
 
 private class ProductCardPreviewProvider : PreviewParameterProvider<MenuItemDisplayModel> {

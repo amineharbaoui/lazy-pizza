@@ -157,7 +157,7 @@ private fun PhoneDetailLayout(
             },
             painter = rememberImagePainterPreviewAware(
                 previewDrawableResId = R.drawable.pizza,
-                painterProvider = { rememberAsyncImagePainter(uiState.pizza.imageUrl) }
+                painterProvider = { rememberAsyncImagePainter(uiState.pizza.imageUrl) },
             ),
             contentDescription = null,
             contentScale = ContentScale.Fit,
@@ -364,7 +364,7 @@ private fun ExtraToppingsContent(
                 priceText = item.unitPriceFormatted,
                 image = rememberImagePainterPreviewAware(
                     previewDrawableResId = R.drawable.topping,
-                    painterProvider = { rememberAsyncImagePainter(item.imageUrl) }
+                    painterProvider = { rememberAsyncImagePainter(item.imageUrl) },
                 ),
                 quantity = qty,
                 onQuantityChange = { newQty ->

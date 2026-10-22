@@ -245,7 +245,7 @@ private fun CartItemsSection(
         items.forEach { item ->
             val image = rememberImagePainterPreviewAware(
                 previewDrawableResId = DS_R.drawable.pizza,
-                painterProvider = { rememberAsyncImagePainter(item.imageUrl) }
+                painterProvider = { rememberAsyncImagePainter(item.imageUrl) },
             )
             DsCardRow.CartItem(
                 title = item.name,
