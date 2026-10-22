@@ -44,4 +44,4 @@
 ## 7. Verify and PR
 
 - [x] 7.1 Commit all work, then the reviewer subagent writes verify.md. Verify: DECISION is PASS or PASS_WITH_WARNINGS.
-- [ ] 7.2 Push `feature/order-again` and open the PR. Verify: PR link.
+- [x] 7.2 Push `feature/order-again` and open the PR. Verify: PR link.
