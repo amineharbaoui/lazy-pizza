@@ -31,4 +31,4 @@ operations:
       - Keep test-plan.md rows in sync as tests turn green.
   archive:
     guidance:
-      - Archive only after verify.md says DECISION PASS and the PR is merged.
+      - Archive only after verify.md says DECISION PASS and the developer approved the PR, as the last commit on the branch before merge, so the updated specs land with the code.
