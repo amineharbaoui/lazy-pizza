@@ -78,6 +78,7 @@ class FakeCartLocalDataSource : CartLocalDataSource {
         linesByOwner.update { all ->
             val lines = all[ownerKey].orEmpty()
             val line = lines[lineId] ?: return@update all
+            if (quantity <= 0) return@update all + (ownerKey to lines - lineId)
             val updated = when (line) {
                 is CartItem.Other -> line.copy(quantity = quantity)
                 is CartItem.Pizza -> line.copy(quantity = quantity)

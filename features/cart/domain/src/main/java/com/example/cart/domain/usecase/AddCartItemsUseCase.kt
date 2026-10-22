@@ -4,6 +4,7 @@ import com.example.auth.domain.repository.SessionRepository
 import com.example.cart.domain.model.CartItem
 import com.example.cart.domain.model.CartWriteResult
 import com.example.cart.domain.repository.CartRepository
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.first
 import javax.inject.Inject
 
@@ -18,7 +19,13 @@ class AddCartItemsUseCase @Inject constructor(
     suspend operator fun invoke(items: List<CartItem>): CartWriteResult {
         val owner = sessionRepository.currentCartOwner()
         // A non-pizza line's lineId is its productId, so the write replaces the existing line.
-        val quantities = repository.observeCart(owner).first().items
+        val quantities = try {
+            repository.observeCart(owner).first().items
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            return CartWriteResult.Failed
+        }
             .filterIsInstance<CartItem.Other>()
             .associate { it.lineId to it.quantity }
             .toMutableMap()

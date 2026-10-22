@@ -1,6 +1,5 @@
 package com.example.checkout.order.ui.pastorders
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.auth.domain.usecase.GetCurrentUserUidUseCase
@@ -110,7 +109,6 @@ class OrdersViewModel @Inject constructor(
 
             observeOrdersUseCase(userId)
                 .map { list ->
-                    Log.d(javaClass.name, "observeOrders: $list")
                     ordersByNumber = list.associateBy { it.orderNumber }
                     list
                         .sortedByDescending { it.createdAt }

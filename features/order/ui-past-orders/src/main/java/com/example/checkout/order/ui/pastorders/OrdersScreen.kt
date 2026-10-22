@@ -51,6 +51,7 @@ import com.example.core.designsystem.theme.LazyPizzaThemePreview
 import com.example.core.designsystem.utils.PreviewPhoneTablet
 import com.example.core.designsystem.utils.isWideLayout
 import com.example.core.model.OrderStatus
+import kotlinx.coroutines.launch
 
 @Composable
 fun OrdersScreen(
@@ -69,12 +70,16 @@ fun OrdersScreen(
         viewModel.events.collect { event ->
             when (event) {
                 OrdersUiEvent.NavigateToCart -> onNavigateToCart()
-                is OrdersUiEvent.ShowOrderAgainError -> snackbarHostState.showSnackbar(
-                    when (event.error) {
-                        OrderAgainErrorUi.MENU_UNAVAILABLE -> menuUnavailableMessage
-                        OrderAgainErrorUi.CART_UPDATE_FAILED -> cartUpdateFailedMessage
-                    },
-                )
+                // Launched so a showing snackbar never holds back the next event, such as NavigateToCart.
+                is OrdersUiEvent.ShowOrderAgainError -> launch {
+                    snackbarHostState.currentSnackbarData?.dismiss()
+                    snackbarHostState.showSnackbar(
+                        when (event.error) {
+                            OrderAgainErrorUi.MENU_UNAVAILABLE -> menuUnavailableMessage
+                            OrderAgainErrorUi.CART_UPDATE_FAILED -> cartUpdateFailedMessage
+                        },
+                    )
+                }
             }
         }
     }
