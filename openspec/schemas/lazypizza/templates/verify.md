@@ -1,7 +1,8 @@
 # Verify
 
 ## Tasks
-- [ ] Every box in tasks.md is checked
+- [ ] Every box in tasks groups 1 to 6 is checked
+- [ ] `git status --porcelain` shows nothing but verify.md
 - Open tasks: <!-- list with reason, or "none" -->
 
 ## Ledger

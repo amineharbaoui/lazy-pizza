@@ -24,3 +24,8 @@
 ## 6. Journey
 
 - [ ] 6.1 <!-- only for journey scenarios: run the Maestro flow on device_for_test; verify: passes, retries off -->
+
+## 7. Verify and PR
+
+- [ ] 7.1 Commit all work, then the reviewer subagent writes verify.md; verify: DECISION is PASS or PASS_WITH_WARNINGS
+- [ ] 7.2 Push `feature/<change-name>` and open the PR; verify: PR link

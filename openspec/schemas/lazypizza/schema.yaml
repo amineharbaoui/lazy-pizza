@@ -172,11 +172,9 @@ artifacts:
     instruction: |
       Create the design document that explains HOW to implement the change.
 
-      When to include design.md (create only if any apply):
-      - Cross-cutting change (multiple services/modules) or new architectural pattern
-      - New external dependency or significant data model changes
-      - Security, performance, or migration complexity
-      - Ambiguity that benefits from technical decisions before coding
+      Always create design.md: test-plan and tasks depend on its Contract
+      section. For a small change, keep it to the Contract plus the decisions
+      that matter.
 
       Sections:
       - **Context**: Only the current state and constraints needed to explain the approach. Reference the proposal for motivation instead of restating it (e.g., "See proposal.md - Why").
@@ -209,7 +207,9 @@ artifacts:
       explicitly approved the specs in the conversation. If they have not:
       STOP, list the scenarios (id, Level, one line each) with the path to
       specs/, and ask "Do you approve these specs?". Silence, or approval of
-      something else, is not approval.
+      something else, is not approval. While waiting, do not report the
+      change as ready for implementation. If the session ends before the
+      answer, the developer resumes with `/opsx:continue <change-name>`.
 
       Once approved: if you are not on the change branch yet, create
       `feature/<change-name>` from the latest main (the uncommitted change
@@ -263,7 +263,7 @@ artifacts:
 
   - id: tasks
     generates: tasks.md
-    description: Implementation checklist ordered contract → red → green (bottom up) → UI → gate → journey
+    description: Implementation checklist ordered contract → red → green (bottom up) → UI → gate → journey → verify and PR
     template: tasks.md
     instruction: |
       Create the task list for apply. The apply phase parses checkboxes: a box
@@ -304,6 +304,12 @@ artifacts:
       Only if a scenario has Level `journey`: run its Maestro flow on
       `device_for_test`. Verify: the flow passes with retries off.
 
+      ## 7. Verify and PR
+      Always present, exactly two tasks (the apply rules 7 and 8 describe them):
+      - [ ] 7.1 Commit all work, then the reviewer subagent writes verify.md.
+        Verify: DECISION is PASS or PASS_WITH_WARNINGS.
+      - [ ] 7.2 Push `feature/<change-name>` and open the PR. Verify: PR link.
+
       Reference specs for WHAT, design.md for HOW, test-plan.md for the tests.
     requires:
       - test-plan
@@ -314,15 +320,18 @@ artifacts:
     description: Evidence that the change matches its approved specs
     template: verify.md
     instruction: |
-      PRECHECK: only after apply is complete (every box in tasks.md checked
-      or explained). If tasks remain, STOP and run /opsx:apply instead.
+      PRECHECK: only when tasks groups 1 to 6 are complete (every box checked
+      or explained) and all work is committed. Otherwise STOP and run
+      /opsx:apply instead.
 
       Written AFTER apply completes, by the `reviewer` subagent
       (`.claude/agents/reviewer.md`) with a fresh context. The reviewer may run
       commands and read everything, but changes no code.
 
       Record, with evidence:
-      1. Tasks: every box in tasks.md checked, or the reason it is not.
+      1. Tasks: every box in groups 1 to 6 checked, or the reason it is not.
+         `git status --porcelain` shows nothing but verify.md; uncommitted
+         work means FAIL, because the diff review would miss it.
       2. Ledger: every test-plan.md row exists as a real test and is 🟢 green.
       3. Lock integrity (BLOCKING): `git diff <LOCK sha> -- <every test file and support file in test-plan.md>`
          is empty, or each change is explained by an amended, re-approved spec
@@ -374,10 +383,11 @@ apply:
        deleted tests.
     6. Screenshot baselines change only when a scenario requires the visual
        change; list each one with its reason.
-    7. When every task is done, produce `verify` via the reviewer subagent. If
-       its DECISION is FAIL, fix the findings (back to group 3 or 4) and run
-       verify again.
-    8. On PASS or PASS_WITH_WARNINGS: push the change branch
+    7. Task 7.1: when groups 1 to 6 are done, commit all work (the reviewer
+       only reviews committed changes), then produce `verify` via the
+       reviewer subagent. If its DECISION is FAIL, fix the findings (back to
+       group 3 or 4) and run verify again.
+    8. Task 7.2, on PASS or PASS_WITH_WARNINGS: commit verify.md, push the change branch
        (`git push -u origin feature/<change-name>`, never main, never force)
        and open a PR to main with `gh pr create`; if gh is not available,
        give the developer the compare link instead. The PR body lists the
