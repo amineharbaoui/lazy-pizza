@@ -11,6 +11,8 @@ android {
     namespace = "com.example.order.checkout.ui.pastorders"
 
     testOptions.unitTests.isIncludeAndroidResources = true
+    // OrdersViewModel logs with android.util.Log; plain JVM acceptance tests need the stubs to no-op.
+    testOptions.unitTests.isReturnDefaultValues = true
 }
 
 roborazzi {
