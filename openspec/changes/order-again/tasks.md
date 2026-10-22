@@ -11,7 +11,7 @@
 ## 2. Red (test-writer)
 
 - [x] 2.1 Write every test and support file in test-plan.md. Verify: `./gradlew :features:order:ui-past-orders:testDebugUnitTest` compiles, and every new test fails on an assertion or `TODO()`/`NotImplementedError`, never on compilation or setup.
-- [ ] 2.2 Commit `test(order-again): red` and write its sha into test-plan.md `LOCK:`. Verify: `git log -1` shows the commit, and test-plan.md ends with `LOCK: <sha>`.
+- [x] 2.2 Commit `test(order-again): red` and write its sha into test-plan.md `LOCK:`. Verify: `git log -1` shows the commit, and test-plan.md ends with `LOCK: <sha>`.
 
 ## 3. Green: Order again adds available items to the cart at today's prices
 

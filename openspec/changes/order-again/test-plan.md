@@ -88,4 +88,4 @@ Screenshot and journey:
 - ORDER-03 is also exercised on a device by ORDER-22.
 - Extra preview `OrdersScreenOrderAgainInProgressPreview` (all buttons disabled) is recommended for ORDER-08's visual state. It needs no row.
 
-LOCK: pending
+LOCK: cb54a226fc3fa3011e60b81d7c130a21874b62b2
