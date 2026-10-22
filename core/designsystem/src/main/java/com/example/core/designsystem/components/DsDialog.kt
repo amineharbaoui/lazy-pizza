@@ -17,6 +17,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
@@ -40,57 +41,83 @@ object DsDialog {
         Dialog(
             onDismissRequest = onDismissRequest,
         ) {
-            Surface(
-                modifier = modifier
+            ConfirmContent(
+                title = title,
+                modifier = modifier,
+                message = message,
+                primaryButtonText = primaryButtonText,
+                onPrimaryClick = onPrimaryClick,
+                onSecondaryClick = onDismissRequest,
+                secondaryButtonText = secondaryButtonText,
+                showSecondaryButton = showSecondaryButton,
+            )
+        }
+    }
+
+    /** The dialog surface without its window, for previews and screenshot tests. */
+    @Composable
+    fun ConfirmContent(
+        title: String,
+        modifier: Modifier = Modifier,
+        message: String? = null,
+        primaryButtonText: String,
+        onPrimaryClick: () -> Unit,
+        onSecondaryClick: () -> Unit,
+        secondaryButtonText: String = "Cancel",
+        showSecondaryButton: Boolean = true,
+    ) {
+        Surface(
+            modifier = modifier
+                .fillMaxWidth()
+                .shadow(
+                    elevation = 8.dp,
+                    shape = RoundedCornerShape(24.dp),
+                    ambientColor = AppColors.PrimaryShadow,
+                    spotColor = AppColors.PrimaryShadow,
+                ),
+            shape = RoundedCornerShape(24.dp),
+            color = AppColors.SurfaceHigher,
+        ) {
+            Column(
+                modifier = Modifier
                     .fillMaxWidth()
-                    .shadow(
-                        elevation = 8.dp,
-                        shape = RoundedCornerShape(24.dp),
-                        ambientColor = AppColors.PrimaryShadow,
-                        spotColor = AppColors.PrimaryShadow,
-                    ),
-                shape = RoundedCornerShape(24.dp),
-                color = AppColors.SurfaceHigher,
+                    .padding(horizontal = 24.dp, vertical = 20.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp),
             ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 24.dp, vertical = 20.dp),
-                    verticalArrangement = Arrangement.spacedBy(16.dp),
-                ) {
+                Text(
+                    text = title,
+                    style = AppTypography.Title2SemiBold,
+                    color = AppColors.TextPrimary,
+                )
+
+                if (message != null) {
                     Text(
-                        text = title,
-                        style = AppTypography.Title2SemiBold,
-                        color = AppColors.TextPrimary,
+                        text = message,
+                        style = AppTypography.Body1Regular,
+                        color = AppColors.TextSecondary,
                     )
+                }
 
-                    if (message != null) {
-                        Text(
-                            text = message,
-                            style = AppTypography.Body1Regular,
-                            color = AppColors.TextSecondary,
+                Spacer(Modifier.weight(1f, fill = false))
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(16.dp, Alignment.End),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    if (showSecondaryButton) {
+                        DsButton.Outlined(
+                            text = secondaryButtonText,
+                            onClick = onSecondaryClick,
+                            modifier = Modifier.testTag("dialog_secondary_button"),
                         )
                     }
 
-                    Spacer(Modifier.weight(1f, fill = false))
-
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(16.dp, Alignment.End),
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        if (showSecondaryButton) {
-                            DsButton.Outlined(
-                                text = secondaryButtonText,
-                                onClick = onDismissRequest,
-                            )
-                        }
-
-                        DsButton.Filled(
-                            text = primaryButtonText,
-                            onClick = onPrimaryClick,
-                        )
-                    }
+                    DsButton.Filled(
+                        text = primaryButtonText,
+                        onClick = onPrimaryClick,
+                        modifier = Modifier.testTag("dialog_primary_button"),
+                    )
                 }
             }
         }

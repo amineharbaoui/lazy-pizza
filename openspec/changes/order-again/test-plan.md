@@ -9,8 +9,8 @@ Paths below abbreviate `features/order/ui-past-orders/src/test/java/com/example/
 
 | Scenario | Level | Test File | Test Name | State |
 |----------|-------|-----------|-----------|-------|
-| ORDER-01 Order again button on every past order | screenshot | `<pastorders-test>/screenshot/OrdersScreenScreenshotTest.kt` (preview in `OrdersScreen.kt`) | `OrdersScreenReadyMixedStatusesPreview` | 🔴 red |
-| ORDER-02 No Order again when signed out | screenshot | `<pastorders-test>/screenshot/OrdersScreenScreenshotTest.kt` (preview in `OrdersScreen.kt`) | `OrdersScreenNotLoggedInPreview` | 🔴 red |
+| ORDER-01 Order again button on every past order | screenshot | `<pastorders-test>/screenshot/OrdersScreenScreenshotTest.kt` (preview in `OrdersScreen.kt`) | `OrdersScreenReadyMixedStatusesPreview` | 🟢 green |
+| ORDER-02 No Order again when signed out | screenshot | `<pastorders-test>/screenshot/OrdersScreenScreenshotTest.kt` (preview in `OrdersScreen.kt`) | `OrdersScreenNotLoggedInPreview` | 🟢 green |
 | ORDER-03 Whole order still on the menu | acceptance | `<pastorders-test>/acceptance/OrderAgainAcceptanceTest.kt` | `orderAgain when whole order is on the menu then cart holds every item with its quantities and toppings` | 🟢 green |
 | ORDER-03 Whole order still on the menu | acceptance | `<pastorders-test>/acceptance/OrderAgainAcceptanceTest.kt` | `orderAgain when whole order is on the menu then emits navigate to cart event` | 🟢 green |
 | ORDER-03 Whole order still on the menu | acceptance | `<pastorders-test>/acceptance/OrderAgainAcceptanceTest.kt` | `orderAgain when whole order is on the menu then shows no dialog` | 🟢 green |
@@ -36,8 +36,8 @@ Paths below abbreviate `features/order/ui-past-orders/src/test/java/com/example/
 | ORDER-13 Nothing in the order is still on the menu | acceptance | `<pastorders-test>/acceptance/OrderAgainSkippedItemsAcceptanceTest.kt` | `orderAgain when nothing in the order is on the menu then leaves the cart unchanged` | 🟢 green |
 | ORDER-14 Close after nothing was available | acceptance | `<pastorders-test>/acceptance/OrderAgainSkippedItemsAcceptanceTest.kt` | `dismissOrderAgainDialog when nothing available dialog is showing then closes the dialog` | 🟢 green |
 | ORDER-14 Close after nothing was available | acceptance | `<pastorders-test>/acceptance/OrderAgainSkippedItemsAcceptanceTest.kt` | `dismissOrderAgainDialog when nothing available dialog is showing then emits no navigation event` | 🟢 green |
-| ORDER-15 Skipped items dialog | screenshot | `<pastorders-test>/screenshot/OrdersScreenScreenshotTest.kt` (preview in `OrdersScreen.kt`) | `OrdersScreenSomeSkippedDialogPreview` | 🔴 red |
-| ORDER-16 Nothing available dialog | screenshot | `<pastorders-test>/screenshot/OrdersScreenScreenshotTest.kt` (preview in `OrdersScreen.kt`) | `OrdersScreenNothingAvailableDialogPreview` | 🔴 red |
+| ORDER-15 Skipped items dialog | screenshot | `<pastorders-test>/screenshot/OrdersScreenScreenshotTest.kt` (preview in `OrdersScreen.kt`) | `OrdersScreenSomeSkippedDialogPreview` | 🟢 green |
+| ORDER-16 Nothing available dialog | screenshot | `<pastorders-test>/screenshot/OrdersScreenScreenshotTest.kt` (preview in `OrdersScreen.kt`) | `OrdersScreenNothingAvailableDialogPreview` | 🟢 green |
 | ORDER-17 Menu cannot be loaded | acceptance | `<pastorders-test>/acceptance/OrderAgainFailureAcceptanceTest.kt` | `orderAgain when menu fails to load then emits menu unavailable error event` | 🟢 green |
 | ORDER-17 Menu cannot be loaded | acceptance | `<pastorders-test>/acceptance/OrderAgainFailureAcceptanceTest.kt` | `orderAgain when menu fails to load then leaves the cart unchanged` | 🟢 green |
 | ORDER-17 Menu cannot be loaded | acceptance | `<pastorders-test>/acceptance/OrderAgainFailureAcceptanceTest.kt` | `orderAgain when menu fails to load then emits no navigation event` | 🟢 green |

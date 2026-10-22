@@ -16,18 +16,24 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.example.core.designsystem.components.DsButton
 import com.example.core.designsystem.components.DsStatusPill
 import com.example.core.designsystem.theme.AppColors
 import com.example.core.designsystem.theme.AppTypography
 import com.example.core.designsystem.theme.LazyPizzaTheme
 import com.example.core.designsystem.utils.PreviewPhoneTablet
 import com.example.core.model.OrderStatus
+import com.example.order.checkout.ui.pastorders.R
 
 @Composable
 fun OrderCard(
     orderUi: OrderUi,
+    isOrderAgainEnabled: Boolean,
+    onOrderAgainClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Card(
@@ -85,6 +91,15 @@ fun OrderCard(
                         )
                     }
                 }
+
+                Spacer(Modifier.height(16.dp))
+
+                DsButton.Outlined(
+                    text = stringResource(R.string.order_again),
+                    onClick = onOrderAgainClick,
+                    enabled = isOrderAgainEnabled,
+                    modifier = Modifier.testTag("order_again_button"),
+                )
             }
 
             Column(
@@ -150,6 +165,8 @@ private fun OrderCardPreview() {
                 totalAmountLabel = "$25.45",
                 status = OrderStatus.COMPLETED,
             ),
+            isOrderAgainEnabled = true,
+            onOrderAgainClick = {},
             modifier = Modifier.padding(16.dp),
         )
     }

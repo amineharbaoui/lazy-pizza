@@ -30,8 +30,8 @@
 
 ## 4. UI
 
-- [ ] 4.1 `OrderCard` "Order again" button (disabled while `InProgress`); skipped and nothing-available dialogs with "Go to cart" / "Close" and back dismissal; `SnackbarHost` for errors; strings in `strings.xml`; test tags for Maestro ids. Verify: the app builds.
-- [ ] 4.2 Previews `OrdersScreenReadyMixedStatusesPreview`, `OrdersScreenNotLoggedInPreview`, `OrdersScreenSomeSkippedDialogPreview`, `OrdersScreenNothingAvailableDialogPreview`. Verify: `./gradlew :features:order:ui-past-orders:recordRoborazziDebug`, open every new PNG and check it against ORDER-01, -02, -15 and -16; rows 🟢.
+- [x] 4.1 `OrderCard` "Order again" button (disabled while `InProgress`); skipped and nothing-available dialogs with "Go to cart" / "Close" and back dismissal; `SnackbarHost` for errors; strings in `strings.xml`; test tags for Maestro ids. Verify: the app builds.
+- [x] 4.2 Previews `OrdersScreenReadyMixedStatusesPreview`, `OrdersScreenNotLoggedInPreview`, `OrdersScreenSomeSkippedDialogPreview`, `OrdersScreenNothingAvailableDialogPreview`. Verify: `./gradlew :features:order:ui-past-orders:recordRoborazziDebug`, open every new PNG and check it against ORDER-01, -02, -15 and -16; rows 🟢.
 
 ## 5. Gate
 
