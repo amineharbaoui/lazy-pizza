@@ -33,6 +33,13 @@ Listed in `settings.gradle.kts`.
 
 Run `ktlintFormat` and the affected module tests before declaring work done.
 
+## Change Workflow
+
+- **Gate**: `./gradlew ktlintCheck unitTestAll assembleDebug`. Never claim work is done without a fresh green run of it.
+- **Behavior changes** (anything a user can observe) go through OpenSpec with the `lazypizza` schema: `/opsx:explore` when the idea is still fuzzy, then `/opsx:propose`, the developer approves the specs in the conversation, then `/opsx:apply`.
+- **Fast lane**, no OpenSpec: refactors, dependency bumps, tooling and docs need only the gate. A small bug fix needs one test that fails because of the bug, the fix, then the gate.
+- Never edit a spec the developer approved. Stop and ask once, with a proposed diff.
+
 ## Layers & Dependencies (Hard Constraints)
 
 - **Domain**: pure Kotlin (Hilt annotations allowed, nothing else from Android/Compose/Firebase/Room). Holds business models, use cases, business rules, repository interfaces. Single source of truth for behavior.

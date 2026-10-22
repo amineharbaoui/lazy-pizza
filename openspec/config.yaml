@@ -4,9 +4,9 @@ context: |
   Android app, multi-module, strictly layered (domain / data / ui-*). CLAUDE.md is
   the source of truth for architecture and layer rules; .claude/rules/testing.md
   for test style (JUnit 5, MockK BDD, Turbine, AssertJ, backtick names).
-  The developer's only inputs are approving specs (by creating the
-  `spec-lock/<change>` git tag) and reviewing the final PR. Everything between
-  is proved by tests, not by asking.
+  The developer's only inputs are approving the specs (in the conversation,
+  when Claude asks) and reviewing the final PR. Everything between is proved
+  by tests, not by asking.
   Capabilities are named after features: auth, menu, cart, order, plus
   design-system for shared UI components.
 

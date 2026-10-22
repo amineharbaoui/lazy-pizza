@@ -10,7 +10,7 @@
 
 ## Lock integrity (blocking)
 - Tests and support files vs `LOCK:` sha: <!-- command + "no diff" or explained changes -->
-- Specs vs `spec-lock/<change-name>`: <!-- command + "no diff" -->
+- Specs vs `SPECS-APPROVED` sha: <!-- command + "no diff" -->
 
 ## Gate
 - Command: <!-- e.g. ./gradlew ktlintCheck unitTestAll assembleDebug -->

@@ -1,3 +1,5 @@
+SPECS-APPROVED: <sha of the spec(<change-name>): approved commit>
+
 # Test Plan
 
 <!-- Every scenario in specs/ mapped to at least one named test. -->
