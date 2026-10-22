@@ -165,8 +165,8 @@ sealed interface OrderUiState {
 sealed interface OrderAgainUiState {
     data object Idle : OrderAgainUiState
     data object InProgress : OrderAgainUiState               // every Order again button disabled
-    data class SomeSkipped(val skippedLabels: List<String>) : OrderAgainUiState   // dialog: "Go to cart" + "Close"
-    data class NothingAvailable(val skippedLabels: List<String>) : OrderAgainUiState  // dialog: "Close" only
+    data class SomeSkipped(val skippedItems: List<SkippedItemUi>) : OrderAgainUiState   // dialog: "Go to cart" + "Close"
+    data class NothingAvailable(val skippedItems: List<SkippedItemUi>) : OrderAgainUiState  // dialog: "Close" only
 }
 
 sealed interface OrdersUiEvent {
@@ -195,7 +195,14 @@ fun OrdersScreen(
 )
 ```
 
-Skipped labels: a product is shown by its name ("Lemonade"), a topping as "Truffle on Margherita". The strings come from resources.
+```kotlin
+sealed interface SkippedItemUi {
+    data class Product(val name: String) : SkippedItemUi
+    data class Topping(val toppingName: String, val pizzaName: String) : SkippedItemUi
+}
+```
+
+The dialog composable formats them: a product by its name ("Lemonade"), a topping with the string resource `"%1$s on %2$s"` ("Truffle on Margherita"). The ViewModel never reads resources, so acceptance tests assert the typed items.
 
 ## Decisions
 
