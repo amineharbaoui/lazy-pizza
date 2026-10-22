@@ -1,32 +1,34 @@
-schema: spec-driven
+schema: lazypizza
 
-# Project context (optional)
-# Add only constraints that should guide OpenSpec artifacts and workflows.
-# Include constraints an agent cannot infer by reading the code.
-# Keep general project documentation and discoverable codebase facts out.
-# Example:
-#   context: |
-#     Designs and tasks must cover Windows, macOS, and Linux
-#     Write all artifacts in Spanish
+context: |
+  Android app, multi-module, strictly layered (domain / data / ui-*). CLAUDE.md is
+  the source of truth for architecture and layer rules; .claude/rules/testing.md
+  for test style (JUnit 5, MockK BDD, Turbine, AssertJ, backtick names).
+  The developer's only inputs are approving specs (by creating the
+  `spec-lock/<change>` git tag) and reviewing the final PR. Everything between
+  is proved by tests, not by asking.
+  Capabilities are named after features: auth, menu, cart, order, plus
+  design-system for shared UI components.
 
-# Per-artifact rules (optional)
-# Add custom rules for specific artifacts.
-# Example:
-#   rules:
-#     proposal:
-#       - Keep proposals under 500 words
-#       - Always state what is out of scope
-#     tasks:
-#       - Break tasks into chunks of max 2 hours
+rules:
+  proposal:
+    - State what is out of scope.
+  specs:
+    - "Prefix every scenario name with an id: `<CAP>-NN`, where CAP is the capability in upper case (AUTH, MENU, CART, ORDER, DS) and NN keeps counting within that capability across changes. Never reuse an id."
+    - "First bullet of every scenario is `- **Level**: acceptance | screenshot | journey | unit`. Default to acceptance; use journey only for flows that need a real device or real Firebase; screenshot for what a screen shows in a given state; unit only for an isolated domain rule."
+    - Use GIVEN / WHEN / THEN bullets. THEN describes what the user sees or what the app emits, never internal calls.
+    - Cover the error path of every requirement that can fail, with the user-facing outcome.
+  design:
+    - "Always write the Contract section: sealed UiState, UiAction/UiEvent, use case and repository signatures, and an interface for every data source the change touches. Tests are written against it before any implementation."
+    - Respect CLAUDE.md layer rules. Test source sets may depend on data modules and their testFixtures; production code may not.
+  tasks:
+    - Use the six groups from the schema in order. Never merge writing a test and implementing it into one task.
 
-# Per-operation guidance (optional)
-# Add advisory guidance for how apply and archive work should be conducted.
-# This is separate from artifact rules above.
-# Example:
-#   operations:
-#     apply:
-#       guidance:
-#         - Keep test summaries concise
-#     archive:
-#       guidance:
-#         - Summarize the archive outcome before finishing
+operations:
+  apply:
+    guidance:
+      - Run the narrowest Gradle test task first; the full gate only in group 5.
+      - Keep test-plan.md rows in sync as tests turn green.
+  archive:
+    guidance:
+      - Archive only after verify.md says DECISION PASS and the PR is merged.
