@@ -36,9 +36,10 @@ Run `ktlintFormat` and the affected module tests before declaring work done.
 ## Change Workflow
 
 - **Gate**: `./gradlew ktlintCheck unitTestAll assembleDebug`. Never claim work is done without a fresh green run of it.
-- **Behavior changes** (anything a user can observe) go through OpenSpec with the `lazypizza` schema: `/opsx:explore` when the idea is still fuzzy, then `/opsx:propose`, the developer approves the specs in the conversation, then `/opsx:apply`.
+- **Behavior changes** (anything a user can observe) go through OpenSpec with the `lazypizza` schema: `/opsx:explore` when the idea is still fuzzy, then `/opsx:propose`. The developer approves the specs in the conversation, and that approval is also the go to apply, verify and open the PR without asking again.
 - **Fast lane**, no OpenSpec: refactors, dependency bumps, tooling and docs need only the gate. A small bug fix needs one test that fails because of the bug, the fix, then the gate.
 - Never edit a spec the developer approved. Stop and ask once, with a proposed diff.
+- **Git**: push only your own branch, by name (`git push -u origin <branch>`). Never push to `main`, never force-push.
 
 ## Layers & Dependencies (Hard Constraints)
 

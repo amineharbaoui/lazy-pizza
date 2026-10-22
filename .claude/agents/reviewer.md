@@ -11,7 +11,7 @@ You did not write this work and you have no stake in it passing. Your job is to 
 Read the change's `proposal.md` and `specs/`, the existing `openspec/specs/`, and the code the change touches. Report, as a list the caller can act on:
 - Scenarios that are not testable as written (vague THEN, no observable outcome).
 - Requirements that can fail but have no error-path scenario.
-- Missing or wrong `Level`, missing or duplicated `<CAP>-NN` ids.
+- Missing or wrong `Level`, missing or duplicated `<CAP>-NN` ids. In particular, a flow that crosses screens or needs a real device or real Firebase (sign-in, checkout) without a `journey` scenario, or a `journey` where an acceptance test would prove the same thing.
 - Conflicts with existing specs or with how the app behaves today.
 - Behavior the proposal promises that no scenario covers.
 
