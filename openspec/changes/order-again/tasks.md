@@ -15,18 +15,18 @@
 
 ## 3. Green: Order again adds available items to the cart at today's prices
 
-- [ ] 3.1 `MenuRepositoryImpl.getMenuSnapshot`: `combine` of category flows + toppings, `first()`, `withTimeout`, failures mapped to `Unavailable`. Verify: `./gradlew :features:menu:data:testDebugUnitTest` green.
-- [ ] 3.2 `CartLocalDataSourceImpl.addItems` in one `db.withTransaction`, and `CartRepositoryImpl.addItems` maps exceptions to `CartWriteResult.Failed`. Verify: `./gradlew :features:cart:data:testDebugUnitTest` green.
-- [ ] 3.3 `AddCartItemsUseCase`: merge non-pizza quantities with the current cart, then `addItems`. Verify: `./gradlew :features:cart:domain:test` green.
-- [ ] 3.4 `ReorderUseCase`: match by product id, reprice from the menu, build cart lines. `OrdersViewModel.orderAgain` with the `InProgress` guard and `NavigateToCart`. Verify: `./gradlew :features:order:ui-past-orders:testDebugUnitTest`; rows ORDER-03 to ORDER-08 🟢.
+- [x] 3.1 `MenuRepositoryImpl.getMenuSnapshot`: `combine` of category flows + toppings, `first()`, `withTimeout`, failures mapped to `Unavailable`. Verify: `./gradlew :features:menu:data:testDebugUnitTest` green.
+- [x] 3.2 `CartLocalDataSourceImpl.addItems` in one `db.withTransaction`, and `CartRepositoryImpl.addItems` maps exceptions to `CartWriteResult.Failed`. Verify: `./gradlew :features:cart:data:testDebugUnitTest` green.
+- [x] 3.3 `AddCartItemsUseCase`: merge non-pizza quantities with the current cart, then `addItems`. Verify: `./gradlew :features:cart:domain:test` green.
+- [x] 3.4 `ReorderUseCase`: match by product id, reprice from the menu, build cart lines. `OrdersViewModel.orderAgain` with the `InProgress` guard and `NavigateToCart`. Verify: `./gradlew :features:order:ui-past-orders:testDebugUnitTest`; rows ORDER-03 to ORDER-08 🟢.
 
 ## 3. Green: Order again skips what is no longer on the menu and tells the user
 
-- [ ] 3.5 `ReorderUseCase`: skip products not on the menu and drop toppings not in today's topping list, returning `Added(skipped)` / `NothingAvailable`. ViewModel maps to `SomeSkipped` / `NothingAvailable`, plus `goToCartFromSkippedItems` and `dismissOrderAgainDialog`. Verify: `./gradlew :features:order:ui-past-orders:testDebugUnitTest`; rows ORDER-09 to ORDER-14 🟢.
+- [x] 3.5 `ReorderUseCase`: skip products not on the menu and drop toppings not in today's topping list, returning `Added(skipped)` / `NothingAvailable`. ViewModel maps to `SomeSkipped` / `NothingAvailable`, plus `goToCartFromSkippedItems` and `dismissOrderAgainDialog`. Verify: `./gradlew :features:order:ui-past-orders:testDebugUnitTest`; rows ORDER-09 to ORDER-14 🟢.
 
 ## 3. Green: Order again fails safely
 
-- [ ] 3.6 `ReorderUseCase` maps `Unavailable` and an empty menu to `MenuUnavailable`, and a cart failure to `CartUpdateFailed`. The ViewModel emits `ShowOrderAgainError` and returns to `Idle`. Verify: `./gradlew :features:order:ui-past-orders:testDebugUnitTest`; rows ORDER-17 to ORDER-21 🟢.
+- [x] 3.6 `ReorderUseCase` maps `Unavailable` and an empty menu to `MenuUnavailable`, and a cart failure to `CartUpdateFailed`. The ViewModel emits `ShowOrderAgainError` and returns to `Idle`. Verify: `./gradlew :features:order:ui-past-orders:testDebugUnitTest`; rows ORDER-17 to ORDER-21 🟢.
 
 ## 4. UI
 

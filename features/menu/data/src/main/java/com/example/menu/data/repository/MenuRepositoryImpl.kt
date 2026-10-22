@@ -5,13 +5,18 @@ import com.example.menu.data.datasource.ProductRemoteDataSource
 import com.example.menu.data.mapper.ProductDtoToDomainMapper
 import com.example.menu.domain.model.MenuItem
 import com.example.menu.domain.model.MenuSection
+import com.example.menu.domain.model.MenuSnapshot
 import com.example.menu.domain.model.MenuSnapshotResult
 import com.example.menu.domain.model.Topping
 import com.example.menu.domain.repository.MenuRepository
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.withTimeoutOrNull
 import javax.inject.Inject
+import kotlin.time.Duration.Companion.seconds
 
 class MenuRepositoryImpl @Inject constructor(
     private val productRemoteDataSource: ProductRemoteDataSource,
@@ -53,5 +58,20 @@ class MenuRepositoryImpl @Inject constructor(
         .observeProductsByCategory(category = ProductCategory.TOPPING)
         .map(productMapper::mapListToToppings)
 
-    override suspend fun getMenuSnapshot(): MenuSnapshotResult = TODO()
+    // A Firestore listener with no cache and no network can wait forever instead of failing.
+    override suspend fun getMenuSnapshot(): MenuSnapshotResult = try {
+        withTimeoutOrNull(MENU_SNAPSHOT_TIMEOUT) {
+            combine(observeMenuSections(), observeToppings()) { sections, toppings ->
+                MenuSnapshot(items = sections.flatMap { it.items }, toppings = toppings)
+            }.first()
+        }?.let(MenuSnapshotResult::Success) ?: MenuSnapshotResult.Unavailable
+    } catch (e: CancellationException) {
+        throw e
+    } catch (e: Exception) {
+        MenuSnapshotResult.Unavailable
+    }
+
+    private companion object {
+        val MENU_SNAPSHOT_TIMEOUT = 10.seconds
+    }
 }

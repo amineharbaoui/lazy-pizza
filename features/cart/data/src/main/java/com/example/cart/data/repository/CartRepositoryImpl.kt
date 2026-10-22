@@ -8,6 +8,7 @@ import com.example.cart.domain.model.CartItem
 import com.example.cart.domain.model.CartOwner
 import com.example.cart.domain.model.CartWriteResult
 import com.example.cart.domain.repository.CartRepository
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
@@ -29,7 +30,14 @@ class CartRepositoryImpl @Inject constructor(
     override suspend fun addItems(
         owner: CartOwner,
         items: List<CartItem>,
-    ): CartWriteResult = TODO()
+    ): CartWriteResult = try {
+        localDataSource.addItems(ownerKey = ownerToKeyMapper.map(owner), items = items)
+        CartWriteResult.Success
+    } catch (e: CancellationException) {
+        throw e
+    } catch (e: Exception) {
+        CartWriteResult.Failed
+    }
 
     override suspend fun updateItemQuantity(
         owner: CartOwner,

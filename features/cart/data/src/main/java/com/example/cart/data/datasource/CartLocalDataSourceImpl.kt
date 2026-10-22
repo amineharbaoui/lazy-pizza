@@ -1,5 +1,7 @@
 package com.example.cart.data.datasource
 
+import androidx.room.withTransaction
+import com.example.cart.data.datasource.db.CartDatabase
 import com.example.cart.data.datasource.db.dao.CartDao
 import com.example.cart.data.datasource.db.dao.CartMetadataDao
 import com.example.cart.data.datasource.db.entity.CartMetadataEntity
@@ -18,6 +20,7 @@ import javax.inject.Inject
 import kotlin.time.Duration.Companion.seconds
 
 class CartLocalDataSourceImpl @Inject constructor(
+    private val db: CartDatabase,
     private val cartDao: CartDao,
     private val cartMetadataDao: CartMetadataDao,
     private val entityToDomainMapper: CartEntityToDomainMapper,
@@ -57,8 +60,15 @@ class CartLocalDataSourceImpl @Inject constructor(
     override suspend fun addItems(
         ownerKey: String,
         items: List<CartItem>,
-    ) {
-        TODO()
+    ) = db.withTransaction {
+        expireIfNeeded(ownerKey)
+        items.forEach { item ->
+            when (item) {
+                is CartItem.Other -> insertSimple(ownerKey = ownerKey, item = item)
+                is CartItem.Pizza -> insertPizza(ownerKey = ownerKey, item = item)
+            }
+        }
+        touchCart(ownerKey)
     }
 
     override suspend fun updateItemQuantity(
