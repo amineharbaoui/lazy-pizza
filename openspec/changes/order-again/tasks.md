@@ -35,11 +35,11 @@
 
 ## 5. Gate
 
-- [ ] 5.1 Run `./gradlew ktlintFormat`, then `./gradlew ktlintCheck unitTestAll assembleDebug`. Verify: green, output kept for verify.md.
+- [x] 5.1 Run `./gradlew ktlintFormat`, then `./gradlew ktlintCheck unitTestAll assembleDebug`. Verify: green, output kept for verify.md.
 
 ## 6. Journey
 
-- [ ] 6.1 Add `.maestro/config.yaml`, `.maestro/common/login.yaml` and `.maestro/common/place-order.yaml` (based on `feature/integrate-ai`), and `.maestro/flows/order_again.yaml`. Run it on `device_for_test` with retries off. Verify: the flow passes; row ORDER-22 🟢.
+- [x] 6.1 Add `.maestro/config.yaml`, `.maestro/common/login.yaml` and `.maestro/common/place-margherita-order.yaml` (based on `feature/integrate-ai`), and `.maestro/flows/order_again.yaml`. Run it on `device_for_test` with retries off. Verify: the flow passes; row ORDER-22 🟢.
 
 ## 7. Verify and PR
 

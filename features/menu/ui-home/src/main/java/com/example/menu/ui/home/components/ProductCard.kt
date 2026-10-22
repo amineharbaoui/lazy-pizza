@@ -11,6 +11,7 @@ import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
@@ -37,7 +38,7 @@ fun ProductCard(
         is MenuItemDisplayModel.Pizza -> {
             val sharedKey = "pizza-image-${product.id}"
             DsCardRow.MenuItem(
-                modifier = modifier,
+                modifier = modifier.testTag("product_card_${product.name}"),
                 imageModifier = with(sharedTransitionScope) {
                     Modifier.sharedElement(
                         sharedContentState = rememberSharedContentState(sharedKey),

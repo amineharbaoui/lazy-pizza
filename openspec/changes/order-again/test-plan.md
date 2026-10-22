@@ -53,7 +53,7 @@ Paths below abbreviate `features/order/ui-past-orders/src/test/java/com/example/
 | ORDER-20 Retry after the menu failed | acceptance | `<pastorders-test>/acceptance/OrderAgainFailureAcceptanceTest.kt` | `orderAgain when retried after menu failure then emits navigate to cart event` | 🟢 green |
 | ORDER-21 Retry after the cart failed | acceptance | `<pastorders-test>/acceptance/OrderAgainFailureAcceptanceTest.kt` | `orderAgain when retried after cart failure then cart holds the order` | 🟢 green |
 | ORDER-21 Retry after the cart failed | acceptance | `<pastorders-test>/acceptance/OrderAgainFailureAcceptanceTest.kt` | `orderAgain when retried after cart failure then emits navigate to cart event` | 🟢 green |
-| ORDER-22 Reorder from history to cart | journey | `.maestro/flows/order_again.yaml` | `order_again.yaml` | 🔴 red |
+| ORDER-22 Reorder from history to cart | journey | `.maestro/flows/order_again.yaml` | `order_again.yaml` | 🟢 green |
 
 ## Support files
 

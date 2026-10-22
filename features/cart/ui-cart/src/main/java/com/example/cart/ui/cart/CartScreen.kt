@@ -21,6 +21,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -113,6 +114,7 @@ fun CartScreenContent(
                     text = cartUiState.cart.totalPriceFormatted,
                     onClick = onNavigateToCheckout,
                     modifier = Modifier
+                        .testTag("cart_checkout_button")
                         .padding(horizontal = 16.dp)
                         .padding(bottom = 16.dp)
                         .fillMaxWidth(),
@@ -150,6 +152,7 @@ fun CartScreenContent(
                 ),
                 onClick = onNavigateToCheckout,
                 modifier = Modifier
+                    .testTag("cart_checkout_button")
                     .padding(horizontal = 12.dp)
                     .fillMaxWidth(),
             )
@@ -248,6 +251,7 @@ private fun CartItemsSection(
                 painterProvider = { rememberAsyncImagePainter(item.imageUrl) },
             )
             DsCardRow.CartItem(
+                modifier = Modifier.testTag("cart_item_${item.name}"),
                 title = item.name,
                 subtitleLines = item.subtitleLines,
                 unitPriceText = item.unitPriceFormatted,

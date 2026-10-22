@@ -56,6 +56,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -185,7 +186,9 @@ object DsNavigationBar {
                         durationMs = durationMs,
                         moveSpec = moveSpec,
                         onClick = { if (!item.isSelected) item.onClick() },
-                        modifier = Modifier.weight(1f),
+                        modifier = Modifier
+                            .weight(1f)
+                            .testTag("nav_${item.label.lowercase()}"),
                     )
                 }
             }
@@ -344,6 +347,7 @@ object DsNavigationBar {
             ) {
                 menuItems.forEach { item ->
                     NavigationRailItem(
+                        modifier = Modifier.testTag("nav_${item.label.lowercase()}"),
                         selected = item.isSelected,
                         onClick = { if (!item.isSelected) item.onClick() },
                         icon = { NavIcon(item.icon, item.label, item.badgeCount) },
