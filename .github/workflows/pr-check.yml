@@ -29,3 +29,12 @@ jobs:
 
             - name: Assemble debug APK
               run: ./gradlew assembleDebug
+
+            - name: Upload screenshot diffs
+              if: failure()
+              uses: actions/upload-artifact@v4
+              with:
+                  name: roborazzi-diffs
+                  path: |
+                      **/build/outputs/roborazzi/
+                      **/build/test-results/roborazzi/
