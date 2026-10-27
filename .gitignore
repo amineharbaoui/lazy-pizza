@@ -13,6 +13,7 @@ local.properties
 # Local tool state
 .hotswan/
 .claude/settings.local.json
+.claude/spec-drafts/
 
 # Android Studio generated files and folders
 captures/
