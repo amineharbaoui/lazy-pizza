@@ -14,7 +14,7 @@ LazyPizza simulates an **enterprise project at a big tech company**: a very larg
 - Build/CI must scale: affected-module builds and tests, build caching, parallelism.
 - Production-ready: offline resilience, retries with backoff, pagination, efficient Firestore reads/writes, graceful degradation, observability, crash-free rate, startup time, and backward-compatible migrations are first-class.
 
-Scale justifies boundaries and robustness, not speculative abstractions (see Simplicity & Naming).
+Scale justifies boundaries and robustness, not speculative abstractions (see Simplicity & Naming). It shapes how a feature is built, not what it does: a spec describes only what a user or the business can notice, and leaves the technical choices to the implementation.
 
 ## Modules
 
@@ -31,13 +31,13 @@ Listed in `settings.gradle.kts`.
 - Build: `./gradlew assembleDebug`
 - Coverage: `./gradlew koverXmlReport`
 
-Run `ktlintFormat` and the affected module tests before declaring work done.
+Run `ktlintFormat` and the affected module tests before declaring a code change done.
 
 ## Change Workflow
 
-- **Gate**: `./gradlew ktlintCheck unitTestAll assembleDebug`. Never claim work is done without a fresh green run of it.
+- **Gate** for any change to the repo: `./gradlew ktlintCheck unitTestAll assembleDebug`. Never claim such a change is done without a fresh green run of it.
 - Refactors, dependency bumps, tooling and docs need only the gate. A small bug fix needs one test that fails because of the bug, the fix, then the gate.
-- Never edit a spec the developer approved. Stop and ask once, with a proposed diff.
+- Specs are GitHub issues. Never edit one without asking the developer first, with a proposed diff.
 - **Git**: push only your own branch, by name (`git push -u origin <branch>`). Never push to `main`, never force-push.
 
 ## Layers & Dependencies (Hard Constraints)
