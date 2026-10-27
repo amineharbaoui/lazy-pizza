@@ -55,7 +55,7 @@ Stop asking when every section can be filled. Something the developer can't answ
 
 ### 4. Keep a local draft
 
-Write the draft to `.claude/spec-drafts/<feature-slug>/spec.md`, following [template.md](template.md). The folder is gitignored and never committed.
+Write the draft to `.claude/spec-drafts/<feature-slug>/spec.md`, following [template.md](template.md). The slug uses only lowercase letters, digits and hyphens, for example `order-again`. The folder is gitignored and never committed.
 
 - The first line is `# <title>`: a short name for the feature, as the issue title.
 - Business rules are numbered `R1`, `R2`, ... Scenarios are numbered `1`, `2`, ... and each one lists the rules it covers.
@@ -90,10 +90,12 @@ When it is done, print the full draft in the conversation, then ask with `AskUse
 
 ### 7. Create the issue
 
-Create it once, from the draft, without the title line:
+Create it once, from the draft. The title comes from the draft's first line, so it is never retyped into the command:
 
 ```bash
-tail -n +2 .claude/spec-drafts/<feature-slug>/spec.md | gh issue create --title "<title>" --body-file -
+draft=.claude/spec-drafts/<feature-slug>/spec.md
+title="$(head -n 1 "$draft" | sed 's/^# //')"
+tail -n +2 "$draft" | gh issue create --title "$title" --body-file -
 ```
 
 For sub-issues, create the parent first, then each sub-issue the same way, then link each one to the parent:
