@@ -12,7 +12,7 @@ Never edit the draft. Report what is wrong and how to fix it.
 
 ## What to check
 
-1. **Structure.** The draft starts with a `# <title>` line, then has these 8 sections in this order: Why, Scope (with In scope and Out of scope), Business rules, Scenarios, UI, Constraints, Dependencies, Open questions. No section is empty. Only UI, Constraints and Dependencies may say `None.`, and only when nothing applies.
+1. **Structure.** The draft starts with a `# <title>` line, then has these 8 sections in this order: Why, Scope (with In scope and Out of scope), Business rules, Scenarios, UI, Constraints, Dependencies, Open questions. No section is empty. UI, Constraints and Dependencies may say `None.` only when nothing applies. Open questions must say `None.` (check 10).
 2. **Rules and scenarios match.** Every rule `R<n>` is covered by at least one scenario. Every scenario lists the rules it covers, and those rules exist. A scenario that covers no rule points to a missing rule.
 3. **Scenarios are testable.** Each one has Given, When and Then, checks one behavior and uses concrete values. Failures and edge cases are covered: errors, empty states, offline, limits, signed-out users, items that no longer exist, repeated taps.
 4. **No technical choices.** Flag any module, class, layer, library, data schema, caching, retry, threading or API detail. Suggest the behavior the user would notice instead, or removing it.
