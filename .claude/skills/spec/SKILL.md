@@ -3,11 +3,6 @@ name: spec
 description: Write a feature spec together with the developer, then create it as a GitHub issue. Use when the developer wants to specify a new feature or a user-visible change before it is implemented.
 argument-hint: "[feature idea, or the name of a draft to continue]"
 disable-model-invocation: true
-allowed-tools:
-  - Bash(gh auth status)
-  - Bash(gh issue list *)
-  - Bash(gh issue view *)
-  - Bash(gh repo view *)
 ---
 
 # /spec
@@ -62,7 +57,7 @@ Write the draft to `.claude/spec-drafts/<feature-slug>/spec.md`, following [temp
 - Once the issue exists, a scenario is referred to outside the issue as `<issue number>-<scenario number>`, for example `42-3`.
 - A section with nothing in it says `None.` explicitly. Only UI, Constraints and Dependencies can be `None.`, when nothing applies. Open questions must end up `None.`
 
-If the spec grows past about 3 screens or 15 scenarios, ask the developer whether to split it into a parent issue and sub-issues. Each sub-issue then gets its own draft in the same folder, following the same template. The parent keeps Why, Scope and the rules they share.
+If the spec looks too big for one issue, propose a split into a parent issue and sub-issues, saying what goes in each, and ask the developer to validate it. Each sub-issue then gets its own draft in the same folder, following the same template. The parent keeps Why, Scope and the rules they share.
 
 ### 5. Review
 
