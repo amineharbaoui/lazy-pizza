@@ -41,7 +41,7 @@ Never ask the developer something the code already answers. When you mention cur
 Use `AskUserQuestion` with exactly one question per call:
 
 - Give 2 to 4 options. Put your recommendation first, mark it `(Recommended)`, and say why in its description.
-- The developer can always type their own answer instead.
+- The developer can always type their own answer instead. Never set the `preview` field on an option: a question with previews loses its free-answer row. To compare layouts, print the mockups in your message just before the question, label them like the options, and keep the options short.
 - Ask only what the developer must decide: the goal, scope, rules, edge-case behavior, texts, constraints. Never ask a technical question. The implementation decides those.
 - Go roughly in section order: Why, Scope, Business rules, Scenarios, UI, Constraints, Dependencies.
 - After each answer, update the draft (step 4) before asking the next question.
