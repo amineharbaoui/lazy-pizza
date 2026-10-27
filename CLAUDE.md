@@ -36,10 +36,8 @@ Run `ktlintFormat` and the affected module tests before declaring work done.
 ## Change Workflow
 
 - **Gate**: `./gradlew ktlintCheck unitTestAll assembleDebug`. Never claim work is done without a fresh green run of it.
-- **Behavior changes** (anything a user can observe) go through OpenSpec with the `lazypizza` schema: `/opsx:explore` when the idea is still fuzzy, then `/opsx:propose`. The developer approves the specs in the conversation, and that approval is also the go to apply, verify and open the PR without asking again.
-- **Fast lane**, no OpenSpec: refactors, dependency bumps, tooling and docs need only the gate. A small bug fix needs one test that fails because of the bug, the fix, then the gate.
+- Refactors, dependency bumps, tooling and docs need only the gate. A small bug fix needs one test that fails because of the bug, the fix, then the gate.
 - Never edit a spec the developer approved. Stop and ask once, with a proposed diff.
-- Run `/opsx:archive` only when the change's verify.md says `DECISION: PASS` or `PASS_WITH_WARNINGS` and the developer has approved the PR. Otherwise stop before moving anything.
 - **Git**: push only your own branch, by name (`git push -u origin <branch>`). Never push to `main`, never force-push.
 
 ## Layers & Dependencies (Hard Constraints)
@@ -75,15 +73,3 @@ Flow is strictly unidirectional: intents go up (UI → ViewModel → UseCase →
 - Suffixes: `*UiState`, `*UiEvent`, `*UiAction`, `*UseCase`, `*Repository`, `*DataSource`.
 - Booleans read like a sentence: `isUserSignedIn`, `isPrimaryEnabled`.
 - One public class per file (small sealed hierarchies excepted).
-
-## Scoped Rules
-
-These load automatically when you work on matching files:
-
-- `.claude/rules/ui.md`: ViewModels, UI state & events, design system, navigation
-- `.claude/rules/data.md`: Room, Firebase, threading, error mapping
-- `.claude/rules/gradle.md`: version catalog, build config, R8
-- `.claude/rules/cart-session.md`: guest vs. signed-in cart, session lifecycle
-- `.claude/rules/testing.md`: test stack and conventions. Read it before writing tests.
-
-Before reviewing code, read `docs/agents/review-checklist.md`.
