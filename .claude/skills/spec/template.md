@@ -14,20 +14,29 @@
 
 ## Business rules
 
+<details>
+<summary>{Number of rules} rules</summary>
+
 - **R1**: <One rule per line, testable, with concrete values: limits, amounts, conditions.>
+
+</details>
 
 ## Scenarios
 
 <details>
-<summary>1. {Short title} · Covers R1</summary>
+<summary>{Number of scenarios} scenarios</summary>
+
+### 1. <Short title>
+
+Covers: R1
 
 - **Given** <the starting situation>
 - **When** <what the user does, or what happens>
 - **Then** <what the user sees, or what the business gets>
 
-</details>
+<Add one scenario per behavior, including failures and edge cases: errors, empty states, offline, limits, signed-out users.>
 
-<Add one folded block per behavior, including failures and edge cases: errors, empty states, offline, limits, signed-out users.>
+</details>
 
 ## UI
 
