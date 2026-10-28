@@ -47,10 +47,11 @@ Covers: R1
 - **States**: <each state the screen can show: loading, content, empty, error, offline, and so on>
 - **Texts**: <every text, exactly as the user reads it, per state>
 - **Actions**: <what the user can do, and where each action leads>
+- **Sketch**: ![{Screen name} sketch](.claude/spec-drafts/<feature-slug>/<screen-slug>.svg)
 
 </details>
 
-<Add one folded block per screen. Write `None.` when the feature has no UI change.>
+<Add one folded block per screen. Keep the Sketch line only when the layout is new or changes. Write `None.` when the feature has no UI change.>
 
 ## Constraints
 
