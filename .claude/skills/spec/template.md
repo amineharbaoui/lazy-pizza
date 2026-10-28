@@ -18,26 +18,30 @@
 
 ## Scenarios
 
-### 1. <Short title>
-
-Covers: R1
+<details>
+<summary>1. {Short title} · Covers R1</summary>
 
 - **Given** <the starting situation>
 - **When** <what the user does, or what happens>
 - **Then** <what the user sees, or what the business gets>
 
-<Add one scenario per behavior, including failures and edge cases: errors, empty states, offline, limits, signed-out users.>
+</details>
+
+<Add one folded block per behavior, including failures and edge cases: errors, empty states, offline, limits, signed-out users.>
 
 ## UI
 
-### <Screen name>
+<details>
+<summary>{Screen name}</summary>
 
 - **Entry**: <how the user gets here>
 - **States**: <each state the screen can show: loading, content, empty, error, offline, and so on>
 - **Texts**: <every text, exactly as the user reads it, per state>
 - **Actions**: <what the user can do, and where each action leads>
 
-<Write `None.` when the feature has no UI change.>
+</details>
+
+<Add one folded block per screen. Write `None.` when the feature has no UI change.>
 
 ## Constraints
 
