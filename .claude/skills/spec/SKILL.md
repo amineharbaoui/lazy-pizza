@@ -61,11 +61,18 @@ If the spec looks too big for one issue, propose a split into a parent issue and
 
 ### 5. Review
 
-Run the `spec-reviewer` subagent with the draft's path. It reports findings and ends with a verdict.
+Run the `spec-reviewer` subagent, at most 3 rounds. It reports findings and ends with a verdict.
 
-- Fix the findings that are clear.
-- When a fix needs the developer's decision, ask it like any other question (step 3).
-- Run the reviewer again after changes, until the verdict is `CLEAN`. After 3 rounds that are still not clean, show the developer the remaining findings and let them decide.
+- Round 1: give it the draft's path. It reviews the whole draft.
+- Rounds 2 and 3: give it the draft's path, the previous round's findings with how each was handled, and any other change since. It checks only those changes and looks for no new cases.
+
+Handle each finding:
+
+- When the fix is clear, apply it.
+- When it needs a decision, and the app already handles the same case elsewhere or only one answer is reasonable, make it yourself. Write it in the draft and add it to `.claude/spec-drafts/<feature-slug>/calls.md`: the decision, where it is in the draft, and why. That file is never part of the issue. When in doubt, ask instead.
+- Otherwise ask the developer, one finding per question, like any other question (step 3). Offer the reviewer's fix as the recommended option, and `Not needed` to leave the spec as it is.
+
+After changes, run the next round, until the verdict is `CLEAN`. When round 3 still has findings, handle them the same way, one question at a time, and stop reviewing.
 
 ### 6. Ask "Create the issue?"
 
@@ -74,13 +81,13 @@ The spec is done when:
 - all 8 sections are filled
 - every business rule has at least one scenario
 - Open questions is `None.`
-- the last review is `CLEAN`, or the developer accepted the remaining findings
+- the last review is `CLEAN`, or every finding of round 3 is handled
 
 Before that, keep working on the draft. The developer can stop at any time, and the draft stays in `.claude/spec-drafts/` for a later `/spec`.
 
-When it is done, print the full draft in the conversation, then ask with `AskUserQuestion`: "Create the issue?", with the options `Yes` and `No`.
+When it is done, print the full draft in the conversation, followed by your calls from `calls.md` if there are any, so the developer can change any of them. Then ask with `AskUserQuestion`: "Create the issue?", with the options `Yes` and `No`.
 
-- On `No`, ask what to change, apply it, review again if the content changed, then ask again.
+- On `No`, ask what to change and apply it. If the content changed, run one more review of those changes, like rounds 2 and 3. Then ask again.
 - On `Yes`, go to step 7.
 
 ### 7. Create the issue
