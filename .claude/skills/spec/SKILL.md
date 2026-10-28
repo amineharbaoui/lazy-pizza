@@ -27,7 +27,7 @@ Write the spec in English. UI texts are exact, as the user will read them.
 ### 1. Prepare
 
 - Run `gh auth status`. If it fails, stop and ask the developer to run `gh auth login`.
-- Run `gh --version`. Attaching sketches to the issue needs 2.99.0 or later. If it's older, tell the developer before you start.
+- Run `gh --version`. Attaching sketches to the issue needs 2.99.0 or later. If it's older, stop and ask the developer to upgrade `gh`.
 - If `.claude/spec-drafts/` already holds drafts, and one matches the feature idea or the developer named it, offer to continue that draft instead of starting over.
 - If the feature idea is empty, ask what the feature is.
 
@@ -54,7 +54,7 @@ Stop asking when every section can be filled. Something the developer can't answ
 Draw a sketch only when the feature adds a screen or changes where things sit on one. A new text or a new state on an existing layout doesn't need one.
 
 - Draw it as an SVG file in the draft folder, one per screen: `.claude/spec-drafts/<feature-slug>/<screen-slug>.svg`. Give it a `viewBox` and a `width`, so it shows at a readable size.
-- Keep it a wireframe: grey boxes and lines, the exact texts from the spec, no colors, fonts or design-system styling. Draw the parts that exist today as the code shows them, and outline what's new in one accent color.
+- Keep it a wireframe: grey boxes and lines, the exact texts from the spec, no fonts or design-system styling, and no color except one accent color that outlines what's new. Draw the parts that exist today as the code shows them.
 - When there is a layout choice, draw the options side by side in the same file, labeled A, B, ..., each with one line on its trade-off. Name the question's options the same way.
 - Open the file with `open <path>` before asking, so the developer sees it in their browser while the question waits in the terminal.
 - Once the developer has chosen, redraw the file with only the chosen layout, and reference it in the screen's UI block, with the same path as the file (see the template).
@@ -124,5 +124,7 @@ gh api repos/{owner}/{repo}/issues/<parent number>/sub_issues -X POST -F sub_iss
 
 Then:
 
+- If a command fails, check with `gh issue list --search "<title>"` whether the issue was created anyway before you run it again.
+- Check the issue body with `gh issue view <number>`: it must not contain a `.claude/spec-drafts/` path. If it does, a sketch didn't upload: keep the draft folder and tell the developer which sketch is missing.
 - Give the developer the issue URL.
 - Delete the draft folder. The issue is now the only copy of the spec.
