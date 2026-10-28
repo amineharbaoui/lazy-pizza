@@ -27,6 +27,7 @@ Write the spec in English. UI texts are exact, as the user will read them.
 ### 1. Prepare
 
 - Run `gh auth status`. If it fails, stop and ask the developer to run `gh auth login`.
+- Run `gh --version`. Attaching sketches to the issue needs 2.99.0 or later. If it's older, tell the developer before you start.
 - If `.claude/spec-drafts/` already holds drafts, and one matches the feature idea or the developer named it, offer to continue that draft instead of starting over.
 - If the feature idea is empty, ask what the feature is.
 
@@ -41,12 +42,24 @@ Never ask the developer something the code already answers. When you mention cur
 Use `AskUserQuestion` with exactly one question per call:
 
 - Give 2 to 4 options. Put your recommendation first, mark it `(Recommended)`, and say why in its description.
-- The developer can always type their own answer instead. Never set the `preview` field on an option: a question with previews loses its free-answer row. To compare layouts, print the mockups in your message just before the question, label them like the options, and keep the options short.
+- The developer can always type their own answer instead. Never set the `preview` field on an option: a question with previews loses its free-answer row. To compare layouts, draw a sketch (below) and name the options like it.
 - Ask only what the developer must decide: the goal, scope, rules, edge-case behavior, texts, constraints. Never ask a technical question. The implementation decides those.
 - Go roughly in section order: Why, Scope, Business rules, Scenarios, UI, Constraints, Dependencies.
 - After each answer, update the draft (step 4) before asking the next question.
 
 Stop asking when every section can be filled. Something the developer can't answer yet goes into Open questions.
+
+#### Layout sketches
+
+Draw a sketch only when the feature adds a screen or changes where things sit on one. A new text or a new state on an existing layout doesn't need one.
+
+- Draw it as an SVG file in the draft folder, one per screen: `.claude/spec-drafts/<feature-slug>/<screen-slug>.svg`. Give it a `viewBox` and a `width`, so it shows at a readable size.
+- Keep it a wireframe: grey boxes and lines, the exact texts from the spec, no colors, fonts or design-system styling. Draw the parts that exist today as the code shows them, and outline what's new in one accent color.
+- When there is a layout choice, draw the options side by side in the same file, labeled A, B, ..., each with one line on its trade-off. Name the question's options the same way.
+- Open the file with `open <path>` before asking, so the developer sees it in their browser while the question waits in the terminal.
+- Once the developer has chosen, redraw the file with only the chosen layout, and reference it in the screen's UI block, with the same path as the file (see the template).
+
+The sketch only settles the layout. The real screens are approved later, as Compose screenshots, when the feature is implemented.
 
 ### 4. Keep a local draft
 
@@ -100,6 +113,8 @@ draft=.claude/spec-drafts/<feature-slug>/spec.md
 title="$(head -n 1 "$draft" | sed 's/^# //')"
 tail -n +2 "$draft" | gh issue create --title "$title" --body-file -
 ```
+
+When the draft references sketches, add one `--attach <path>` per sketch to that command, with the same path the draft uses, for example `--attach .claude/spec-drafts/order-again/order-history.svg`. `gh` uploads each file and points the draft's image reference at it.
 
 For sub-issues, create the parent first, then each sub-issue the same way, then link each one to the parent:
 
