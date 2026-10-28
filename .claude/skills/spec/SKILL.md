@@ -54,7 +54,7 @@ Write the draft to `.claude/spec-drafts/<feature-slug>/spec.md`, following [temp
 
 - The first line is `# <title>`: a short name for the feature, as the issue title.
 - Business rules are numbered `R1`, `R2`, ... Scenarios are numbered `1`, `2`, ... and each one lists the rules it covers.
-- Each scenario and each UI screen is folded in its own `<details>` block, as in the template, so the issue stays short: a reader sees the rules, then the scenario and screen titles, and opens only what they need. Keep a blank line after `</summary>` and before `</details>`, or GitHub doesn't render the Markdown inside.
+- Business rules and Scenarios each fold into one `<details>` block, and each UI screen into its own, as in the template, so the issue stays short and a reader opens only what they need. The summary gives the count, for example `5 rules`. Keep a blank line after `</summary>` and before `</details>`, or GitHub doesn't render the Markdown inside.
 - Once the issue exists, a scenario is referred to outside the issue as `<issue number>-<scenario number>`, for example `42-3`.
 - A section with nothing in it says `None.` explicitly. Only UI, Constraints and Dependencies can be `None.`, when nothing applies. Open questions must end up `None.`
 
