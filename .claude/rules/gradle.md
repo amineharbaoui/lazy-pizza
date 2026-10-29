@@ -23,8 +23,9 @@ paths:
 - Plugins by module type:
   - `:domain`: `custom.kotlin.module`, `custom.testing`
   - `:data`: `custom.android.module`, `custom.hilt`, `custom.testing`, and `custom.room` when it uses Room
-  - `:ui-<screen>`: `custom.android.module`, `custom.compose`, `custom.hilt`, `custom.testing`
-  - `:core:*`: `custom.kotlin.module`, or `custom.android.module` when it needs Android
+  - `:ui-<screen>`: `custom.android.module`, `custom.compose`, `custom.hilt`, `custom.testing`, `custom.screenshot.testing`
+  - `:core:*`: `custom.kotlin.module`, or `custom.android.module` when it needs Android. `:core:designsystem` also applies `custom.screenshot.testing`.
+  - `:core:screenshot-testing`: test-only, the screenshot tester used by `custom.screenshot.testing`.
 
 ## New module
 
@@ -41,3 +42,4 @@ paths:
 
 - Most modules don't apply `custom.testing` yet, including every `:ui-*` module except `:ui-login`. Add it with the module's first test.
 - `:features:cart:data` depends on Firebase Firestore without using it.
+- `:ui-past-orders` has namespace `com.example.order.checkout.ui.pastorders` and its sources live in `com.example.checkout.order.ui.pastorders`; both should be `com.example.order.ui.pastorders`. Until that is fixed it doesn't apply `custom.screenshot.testing`, which scans the namespace for previews.

@@ -14,6 +14,7 @@ class CodeCoverageConventionPlugin : Plugin<Project> {
         ":core:designsystem",
         ":core:model",
         ":core:network",
+        ":core:screenshot-testing",
         ":core:testing",
         ":core:ui",
     )

@@ -164,6 +164,7 @@ VM -->|"Uses"| UC
 | `:core:common` | Shared utilities |
 | `:core:network` | Network/Firebase utilities |
 | `:core:testing` | Test utilities and fixtures |
+| `:core:screenshot-testing` | Test-only: the screenshot tester used by `custom-screenshot-testing` |
 | `:features:menu:*` | Pizza menu browsing (home + detail) |
 | `:features:cart:*` | Shopping cart management |
 | `:features:auth:*` | Authentication (login) |
@@ -186,6 +187,16 @@ This project follows a strict unit testing style:
 - **Flow testing**: Turbine
 - **Mocking**: MockK in **BDD style** (`given/coGiven/then/coThen`)
 
+### Screenshot tests
+
+Modules with the `custom-screenshot-testing` plugin get one Roborazzi test per `@Preview`, rendered on Robolectric (SDK 36, needs Java 21).
+Reference images are committed in `<module>/src/test/screenshots`.
+
+```bash
+./gradlew recordRoborazziDebug   # Record or update the reference images
+./gradlew verifyRoborazziDebug   # Fail when a screen differs from its reference
+```
+
 ## 🔧 Build Logic
 
 Custom Gradle convention plugins in `build-logic/convention/`:
@@ -199,6 +210,7 @@ Custom Gradle convention plugins in `build-logic/convention/`:
 | custom-hilt | Applies Hilt + KSP for dependency injection |
 | custom-room | Applies Room + KSP with schema export configuration |
 | custom-testing | Adds test dependencies (JUnit 5, MockK BDD, AssertJ, Turbine, Coroutines Test) |
+| custom-screenshot-testing | Generates Roborazzi screenshot tests from every `@Preview` of the module |
 | custom-code-coverage | Configures Kover for HTML + XML coverage reports |
 
 ## 🗺 TODOs

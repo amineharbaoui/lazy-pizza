@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.custom.android.module)
     alias(libs.plugins.custom.compose)
     alias(libs.plugins.custom.hilt)
+    alias(libs.plugins.custom.screenshot.testing)
     alias(libs.plugins.kotlin.serialization)
 }
 

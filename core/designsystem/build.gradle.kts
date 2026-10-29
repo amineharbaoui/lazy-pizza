@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.custom.android.module)
     alias(libs.plugins.custom.compose)
+    alias(libs.plugins.custom.screenshot.testing)
 }
 
 android {

@@ -5,11 +5,19 @@ plugins {
     `kotlin-dsl`
 }
 
+kotlin {
+    compilerOptions {
+        // Roborazzi is built with Kotlin 2.3, which the Kotlin 2.0 embedded in Gradle 8.13 can't read. The Gradle 9 upgrade removes it.
+        freeCompilerArgs.add("-Xskip-metadata-version-check")
+    }
+}
+
 dependencies {
     compileOnly(libs.android.gradle.plugin)
     compileOnly(libs.kotlin.gradle.plugin)
     compileOnly(libs.ksp.gradle.plugin)
     compileOnly(libs.room.gradle.plugin)
+    compileOnly(libs.roborazzi.gradle.plugin)
     implementation(libs.kover)
 
     gradle.serviceOf<DependenciesAccessors>().classes.asFiles.forEach {
@@ -42,6 +50,10 @@ gradlePlugin {
         register("Room") {
             id = libs.plugins.custom.room.get().pluginId
             implementationClass = "RoomConventionPlugin"
+        }
+        register("ScreenshotTest") {
+            id = libs.plugins.custom.screenshot.testing.get().pluginId
+            implementationClass = "ScreenshotTestConventionPlugin"
         }
         register("Test") {
             id = libs.plugins.custom.testing.get().pluginId

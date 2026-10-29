@@ -27,6 +27,12 @@ paths:
 - Each data module's `src/testFixtures/` has a public `<Feature>TestData`, written in domain types: it builds the module's repositories on its fakes, presets data and forces failures. A test never sees a DTO or an entity, and a constructor change is fixed in one place.
 - Given presets data in the fakes, starts collecting `uiState` with Turbine (`uiState.test { ... }`) and waits for the loaded state. A `WhileSubscribed` state only updates while something collects it, and a ViewModel may ignore input until it has loaded. When calls a ViewModel function inside that block, and Then asserts the next state.
 
+## Screenshot tests
+
+- In a module with `custom.screenshot.testing`, every `@Preview` is a screenshot test, generated at build time. Never write one by hand.
+- Its reference images are committed in the module's `src/test/screenshots/`. After a UI change, run `./gradlew :<module>:recordRoborazziDebug`, look at every image that changed, and commit the ones that show the intended change.
+- The generated tests are JUnit 4 and run on the JUnit Platform through the Vintage engine. Hand-written tests stay JUnit 6.
+
 ## Style
 
 - Name: `` `methodUnderTest when state or event then expected behavior` ``, in backticks, plain words, no underscores or punctuation. Verbs: returns, emits, shows, updates, navigates, throws. Example: `` `submitOrder when offline then shows offline error` ``.

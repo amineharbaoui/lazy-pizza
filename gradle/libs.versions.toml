@@ -58,8 +58,14 @@ kotlinSerialization = "1.9.25"
 # --- Testing ---
 assertJ = "3.27.6"
 junit = "6.0.2"
+junit4 = "4.13.2"
 mockk = "1.14.7"
 turbine = "1.2.1"
+
+# --- Screenshot testing ---
+composablePreviewScanner = "0.9.3"
+robolectric = "4.17"
+roborazzi = "1.77.0"
 
 # --- Tooling ---
 dependencyAnalysis = "3.5.1"
@@ -132,16 +138,27 @@ junit-jupiter = { module = "org.junit.jupiter:junit-jupiter", version.ref = "jun
 junit-jupiter-engine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "junit" }
 junit-params = { module = "org.junit.jupiter:junit-jupiter-params", version.ref = "junit" }
 junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher", version.ref = "junit" }
+junit-vintage-engine = { module = "org.junit.vintage:junit-vintage-engine", version.ref = "junit" }
+junit4 = { module = "junit:junit", version.ref = "junit4" }
 mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
 mockk-bdd = { module = "io.mockk:mockk-bdd", version.ref = "mockk" }
 turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine" }
 kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinxCoroutinesCore" }
+
+# --- Screenshot testing ---
+composable-preview-scanner = { module = "io.github.sergio-sastre.ComposablePreviewScanner:android", version.ref = "composablePreviewScanner" }
+robolectric = { module = "org.robolectric:robolectric", version.ref = "robolectric" }
+roborazzi = { module = "io.github.takahirom.roborazzi:roborazzi", version.ref = "roborazzi" }
+roborazzi-compose = { module = "io.github.takahirom.roborazzi:roborazzi-compose", version.ref = "roborazzi" }
+roborazzi-core = { module = "io.github.takahirom.roborazzi:roborazzi-core", version.ref = "roborazzi" }
+roborazzi-compose-preview-scanner-support = { module = "io.github.takahirom.roborazzi:roborazzi-compose-preview-scanner-support", version.ref = "roborazzi" }
 
 # --- Tooling / Gradle plugins as libs ---
 android-gradle-plugin = { module = "com.android.tools.build:gradle", version.ref = "agp" }
 kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 kover = { module = "org.jetbrains.kotlinx:kover-gradle-plugin", version.ref = "kover" }
 ksp-gradle-plugin = { module = "com.google.devtools.ksp:com.google.devtools.ksp.gradle.plugin", version.ref = "ksp" }
+roborazzi-gradle-plugin = { module = "io.github.takahirom.roborazzi:roborazzi-gradle-plugin", version.ref = "roborazzi" }
 
 
 [bundles]
@@ -179,6 +196,7 @@ firebase-crashlytics = { id = "com.google.firebase.crashlytics", version.ref = "
 dependency-analysis = { id = "com.autonomousapps.dependency-analysis", version.ref = "dependencyAnalysis" }
 kover = { id = "org.jetbrains.kotlinx.kover", version.ref = "kover" }
 ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlint" }
+roborazzi = { id = "io.github.takahirom.roborazzi", version.ref = "roborazzi" }
 
 # --- Convention plugins (no version here; provided by build-logic / included build) ---
 custom-android-application = { id = "custom-android-application" }
@@ -188,4 +206,5 @@ custom-compose = { id = "custom-compose" }
 custom-hilt = { id = "custom-hilt" }
 custom-kotlin-module = { id = "custom-kotlin-module" }
 custom-room = { id = "custom-room" }
+custom-screenshot-testing = { id = "custom-screenshot-testing" }
 custom-testing = { id = "custom-testing" }
