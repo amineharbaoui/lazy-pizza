@@ -17,6 +17,7 @@ LazyPizza is a showcase that mirrors a very large multi-module production app. T
 - All unit tests: `./gradlew unitTestAll`
 - One module: `./gradlew :features:cart:domain:test` (pure Kotlin module) or `./gradlew :features:cart:data:testDebugUnitTest` (Android module)
 - One test class: add `--tests "com.example.cart.domain.usecase.AddCartItemUseCaseTest"`
+- Screenshot tests: `./gradlew verifyRoborazziDebug` fails when a preview no longer matches its reference image; `./gradlew recordRoborazziDebug` re-records them
 - Build: `./gradlew assembleDebug`
 - Dependency health: `./gradlew buildHealth`
 
@@ -54,7 +55,7 @@ The project follows Clean Architecture strictly: dependencies point toward `:dom
 A change to Kotlin or Gradle code is done when:
 - it has its tests, and it follows this file and `.claude/rules/`
 - the Kotlin files it changes pass ktlint
-- `./gradlew unitTestAll assembleDebug` passes. Show the command and the end of its output.
+- `./gradlew unitTestAll verifyRoborazziDebug assembleDebug` passes. Show the command and the end of its output.
 
 ## Git
 
