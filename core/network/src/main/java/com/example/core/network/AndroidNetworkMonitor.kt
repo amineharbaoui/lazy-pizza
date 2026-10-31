@@ -70,11 +70,9 @@ private fun ConnectivityManager.isDeviceOnline(): Boolean = allNetworks.any { ne
     networkCapabilities.hasInternetValidated() && networkCapabilities.hasRealTransport()
 }
 
-private fun NetworkCapabilities.hasInternetValidated(): Boolean =
-    hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) &&
+private fun NetworkCapabilities.hasInternetValidated(): Boolean = hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) &&
     hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED)
 
-private fun NetworkCapabilities.hasRealTransport(): Boolean =
-    hasTransport(NetworkCapabilities.TRANSPORT_WIFI) ||
+private fun NetworkCapabilities.hasRealTransport(): Boolean = hasTransport(NetworkCapabilities.TRANSPORT_WIFI) ||
     hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) ||
     hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET)

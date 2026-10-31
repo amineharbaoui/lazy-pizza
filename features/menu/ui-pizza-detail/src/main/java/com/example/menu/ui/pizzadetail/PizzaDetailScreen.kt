@@ -35,6 +35,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -157,7 +158,7 @@ private fun PhoneDetailLayout(
             },
             painter = rememberImagePainterPreviewAware(
                 previewDrawableResId = R.drawable.pizza,
-                painterProvider = { rememberAsyncImagePainter(uiState.pizza.imageUrl) }
+                painterProvider = { rememberAsyncImagePainter(uiState.pizza.imageUrl) },
             ),
             contentDescription = null,
             contentScale = ContentScale.Fit,
@@ -198,6 +199,7 @@ private fun PhoneDetailLayout(
                 },
                 onClick = onAddToCartClick,
                 modifier = Modifier
+                    .testTag("pizza_detail_add_to_cart_button")
                     .fillMaxWidth()
                     .padding(bottom = 16.dp),
             )
@@ -296,6 +298,7 @@ private fun WideDetailLayout(
                 },
                 onClick = onAddToCartClick,
                 modifier = Modifier
+                    .testTag("pizza_detail_add_to_cart_button")
                     .fillMaxWidth()
                     .padding(bottom = 16.dp),
             )
@@ -364,7 +367,7 @@ private fun ExtraToppingsContent(
                 priceText = item.unitPriceFormatted,
                 image = rememberImagePainterPreviewAware(
                     previewDrawableResId = R.drawable.topping,
-                    painterProvider = { rememberAsyncImagePainter(item.imageUrl) }
+                    painterProvider = { rememberAsyncImagePainter(item.imageUrl) },
                 ),
                 quantity = qty,
                 onQuantityChange = { newQty ->

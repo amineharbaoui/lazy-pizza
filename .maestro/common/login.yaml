@@ -1,0 +1,14 @@
+# Signs in from the Orders tab with the Firebase test phone number and ends back on Orders.
+appId: com.example.lazypizza.debug
+tags:
+  - subflow
+---
+- tapOn:
+    id: "nav_orders"
+- tapOn:
+    id: "orders_sign_in_button"
+- runFlow: sign-in-with-test-phone.yaml
+- extendedWaitUntil:
+    notVisible:
+      id: "orders_sign_in_button"
+    timeout: 30000

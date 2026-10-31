@@ -5,6 +5,8 @@ plugins {
 
 android {
     namespace = "com.example.menu.data"
+
+    testFixtures { enable = true }
 }
 
 dependencies {
@@ -16,4 +18,8 @@ dependencies {
     implementation(libs.firebase.firestore)
 
     implementation(libs.androidx.annotation)
+
+    testFixturesImplementation(projects.features.menu.domain)
+    testFixturesImplementation(projects.core.model)
+    testFixturesImplementation(libs.kotlinx.coroutines.core)
 }
