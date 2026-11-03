@@ -15,17 +15,26 @@ jobs:
             - name: Checkout
               uses: actions/checkout@v6
 
-            - name: Set up JDK 17
+            - name: Set up JDK 21
               uses: actions/setup-java@v5
               with:
                   distribution: temurin
-                  java-version: 17
+                  java-version: 21
 
             - name: Setup Gradle
               uses: gradle/actions/setup-gradle@v5
 
-            - name: Run all unit tests
-              run: ./gradlew unitTestAll
+            - name: Run unit and screenshot tests
+              run: ./gradlew unitTestAll verifyRoborazziDebug
 
             - name: Assemble debug APK
               run: ./gradlew assembleDebug
+
+            - name: Upload screenshot diffs
+              if: failure()
+              uses: actions/upload-artifact@v4
+              with:
+                  name: roborazzi-diffs
+                  path: |
+                      **/build/outputs/roborazzi/
+                      **/build/test-results/roborazzi/

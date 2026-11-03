@@ -64,6 +64,7 @@ turbine = "1.2.1"
 
 # --- Screenshot testing ---
 composablePreviewScanner = "0.9.3"
+differ = "0.3.0"
 robolectric = "4.17"
 roborazzi = "1.77.0"
 
@@ -147,7 +148,9 @@ kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-t
 
 # --- Screenshot testing ---
 composable-preview-scanner = { module = "io.github.sergio-sastre.ComposablePreviewScanner:android", version.ref = "composablePreviewScanner" }
+differ = { module = "com.dropbox.differ:differ", version.ref = "differ" }
 robolectric = { module = "org.robolectric:robolectric", version.ref = "robolectric" }
+robolectric-annotations = { module = "org.robolectric:annotations", version.ref = "robolectric" }
 roborazzi = { module = "io.github.takahirom.roborazzi:roborazzi", version.ref = "roborazzi" }
 roborazzi-compose = { module = "io.github.takahirom.roborazzi:roborazzi-compose", version.ref = "roborazzi" }
 roborazzi-core = { module = "io.github.takahirom.roborazzi:roborazzi-core", version.ref = "roborazzi" }
