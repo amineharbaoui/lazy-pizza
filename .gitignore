@@ -15,6 +15,7 @@ local.properties
 .claude/settings.local.json
 .claude/spec-drafts/
 .claude/implement-drafts/
+.claude/worktrees/
 .maestro/.env.local
 
 # Android Studio generated files and folders
