@@ -7,11 +7,17 @@
       "Bash(git commit *)",
       "Bash(git fetch *)",
       "Bash(git switch *)",
+      "Bash(git reset --soft *)",
       "Bash(gh --version)",
       "Bash(gh auth status)",
       "Bash(gh issue view *)",
       "Bash(gh issue list *)",
       "Bash(gh pr view *)"
+    ],
+    "ask": [
+      "Bash(gh * --repo *)",
+      "Bash(gh * --repo=*)",
+      "Bash(gh * -R *)"
     ]
   },
   "hooks": {
