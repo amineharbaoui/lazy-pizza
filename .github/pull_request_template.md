@@ -1,8 +1,8 @@
-<!-- Fill every section. A section that doesn't apply says "None." -->
+<!-- Fill every section. A section that doesn't apply says "None." A PR does one thing: a refactor gets its own PR, merged before the feature that needs it. -->
 
 ## Spec
 
-<!-- "Closes #<issue>" for the spec issue, and one more line for each of its sub-issues. A change without a spec: what it fixes or improves, and why. -->
+<!-- "Closes #<issue>" for the spec issue, and one more line for each of its sub-issues. A change without a spec: what it fixes or improves, and why. A refactor done for a feature also says "Prepares #<issue>". -->
 
 ## What changed
 
@@ -30,7 +30,7 @@
 
 ## Follow-ups
 
-<!-- Problems seen but left for later, such as Code not to copy this PR didn't rewrite. -->
+<!-- Problems seen but left for later, such as Code not to copy or a refactor this PR didn't need. -->
 
 ## Verification
 
