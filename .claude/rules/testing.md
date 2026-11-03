@@ -33,6 +33,8 @@ paths:
 
 - In a module with `custom.screenshot.testing`, every `@Preview` is a screenshot test, generated at build time. Never write one by hand.
 - Its reference images are committed in the module's `src/test/screenshots/`. After a UI change, run `./gradlew :<module>:recordRoborazziDebug`, look at every image that changed, and commit the ones that show the intended change.
+- A PR lists every image it adds, changes or deletes under Changed screenshots. An image of a screen its spec doesn't name needs a reason there: it is often a change that leaked from shared code.
+- Renaming or deleting a preview leaves its old images behind. Delete them in the same PR.
 - The generated tests are JUnit 4 and run on the JUnit Platform through the Vintage engine. Hand-written tests stay JUnit 6.
 - A compare passes when at most 0.01% of the pixels differ: references are recorded on macOS, and Linux CI anti-aliases a few pixels differently. PR Check runs `verifyRoborazziDebug` and uploads the diffs when it fails.
 

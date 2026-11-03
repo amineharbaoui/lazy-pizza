@@ -34,6 +34,7 @@ paths:
 - A component that a second screen needs moves to `:core:designsystem`. It stays stateless: state in, callbacks out, no ViewModel and no navigation.
 - Screens work on phone and tablet (`isWideLayout()`), in light and dark mode.
 - Each screen state has a preview: `@PreviewPhoneTablet`, wrapped in `LazyPizzaThemePreview`, with fake display models. Network images go through `rememberImagePainterPreviewAware`.
+- A preview draws the same image on every machine and every run, because it is a screenshot test. Its display models carry their texts already formatted, so no time zone or locale changes them. It never reads the current time or a random value.
 
 ## Accessibility
 
