@@ -1,4 +1,19 @@
 {
+  "permissions": {
+    "allow": [
+      "Bash(./gradlew *)",
+      "Bash(ktlint *)",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(git fetch *)",
+      "Bash(git switch *)",
+      "Bash(gh --version)",
+      "Bash(gh auth status)",
+      "Bash(gh issue view *)",
+      "Bash(gh issue list *)",
+      "Bash(gh pr view *)"
+    ]
+  },
   "hooks": {
     "PostToolUse": [
       {
