@@ -40,6 +40,6 @@ paths:
 
 ## Code not to copy
 
-- Most modules don't apply `custom.testing` yet, including every `:ui-*` module except `:ui-login`. Add it with the module's first test.
+- Most modules don't apply `custom.testing` yet, including every `:ui-*` module except `:ui-login`. Add it with the module's first hand-written test: the generated screenshot tests don't need it.
 - `:features:cart:data` depends on Firebase Firestore without using it.
 - `:ui-past-orders` has namespace `com.example.order.checkout.ui.pastorders` and its sources live in `com.example.checkout.order.ui.pastorders`; both should be `com.example.order.ui.pastorders`. Until that is fixed it doesn't apply `custom.screenshot.testing`, which scans the namespace for previews.

@@ -135,7 +135,7 @@ VM -->|"Uses"| UC
 
 1. **Prerequisites:**
     - Android Studio
-    - JDK 17+
+    - JDK 21 (screenshot tests run on Java 21)
 
 2. **Clone & Run:**
     ```bash

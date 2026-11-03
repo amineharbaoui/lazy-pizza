@@ -5,6 +5,8 @@ import com.github.takahirom.roborazzi.ComposePreviewTester
 import com.github.takahirom.roborazzi.ComposePreviewTester.TestParameter.JUnit4TestParameter.AndroidPreviewJUnit4TestParameter
 import com.github.takahirom.roborazzi.ExperimentalRoborazziApi
 import com.github.takahirom.roborazzi.InternalRoborazziApi
+import com.github.takahirom.roborazzi.RoborazziOptions
+import com.github.takahirom.roborazzi.ThresholdValidator
 import com.github.takahirom.roborazzi.inspectionMode
 
 /**
@@ -16,8 +18,17 @@ class InspectionModePreviewTester :
     ComposePreviewTester<AndroidPreviewJUnit4TestParameter> by AndroidComposePreviewTester(
         capturer = object : AndroidComposePreviewTester.Capturer {
             override fun capture(parameter: AndroidComposePreviewTester.CaptureParameter) {
-                val options = parameter.roborazziComposeOptions.builder().inspectionMode(true).build()
-                AndroidComposePreviewTester.DefaultCapturer().capture(parameter.copy(roborazziComposeOptions = options))
+                val composeOptions = parameter.roborazziComposeOptions.builder().inspectionMode(true).build()
+                val compareOptions = RoborazziOptions.CompareOptions(resultValidator = ThresholdValidator(CROSS_PLATFORM_THRESHOLD))
+                AndroidComposePreviewTester.DefaultCapturer().capture(
+                    parameter.copy(
+                        roborazziComposeOptions = composeOptions,
+                        roborazziOptions = parameter.roborazziOptions.copy(compareOptions = compareOptions),
+                    ),
+                )
             }
         },
     )
+
+// Share of pixels allowed to differ: references are recorded on macOS, and Linux CI anti-aliases a few pixels differently.
+private const val CROSS_PLATFORM_THRESHOLD = 0.0001f

@@ -5,33 +5,18 @@ import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 
 @Preview(
-    name = "P1 - Phone",
+    name = "Phone",
     device = Devices.PHONE,
     showBackground = true,
 )
 @Preview(
-    name = "P1 - Phone",
-    device = "id:small_phone",
-    showBackground = true,
-)
-@Preview(
-    name = "P1 - Phone (Dark)",
+    name = "Phone - Dark",
     device = Devices.PHONE,
     uiMode = Configuration.UI_MODE_NIGHT_YES,
     showBackground = true,
 )
 @Preview(
-    name = "P2 - Tablet",
-    device = "spec:width=1280dp,height=800dp,dpi=240,orientation=portrait",
-    showBackground = true,
-)
-@Preview(
-    name = "P3 - Phone - Landscape",
-    device = "spec:width=411dp,height=891dp,orientation=landscape,dpi=420",
-    showBackground = true,
-)
-@Preview(
-    name = "P4 - Tablet - Landscape",
+    name = "Tablet - Landscape",
     device = "spec:width=1280dp,height=800dp,dpi=240",
     showBackground = true,
 )
