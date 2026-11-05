@@ -17,7 +17,8 @@
     "ask": [
       "Bash(gh * --repo *)",
       "Bash(gh * --repo=*)",
-      "Bash(gh * -R *)"
+      "Bash(gh * -R*)",
+      "Bash(gh * *://*)"
     ]
   },
   "hooks": {
