@@ -3,22 +3,46 @@
     "allow": [
       "Bash(./gradlew *)",
       "Bash(ktlint *)",
+      "Bash(git status *)",
+      "Bash(git diff *)",
+      "Bash(git log *)",
+      "Bash(git show *)",
       "Bash(git add *)",
       "Bash(git commit *)",
       "Bash(git fetch *)",
       "Bash(git switch *)",
       "Bash(git reset --soft *)",
+      "Bash(git merge --ff-only origin/main)",
+      "Bash(git rebase origin/main)",
+      "Bash(git worktree list *)",
+      "Bash(git worktree add *)",
       "Bash(gh --version)",
       "Bash(gh auth status)",
       "Bash(gh issue view *)",
       "Bash(gh issue list *)",
-      "Bash(gh pr view *)"
+      "Bash(gh pr view *)",
+      "Bash(gh pr list *)",
+      "Bash(gh api repos/{owner}/{repo}/*)",
+      "Bash(gh api --paginate repos/{owner}/{repo}/*)",
+      "Bash(cp *local.properties *.claude/worktrees/*)",
+      "Bash(mkdir -p *)",
+      "Bash(basename *)",
+      "Bash(open *.png)",
+      "Bash(open *.svg)"
     ],
     "ask": [
       "Bash(gh * --repo *)",
       "Bash(gh * --repo=*)",
       "Bash(gh * -R*)",
-      "Bash(gh * *://*)"
+      "Bash(gh * *://*)",
+      "Bash(gh api * -X*)",
+      "Bash(gh api * --method*)",
+      "Bash(gh api * -f*)",
+      "Bash(gh api * -F*)",
+      "Bash(gh api * --field*)",
+      "Bash(gh api * --raw-field*)",
+      "Bash(gh api * --input*)",
+      "Bash(open *://*)"
     ]
   },
   "hooks": {
