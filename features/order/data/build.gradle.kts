@@ -5,6 +5,8 @@ plugins {
 
 android {
     namespace = "com.example.order.data"
+
+    testFixtures { enable = true }
 }
 
 dependencies {
@@ -13,4 +15,8 @@ dependencies {
 
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.firestore)
+
+    testFixturesImplementation(projects.features.order.domain)
+    testFixturesImplementation(projects.core.model)
+    testFixturesImplementation(libs.kotlinx.coroutines.core)
 }

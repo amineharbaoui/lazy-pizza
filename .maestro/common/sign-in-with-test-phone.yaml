@@ -1,0 +1,27 @@
+# From the phone sign-in screen, signs in with the Firebase test phone number (no real SMS).
+appId: com.example.lazypizza.debug
+tags:
+  - subflow
+---
+- tapOn:
+    id: "auth_phone_input"
+- inputText: "1111111111"
+- hideKeyboard
+- tapOn:
+    id: "auth_continue_button"
+- extendedWaitUntil:
+    visible:
+      id: "auth_code_input"
+    timeout: 30000
+# The code field gets focus slightly after it appears; tap it so typing goes in.
+- tapOn:
+    id: "auth_code_input"
+- inputText: "111111"
+# Entering the 6th digit submits on its own; tap Confirm only if it's still there.
+- tapOn:
+    id: "auth_confirm_button"
+    optional: true
+- extendedWaitUntil:
+    notVisible:
+      id: "auth_code_input"
+    timeout: 30000

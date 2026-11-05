@@ -6,6 +6,8 @@ plugins {
 
 android {
     namespace = "com.example.auth.data"
+
+    testFixtures { enable = true }
 }
 
 dependencies {
@@ -14,4 +16,7 @@ dependencies {
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.auth)
     implementation(libs.play.services.auth)
+
+    testFixturesImplementation(projects.features.auth.domain)
+    testFixturesImplementation(libs.kotlinx.coroutines.core)
 }

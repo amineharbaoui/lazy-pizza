@@ -18,6 +18,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -123,6 +124,7 @@ fun OrderDetails(
                         color = AppColors.TextSecondary,
                     )
                     Text(
+                        modifier = Modifier.testTag("confirmation_order_number"),
                         text = orderNumber,
                         style = AppTypography.Label2SemiBold,
                         color = AppColors.TextPrimary,
@@ -149,7 +151,9 @@ fun OrderDetails(
         DsButton.Text(
             text = "Back to Menu",
             onClick = onBackToMenuClick,
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .testTag("confirmation_back_to_menu_button"),
         )
     }
 }

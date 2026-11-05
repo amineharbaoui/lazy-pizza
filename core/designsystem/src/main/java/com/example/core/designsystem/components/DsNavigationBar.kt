@@ -20,7 +20,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -57,6 +56,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -186,7 +186,9 @@ object DsNavigationBar {
                         durationMs = durationMs,
                         moveSpec = moveSpec,
                         onClick = { if (!item.isSelected) item.onClick() },
-                        modifier = Modifier.weight(1f),
+                        modifier = Modifier
+                            .weight(1f)
+                            .testTag("nav_${item.label.lowercase()}"),
                     )
                 }
             }
@@ -345,6 +347,7 @@ object DsNavigationBar {
             ) {
                 menuItems.forEach { item ->
                     NavigationRailItem(
+                        modifier = Modifier.testTag("nav_${item.label.lowercase()}"),
                         selected = item.isSelected,
                         onClick = { if (!item.isSelected) item.onClick() },
                         icon = { NavIcon(item.icon, item.label, item.badgeCount) },

@@ -46,18 +46,19 @@ class CartToOrderMapper @Inject constructor() {
         )
     }
 
-    private fun mapPickupDetails(checkout: CheckoutUiState.ReadyToOrder): Pair<PickupType, Instant> = when (checkout.pickup.selectedOption) {
-        PickupOption.ASAP -> {
-            val pickupAt = computeAsapPickupInstant()
-            PickupType.ASAP to pickupAt
-        }
+    private fun mapPickupDetails(checkout: CheckoutUiState.ReadyToOrder): Pair<PickupType, Instant> =
+        when (checkout.pickup.selectedOption) {
+            PickupOption.ASAP -> {
+                val pickupAt = computeAsapPickupInstant()
+                PickupType.ASAP to pickupAt
+            }
 
-        PickupOption.SCHEDULE -> {
-            val (dayId, slotId) = resolveScheduledSelection(checkout)
-            val pickupAt = toInstant(dayId = dayId, timeSlotId = slotId)
-            PickupType.SCHEDULED to pickupAt
+            PickupOption.SCHEDULE -> {
+                val (dayId, slotId) = resolveScheduledSelection(checkout)
+                val pickupAt = toInstant(dayId = dayId, timeSlotId = slotId)
+                PickupType.SCHEDULED to pickupAt
+            }
         }
-    }
 
     /**
      * Uses confirmation if present, else uses current selection.

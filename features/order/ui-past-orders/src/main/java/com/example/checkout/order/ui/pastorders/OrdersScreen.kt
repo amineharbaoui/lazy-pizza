@@ -1,8 +1,10 @@
 package com.example.checkout.order.ui.pastorders
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
@@ -21,13 +23,18 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults.windowInsets
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -36,6 +43,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.core.designsystem.R
 import com.example.core.designsystem.components.DsButton
+import com.example.core.designsystem.components.DsDialog
 import com.example.core.designsystem.components.DsTopBar
 import com.example.core.designsystem.theme.AppColors
 import com.example.core.designsystem.theme.AppTypography
@@ -43,40 +51,180 @@ import com.example.core.designsystem.theme.LazyPizzaThemePreview
 import com.example.core.designsystem.utils.PreviewPhoneTablet
 import com.example.core.designsystem.utils.isWideLayout
 import com.example.core.model.OrderStatus
+import kotlinx.coroutines.launch
 
 @Composable
 fun OrdersScreen(
     innerPadding: PaddingValues,
     onSignInClick: () -> Unit,
+    onNavigateToCart: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: OrdersViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val snackbarHostState = remember { SnackbarHostState() }
+    val menuUnavailableMessage = stringResource(com.example.order.checkout.ui.pastorders.R.string.order_again_error_menu_unavailable)
+    val cartUpdateFailedMessage = stringResource(com.example.order.checkout.ui.pastorders.R.string.order_again_error_cart_update_failed)
 
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .padding(bottom = innerPadding.calculateBottomPadding())
-            .windowInsetsPadding(windowInsets.only(WindowInsetsSides.Right)),
-    ) {
-        DsTopBar.Secondary(title = stringResource(R.string.orders))
-        when (val state = uiState) {
-            OrderUiState.Loading -> { }
-
-            OrderUiState.NotLoggedIn -> NotLoggedInState(onSignInClick = onSignInClick)
-
-            is OrderUiState.Ready -> {
-                OrderScreenContent(orders = state.orders)
+    LaunchedEffect(viewModel) {
+        viewModel.events.collect { event ->
+            when (event) {
+                OrdersUiEvent.NavigateToCart -> onNavigateToCart()
+                // Launched so a showing snackbar never holds back the next event, such as NavigateToCart.
+                is OrdersUiEvent.ShowOrderAgainError -> launch {
+                    snackbarHostState.currentSnackbarData?.dismiss()
+                    snackbarHostState.showSnackbar(
+                        when (event.error) {
+                            OrderAgainErrorUi.MENU_UNAVAILABLE -> menuUnavailableMessage
+                            OrderAgainErrorUi.CART_UPDATE_FAILED -> cartUpdateFailedMessage
+                        },
+                    )
+                }
             }
-
-            is OrderUiState.Error -> ErrorState(state.message)
         }
+    }
+
+    OrdersScreenContent(
+        uiState = uiState,
+        snackbarHostState = snackbarHostState,
+        onSignInClick = onSignInClick,
+        onOrderAgainClick = viewModel::orderAgain,
+        onGoToCartClick = viewModel::goToCartFromSkippedItems,
+        onDismissOrderAgainDialog = viewModel::dismissOrderAgainDialog,
+        modifier = modifier.padding(bottom = innerPadding.calculateBottomPadding()),
+    )
+}
+
+@Composable
+private fun OrdersScreenContent(
+    uiState: OrderUiState,
+    snackbarHostState: SnackbarHostState,
+    onSignInClick: () -> Unit,
+    onOrderAgainClick: (orderNumber: String) -> Unit,
+    onGoToCartClick: () -> Unit,
+    onDismissOrderAgainDialog: () -> Unit,
+    modifier: Modifier = Modifier,
+    isDialogInline: Boolean = false,
+) {
+    Box(modifier = modifier.fillMaxSize()) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .windowInsetsPadding(windowInsets.only(WindowInsetsSides.Right)),
+        ) {
+            DsTopBar.Secondary(title = stringResource(R.string.orders))
+            when (uiState) {
+                OrderUiState.Loading -> { }
+
+                OrderUiState.NotLoggedIn -> NotLoggedInState(onSignInClick = onSignInClick)
+
+                is OrderUiState.Ready -> OrderList(
+                    orders = uiState.orders,
+                    isOrderAgainEnabled = uiState.orderAgain == OrderAgainUiState.Idle,
+                    onOrderAgainClick = onOrderAgainClick,
+                )
+
+                is OrderUiState.Error -> ErrorState(uiState.message)
+            }
+        }
+
+        (uiState as? OrderUiState.Ready)?.orderAgain?.let { orderAgain ->
+            OrderAgainDialog(
+                orderAgain = orderAgain,
+                isInline = isDialogInline,
+                onGoToCartClick = onGoToCartClick,
+                onDismiss = onDismissOrderAgainDialog,
+            )
+        }
+
+        SnackbarHost(
+            hostState = snackbarHostState,
+            modifier = Modifier.align(Alignment.BottomCenter),
+        )
     }
 }
 
 @Composable
-private fun OrderScreenContent(
+private fun BoxScope.OrderAgainDialog(
+    orderAgain: OrderAgainUiState,
+    isInline: Boolean,
+    onGoToCartClick: () -> Unit,
+    onDismiss: () -> Unit,
+) {
+    val (title, skippedItems, hasAddedItems) = when (orderAgain) {
+        is OrderAgainUiState.SomeSkipped -> Triple(
+            com.example.order.checkout.ui.pastorders.R.string.order_again_some_skipped_title,
+            orderAgain.skippedItems,
+            true,
+        )
+        is OrderAgainUiState.NothingAvailable -> Triple(
+            com.example.order.checkout.ui.pastorders.R.string.order_again_nothing_available_title,
+            orderAgain.skippedItems,
+            false,
+        )
+        OrderAgainUiState.Idle, OrderAgainUiState.InProgress -> return
+    }
+    val titleText = stringResource(title)
+    val message = skippedItems.map { skippedItemLabel(it) }.joinToString(separator = "\n")
+    val closeText = stringResource(com.example.order.checkout.ui.pastorders.R.string.order_again_close)
+    val primaryText = if (hasAddedItems) {
+        stringResource(
+            com.example.order.checkout.ui.pastorders.R.string.order_again_go_to_cart,
+        )
+    } else {
+        closeText
+    }
+    val onPrimaryClick = if (hasAddedItems) onGoToCartClick else onDismiss
+
+    if (isInline) {
+        // Dialog windows are invisible to screenshot capture, so previews draw the surface in place.
+        Box(
+            Modifier
+                .matchParentSize()
+                .background(Color.Black.copy(alpha = DIALOG_SCRIM_ALPHA)),
+        )
+        DsDialog.ConfirmContent(
+            title = titleText,
+            message = message,
+            primaryButtonText = primaryText,
+            onPrimaryClick = onPrimaryClick,
+            onSecondaryClick = onDismiss,
+            secondaryButtonText = closeText,
+            showSecondaryButton = hasAddedItems,
+            modifier = Modifier
+                .align(Alignment.Center)
+                .padding(24.dp),
+        )
+    } else {
+        DsDialog.Confirm(
+            title = titleText,
+            message = message,
+            primaryButtonText = primaryText,
+            onPrimaryClick = onPrimaryClick,
+            onDismissRequest = onDismiss,
+            secondaryButtonText = closeText,
+            showSecondaryButton = hasAddedItems,
+        )
+    }
+}
+
+private const val DIALOG_SCRIM_ALPHA = 0.32f
+
+@Composable
+private fun skippedItemLabel(item: SkippedItemUi): String = when (item) {
+    is SkippedItemUi.Product -> item.name
+    is SkippedItemUi.Topping -> stringResource(
+        com.example.order.checkout.ui.pastorders.R.string.order_again_skipped_topping,
+        item.toppingName,
+        item.pizzaName,
+    )
+}
+
+@Composable
+private fun OrderList(
     orders: List<OrderUi>,
+    isOrderAgainEnabled: Boolean,
+    onOrderAgainClick: (orderNumber: String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val isEmpty = orders.isEmpty()
@@ -107,7 +255,11 @@ private fun OrderScreenContent(
                         key = { it.orderNumberLabel },
                         contentType = { "OrderCard" },
                     ) { orderUi ->
-                        OrderCard(orderUi = orderUi)
+                        OrderCard(
+                            orderUi = orderUi,
+                            isOrderAgainEnabled = isOrderAgainEnabled,
+                            onOrderAgainClick = { onOrderAgainClick(orderUi.orderNumber) },
+                        )
                     }
                 }
             }
@@ -127,7 +279,11 @@ private fun OrderScreenContent(
                         key = { it.orderNumberLabel },
                         contentType = { "OrderCard" },
                     ) { orderUi ->
-                        OrderCard(orderUi = orderUi)
+                        OrderCard(
+                            orderUi = orderUi,
+                            isOrderAgainEnabled = isOrderAgainEnabled,
+                            onOrderAgainClick = { onOrderAgainClick(orderUi.orderNumber) },
+                        )
                     }
                 }
                 item(contentType = "BottomSpacer") { Spacer(Modifier.height(24.dp)) }
@@ -168,6 +324,7 @@ private fun NotLoggedInState(
         DsButton.Filled(
             text = stringResource(com.example.order.checkout.ui.pastorders.R.string.sign_in),
             onClick = onSignInClick,
+            modifier = Modifier.testTag("orders_sign_in_button"),
         )
     }
 }
@@ -227,77 +384,86 @@ private fun ErrorState(errorMessage: String) {
     }
 }
 
-@PreviewPhoneTablet
+private val previewOrders = listOf(
+    OrderUi(
+        orderNumber = "123",
+        orderNumberLabel = "Order #123",
+        dateTimeLabel = "September 25, 12:15",
+        items = listOf(
+            OrderItem(
+                name = "1 x Margherita",
+                toppings = listOf(),
+            ),
+            OrderItem(
+                name = "1 x Margherita",
+                toppings = listOf(
+                    "1 x Extra cheese",
+                    "2 x Pepperoni",
+                ),
+            ),
+        ),
+        totalAmountLabel = "$25.45",
+        status = OrderStatus.COMPLETED,
+    ),
+    OrderUi(
+        orderNumber = "1234",
+        orderNumberLabel = "Order #1234",
+        dateTimeLabel = "September 25, 12:15",
+        items = listOf(
+            OrderItem(
+                name = "1 x Margherita",
+                toppings = listOf(
+                    "1 x Extra cheese",
+                    "2 x Pepperoni",
+                ),
+            ),
+            OrderItem(
+                name = "1 x Margherita",
+                toppings = listOf(
+                    "1 x Extra cheese",
+                    "2 x Pepperoni",
+                ),
+            ),
+        ),
+        totalAmountLabel = "$25.45",
+        status = OrderStatus.IN_PROGRESS,
+    ),
+    OrderUi(
+        orderNumber = "12346",
+        orderNumberLabel = "Order #12346",
+        dateTimeLabel = "September 25, 12:15",
+        items = listOf(
+            OrderItem(
+                name = "1 x Margherita",
+                toppings = listOf(
+                    "1 x Extra cheese",
+                    "2 x Pepperoni",
+                ),
+            ),
+            OrderItem(
+                name = "1 x Margherita",
+                toppings = listOf(
+                    "1 x Extra cheese",
+                    "2 x Pepperoni",
+                ),
+            ),
+        ),
+        totalAmountLabel = "$25.45",
+        status = OrderStatus.CANCELED,
+    ),
+)
+
 @Composable
-private fun OrderScreenContentPreview() {
-    val orders = listOf(
-        OrderUi(
-            orderNumberLabel = "Order #123",
-            dateTimeLabel = "September 25, 12:15",
-            items = listOf(
-                OrderItem(
-                    name = "1 x Margherita",
-                    toppings = listOf(),
-                ),
-                OrderItem(
-                    name = "1 x Margherita",
-                    toppings = listOf(
-                        "1 x Extra cheese",
-                        "2 x Pepperoni",
-                    ),
-                ),
-            ),
-            totalAmountLabel = "$25.45",
-            status = OrderStatus.COMPLETED,
-        ),
-        OrderUi(
-            orderNumberLabel = "Order #1234",
-            dateTimeLabel = "September 25, 12:15",
-            items = listOf(
-                OrderItem(
-                    name = "1 x Margherita",
-                    toppings = listOf(
-                        "1 x Extra cheese",
-                        "2 x Pepperoni",
-                    ),
-                ),
-                OrderItem(
-                    name = "1 x Margherita",
-                    toppings = listOf(
-                        "1 x Extra cheese",
-                        "2 x Pepperoni",
-                    ),
-                ),
-            ),
-            totalAmountLabel = "$25.45",
-            status = OrderStatus.IN_PROGRESS,
-        ),
-        OrderUi(
-            orderNumberLabel = "Order #12346",
-            dateTimeLabel = "September 25, 12:15",
-            items = listOf(
-                OrderItem(
-                    name = "1 x Margherita",
-                    toppings = listOf(
-                        "1 x Extra cheese",
-                        "2 x Pepperoni",
-                    ),
-                ),
-                OrderItem(
-                    name = "1 x Margherita",
-                    toppings = listOf(
-                        "1 x Extra cheese",
-                        "2 x Pepperoni",
-                    ),
-                ),
-            ),
-            totalAmountLabel = "$25.45",
-            status = OrderStatus.CANCELED,
-        ),
-    )
+private fun OrdersScreenPreview(uiState: OrderUiState) {
     LazyPizzaThemePreview {
-        OrderScreenContent(
-            orders = orders,
+        OrdersScreenContent(
+            uiState = uiState,
+            snackbarHostState = remember { SnackbarHostState() },
+            onSignInClick = {},
+            onOrderAgainClick = {},
+            onGoToCartClick = {},
+            onDismissOrderAgainDialog = {},
+            isDialogInline = true,
         )
     }
 }
@@ -305,23 +471,54 @@ private fun OrderScreenContentPreview() {
 @PreviewPhoneTablet
 @Composable
 private fun EmptyOrderStatePreview() {
-    LazyPizzaThemePreview {
-        NoOrders()
-    }
+    OrdersScreenPreview(OrderUiState.Ready(orders = emptyList()))
 }
 
 @PreviewPhoneTablet
 @Composable
-private fun ErrorCartPreview() {
-    LazyPizzaThemePreview {
-        ErrorState("An error occurred while loading orders.")
-    }
+private fun ErrorStatePreview() {
+    OrdersScreenPreview(OrderUiState.Error("An error occurred while loading orders."))
 }
 
-@PreviewPhoneTablet
+// Screenshot previews for the order-again scenarios, captured by OrdersScreenScreenshotTest.
+
+@Preview
 @Composable
-private fun NotLoggedInStatePreview() {
-    LazyPizzaThemePreview {
-        NotLoggedInState(onSignInClick = {})
-    }
+internal fun OrdersScreenReadyMixedStatusesPreview() {
+    OrdersScreenPreview(OrderUiState.Ready(orders = previewOrders))
+}
+
+@Preview
+@Composable
+internal fun OrdersScreenNotLoggedInPreview() {
+    OrdersScreenPreview(OrderUiState.NotLoggedIn)
+}
+
+@Preview
+@Composable
+internal fun OrdersScreenSomeSkippedDialogPreview() {
+    OrdersScreenPreview(
+        OrderUiState.Ready(
+            orders = previewOrders,
+            orderAgain = OrderAgainUiState.SomeSkipped(
+                skippedItems = listOf(
+                    SkippedItemUi.Product(name = "Lemonade"),
+                    SkippedItemUi.Topping(toppingName = "Truffle", pizzaName = "Margherita"),
+                ),
+            ),
+        ),
+    )
+}
+
+@Preview
+@Composable
+internal fun OrdersScreenNothingAvailableDialogPreview() {
+    OrdersScreenPreview(
+        OrderUiState.Ready(
+            orders = previewOrders,
+            orderAgain = OrderAgainUiState.NothingAvailable(
+                skippedItems = listOf(SkippedItemUi.Product(name = "Lemonade")),
+            ),
+        ),
+    )
 }

@@ -8,7 +8,10 @@ import javax.inject.Inject
 
 class CartDomainToEntityMapper @Inject constructor() {
 
-    fun mapItem(input: CartItem, ownerKey: String): CartItemEntity = when (input) {
+    fun mapItem(
+        input: CartItem,
+        ownerKey: String,
+    ): CartItemEntity = when (input) {
         is CartItem.Other -> CartItemEntity(
             ownerKey = ownerKey,
             lineId = input.lineId,

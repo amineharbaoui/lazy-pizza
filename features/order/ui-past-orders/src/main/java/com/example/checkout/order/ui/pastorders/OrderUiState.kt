@@ -7,6 +7,7 @@ sealed interface OrderUiState {
     object NotLoggedIn : OrderUiState
     data class Ready(
         val orders: List<OrderUi>,
+        val orderAgain: OrderAgainUiState = OrderAgainUiState.Idle,
     ) : OrderUiState
 
     data class Error(
@@ -15,6 +16,7 @@ sealed interface OrderUiState {
 }
 
 data class OrderUi(
+    val orderNumber: String,
     val orderNumberLabel: String,
     val dateTimeLabel: String,
     val items: List<OrderItem>,

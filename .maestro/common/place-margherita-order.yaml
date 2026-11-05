@@ -1,0 +1,27 @@
+# Adds 1 x Margherita, checks out ASAP, waits for the confirmation and returns to Menu. Leaves the cart empty.
+appId: com.example.lazypizza.debug
+tags:
+  - subflow
+---
+- tapOn:
+    id: "nav_menu"
+- scrollUntilVisible:
+    element:
+      id: "product_card_Margherita"
+    direction: DOWN
+- tapOn:
+    id: "product_card_Margherita"
+- tapOn:
+    id: "pizza_detail_add_to_cart_button"
+- tapOn:
+    id: "nav_cart"
+- tapOn:
+    id: "cart_checkout_button"
+- tapOn:
+    id: "checkout_place_order_button"
+- extendedWaitUntil:
+    visible:
+      id: "confirmation_order_number"
+    timeout: 30000
+- tapOn:
+    id: "confirmation_back_to_menu_button"

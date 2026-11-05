@@ -5,4 +5,12 @@
     <string name="not_signed_in_message">Please sign in to view your order history.</string>
     <string name="not_signed_in_image_description">Not Signed In</string>
     <string name="sign_in">Sign In</string>
+    <string name="order_again">Order again</string>
+    <string name="order_again_some_skipped_title">Some items are no longer available</string>
+    <string name="order_again_nothing_available_title">None of these items are on the menu anymore</string>
+    <string name="order_again_go_to_cart">Go to cart</string>
+    <string name="order_again_close">Close</string>
+    <string name="order_again_skipped_topping">%1$s on %2$s</string>
+    <string name="order_again_error_menu_unavailable">Couldn\'t load the menu. Please try again.</string>
+    <string name="order_again_error_cart_update_failed">Couldn\'t update your cart. Please try again.</string>
 </resources>
