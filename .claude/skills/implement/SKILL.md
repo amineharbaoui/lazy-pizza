@@ -50,7 +50,7 @@ Keep your notes in `.claude/implement-drafts/<issue>/`, inside the issue's workt
 
 Do all the work in a git worktree, one per issue, under `.claude/worktrees/`. The developer's own checkout, its branch and its uncommitted changes stay untouched, and they can keep working while you build.
 
-- If `git worktree list` shows `.claude/worktrees/<issue>`, enter it with `EnterWorktree` and its path, read `plan.md`, and continue from the first step not done. When its Refactors list PRs, first check they're merged, as step 3 says for the next run. If its branch has an open PR, see "After the PR".
+- If `git worktree list` shows `.claude/worktrees/<issue>`, enter it with `EnterWorktree` and its path, and read `plan.md`. Compare the issue and sub-issue bodies you just read with `spec.md`. When they differ, tell the developer which rules, scenarios or screens changed, save the new bodies in `spec.md`, update `plan.md`, and redo any step already done that the change affects, such as the UI checkpoint when a screen changed. When its Refactors list PRs, first check they're merged, as step 3 says for the next run. Then continue from the first step not done. If its branch has an open PR, see "After the PR".
 - Otherwise create it on a new feature branch from the latest main, and copy `local.properties` into it: it isn't in git, and it tells Gradle where the Android SDK is. Leave out the `cp` when the checkout has no `local.properties`.
 
   ```bash
@@ -115,7 +115,7 @@ When the spec's UI section is `None.`, go to step 5.
 
 1. Write the tests the plan lists, following `.claude/rules/testing.md`. Each acceptance test runs the real chain, built from the data modules' `<Feature>TestData`, and checks one behavior. A scenario's Then becomes its test's assertions, with the spec's exact values and texts. Test names describe the behavior, never a scenario number: the PR maps scenarios to tests.
 2. Add only the stubs the tests need to compile: new ViewModel functions, use case and repository signatures, UI state fields. A stub does nothing or returns a fixed value, never the behavior and never `TODO()`.
-3. Run the new test classes: `./gradlew :<module>:testDebugUnitTest --tests "<class>"`. Every new test must fail on an assertion. A test that already passes doesn't check the new behavior: fix it. A test that fails with an exception: fix the stub or the test setup.
+3. Run the new test classes: `./gradlew :<module>:testDebugUnitTest --tests "<class>"` in an Android module, or `./gradlew :<module>:test --tests "<class>"` in a pure Kotlin module such as a `:domain`. Every new test must fail on an assertion. A test that already passes doesn't check the new behavior: fix it. A test that fails with an exception: fix the stub or the test setup.
 4. Commit the tests and stubs as a local checkpoint, never pushed: `test: checkpoint for #<issue>`. Write its hash in `plan.md`.
 
 ### 6. Build
@@ -164,7 +164,7 @@ After changes, run step 7's checks again, rewrite the review files, and run the 
 
 ### 9. Pull request
 
-When `origin` already has the branch, an earlier run folded and pushed it: go to 3.
+When `origin` already has the branch, an earlier run folded and pushed it. When `git status --porcelain` shows changes, run step 7's checks, commit the changes and push them with `git push -u origin <branch>`. Then go to 3.
 
 1. Fold the test checkpoint into the rest of the work, so every pushed commit compiles and passes: `git reset --soft <checkpoint>~1`, then `git add -A` and commit, for example `feat: reorder a past order (#73)`.
 2. Push the branch by name: `git push -u origin <branch>`. Never push `main`, never force-push.
