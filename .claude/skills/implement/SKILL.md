@@ -106,7 +106,13 @@ When the spec's UI section is `None.`, go to step 5.
 1. Build each screen the spec names, following `.claude/rules/ui.md`: its UI state, display models, the texts in `strings.xml`, and the stateless `<Name>ScreenContent` with its callbacks. Add one preview per state the spec lists, with fake display models and the spec's exact texts. A new `:ui-<screen>` module is created now, as `.claude/rules/gradle.md` says. Write no ViewModel logic, use case or data change yet: the `<Name>Screen` may pass empty callbacks until step 6.
 2. Record every module you touched, in one command: `./gradlew :<module>:recordRoborazziDebug :<other module>:recordRoborazziDebug`.
 3. List the images that changed with `git status --porcelain -uall -- '*/src/test/screenshots/*'`: `??` is new, `M` is changed. Look at each one yourself first with Read. Fix any text that differs from the spec, any clipped text and any broken layout, then record again.
-4. Copy the previous version of each changed image to `.claude/implement-drafts/<issue>/before/`, with `git show HEAD:<path>`. Open all the images, new ones and previous ones, with a single `open <paths>` call.
+4. Copy the previous version of each changed (`M`) image to `.claude/implement-drafts/<issue>/before/`. A new (`??`) image has none. Use this one command, which writes the files and prints nothing:
+
+   ```bash
+   mkdir -p .claude/implement-drafts/<issue>/before && for f in $(git diff --name-only --diff-filter=M -- '*/src/test/screenshots/*'); do git show "HEAD:$f" > ".claude/implement-drafts/<issue>/before/$(basename "$f")"; done
+   ```
+
+   Never run `git show` on an image without redirecting it to a file: it prints the raw PNG. Then open all the images, the new and changed ones and their previous versions, with a single `open <paths>` call.
 5. Print the plan, then a table of the images: the image, its screen, the spec state it shows, and whether it's new or changed. An image of a screen the spec doesn't name is flagged, with its cause.
 6. Ask "Approve the screens?", with the options `Approve` and `Change something`. Until the developer approves, apply what they ask, record again and show again.
 7. On `Approve`, commit the screens with their images, for example `feat: add the Reorder screens for #73`. Mark step 4 done in `plan.md`.
