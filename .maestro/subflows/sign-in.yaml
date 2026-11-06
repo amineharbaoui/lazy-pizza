@@ -5,13 +5,19 @@ appId: com.example.lazypizza.debug
 - extendedWaitUntil:
     visible: "Enter your phone number"
     timeout: 10000
-- tapOn:
-    id: "phone_country_picker"
-- tapOn: "Search for countries"
-- inputText: ${TEST_PHONE_COUNTRY}
-- tapOn:
-    text: ${TEST_PHONE_COUNTRY}
-    index: 1 # 0 is the search field, which now shows the same text
+# The picker's flag is described by the selected country's name, so pick the country
+# only when the device's default is another one.
+- runFlow:
+    when:
+      notVisible: ${TEST_PHONE_COUNTRY}
+    commands:
+      - tapOn:
+          id: "phone_country_picker"
+      - tapOn: "Search for countries"
+      - inputText: ${TEST_PHONE_COUNTRY}
+      - tapOn:
+          text: ${TEST_PHONE_COUNTRY}
+          index: 1 # 0 is the search field, which now shows the same text
 - tapOn:
     id: "login_phone_input"
 - inputText: ${TEST_PHONE_NUMBER}
