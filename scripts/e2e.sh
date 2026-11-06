@@ -41,6 +41,9 @@ device_count() {
 }
 
 if [ "$(device_count)" -eq 0 ]; then
+  avds="$("$sdk/emulator/emulator" -list-avds 2> /dev/null | grep -v '|' || true)"
+  printf '%s\n' "$avds" | grep -qx "$avd" ||
+    fail "no device connected, and no AVD named $avd. Start a device, or set E2E_AVD to one of: $(printf '%s\n' "$avds" | paste -sd ' ' -)"
   echo "e2e: no device connected, starting the $avd emulator"
   # Fully detached, so the calling shell doesn't wait on it. It keeps running for the next run.
   nohup "$sdk/emulator/emulator" -avd "$avd" -no-window -no-audio -no-boot-anim \
