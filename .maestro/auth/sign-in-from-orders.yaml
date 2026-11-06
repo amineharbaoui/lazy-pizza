@@ -1,0 +1,13 @@
+# A guest opens Orders, signs in with their phone number and sees their order history.
+appId: com.example.lazypizza.debug
+tags:
+  - auth
+  - smoke
+---
+- launchApp:
+    clearState: true
+- tapOn: "Orders"
+- assertVisible: "Not Signed In"
+- tapOn: "Sign In"
+- runFlow: ../subflows/sign-in.yaml
+- assertNotVisible: "Not Signed In"

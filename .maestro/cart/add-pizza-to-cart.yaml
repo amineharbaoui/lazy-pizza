@@ -1,0 +1,16 @@
+# A guest adds a pizza to the cart and finds it there.
+appId: com.example.lazypizza.debug
+tags:
+  - cart
+  - smoke
+---
+- launchApp:
+    clearState: true
+- extendedWaitUntil:
+    visible: "Margherita"
+    timeout: 15000
+- tapOn: "Margherita"
+- tapOn: "Add to Cart for .*"
+- tapOn: "Cart"
+- assertVisible: "Margherita"
+- assertVisible: "Proceed to Checkout.*"

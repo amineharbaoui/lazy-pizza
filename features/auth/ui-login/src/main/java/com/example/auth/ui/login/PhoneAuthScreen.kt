@@ -16,6 +16,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -144,7 +145,9 @@ private fun PhoneAuthContent(
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         DsTextField.PhoneNumber(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .testTag("login_phone_input"),
             phoneNumber = state.phoneNumber,
             onPhoneNumberChange = actions.onPhoneChange,
             onFullPhoneNumberChange = actions.onFullPhoneNumberChange,
@@ -224,7 +227,9 @@ private fun CodeAuthContent(
             length = 6,
             isError = state.showError,
             enabled = !state.isLoading,
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .testTag("login_code_input"),
         )
 
         if (state.showError) {
