@@ -72,7 +72,7 @@ Write `plan.md` with these sections:
 - **Data**: repositories, data sources, Firestore and Room changes.
 - **UI**: per screen, its UI state, display models, and one preview per state the spec lists.
 - **Navigation**: routes and back-stack changes in `:app`.
-- **Scenarios and tests**: every scenario, with the test class and test name that will check it. A journey through several screens also gets a Maestro flow, `.maestro/<feature>/<journey>.yaml`, as `.claude/rules/testing.md` says. A scenario only the real app can show, such as a back-stack behavior that lives in `:app`, is checked by its flow alone. A scenario neither can check is marked `not automated`, with the reason.
+- **Scenarios and tests**: every scenario, with the test class and test name that will check it. A journey through several screens also gets a Maestro flow, `.maestro/<feature>/<journey>.yaml`, as `.claude/rules/testing.md` says. List the existing flows whose journey the spec changes, too. A scenario only the real app can show, such as a back-stack behavior that lives in `:app`, is checked by its flow alone. A scenario neither can check is marked `not automated`, with the reason.
 - **Refactors**: the refactors the feature needs first, see step 3.
 - **Calls**: the technical choices a reviewer might question, each with its reason.
 - **Follow-ups**: Code not to copy and refactors you saw that the feature doesn't need.
@@ -119,7 +119,7 @@ When the spec's UI section is `None.`, go to step 5.
 
 ### 5. Tests first
 
-1. Write the tests the plan lists, following `.claude/rules/testing.md`. Each acceptance test runs the real chain, built from the data modules' `<Feature>TestData`, and checks one behavior. A scenario's Then becomes its test's assertions, with the spec's exact values and texts. Test names describe the behavior, never a scenario number: the PR maps scenarios to tests. Write the Maestro flows the plan lists too, following `.claude/rules/testing.md`. Don't run them yet: they run in step 7, once the app does the journey.
+1. Write the tests the plan lists, following `.claude/rules/testing.md`. Each acceptance test runs the real chain, built from the data modules' `<Feature>TestData`, and checks one behavior. A scenario's Then becomes its test's assertions, with the spec's exact values and texts. Test names describe the behavior, never a scenario number: the PR maps scenarios to tests. Write the new Maestro flows the plan lists, and update the existing ones whose journey the spec changes, following `.claude/rules/testing.md`. Don't run them yet: they run in step 7, once the app does the journey.
 2. Add only the stubs the tests need to compile: new ViewModel functions, use case and repository signatures, UI state fields. A stub does nothing or returns a fixed value, never the behavior and never `TODO()`.
 3. Run the new test classes: `./gradlew :<module>:testDebugUnitTest --tests "<class>"` in an Android module, or `./gradlew :<module>:test --tests "<class>"` in a pure Kotlin module such as a `:domain`. Every new test must fail on an assertion. A test that already passes doesn't check the new behavior: fix it. A test that fails with an exception: fix the stub or the test setup.
 4. Commit the tests, flows and stubs as a local checkpoint, never pushed: `test: checkpoint for #<issue>`. Write its hash in `plan.md`.
@@ -129,7 +129,7 @@ When the spec's UI section is `None.`, go to step 5.
 Build from the inside out: domain, data, then the ViewModel and the screen's wiring, then the navigation in `:app`. Run the module's tests as you go. Don't commit before step 9.
 
 - Follow CLAUDE.md and `.claude/rules/`. Change existing code only as far as the spec's behavior needs, and never refactor on the feature branch. When the feature turns out to need a refactor, see "Refactors found later". Add any other refactor you see to the plan's Follow-ups.
-- When a test fails, decide whether the code or the test is wrong. A test may change to follow a rename or to fix a wrong fixture. It never loses an assertion, gets a looser expected value, or gets deleted or disabled to pass. Write every test change and its reason in the plan's Test changes.
+- When a test fails, decide whether the code or the test is wrong. A test may change to follow a rename or to fix a wrong fixture. It never loses an assertion, gets a looser expected value, or gets deleted or disabled to pass. Until its first pass, a Maestro flow may also change its mechanics, such as a selector, a wait or a scroll, never what it checks. Write every test change and its reason in the plan's Test changes.
 - When the same check fails 3 times for the same reason, stop and tell the developer what you tried.
 - When the spec turns out wrong, ambiguous or incomplete, see "Spec gaps".
 
