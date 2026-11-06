@@ -197,6 +197,21 @@ Reference images are committed in `<module>/src/test/screenshots`.
 ./gradlew verifyRoborazziDebug   # Fail when a screen differs from its reference
 ```
 
+### E2E tests (Maestro)
+
+[Maestro](https://maestro.dev) flows in `.maestro/<feature>/` walk the main journeys through the real app on an emulator: sign in, open a pizza, add it to the cart, place an order.
+
+1. Install the Maestro CLI: `curl -fsSL "https://get.maestro.mobile.dev" | bash` (needs Java 17+).
+2. Copy `.maestro/.env.example` to `.maestro/.env.local` and fill in a Firebase test phone number.
+3. Run them:
+
+```bash
+scripts/e2e.sh               # Every flow
+scripts/e2e.sh cart,smoke    # The flows tagged cart or smoke
+```
+
+With no device connected, the script starts the `device_for_test` AVD without a window (set `E2E_AVD` to use another one). It installs the debug build, turns animations off on the emulator, and writes the report, plus a screenshot and the view hierarchy of a failing step, to `build/maestro/`.
+
 ## 🔧 Build Logic
 
 Custom Gradle convention plugins in `build-logic/convention/`:
@@ -224,7 +239,7 @@ Custom Gradle convention plugins in `build-logic/convention/`:
 - [X] Add **Ktlint** for formatting + auto-fix
 ### Testing
 - [ ] Expand unit tests across all modules
-- [ ] Add **UI tests** for key flows (menu → detail → cart → checkout)
+- [X] Add **UI tests** for key flows (menu → detail → cart → checkout)
 ### UI/UX
 - [X] Add Dark Mode
 

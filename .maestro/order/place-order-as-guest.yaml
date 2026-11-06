@@ -1,0 +1,22 @@
+# A guest checks out a pizza, signs in when asked, and places the order
+# for the earliest pickup time.
+appId: com.example.lazypizza.debug
+tags:
+  - order
+  - smoke
+---
+- launchApp:
+    clearState: true
+- extendedWaitUntil:
+    visible: "Margherita"
+    timeout: 15000
+- tapOn: "Margherita"
+- tapOn: "Add to Cart for .*"
+- tapOn: "Cart"
+- tapOn: "Proceed to Checkout.*"
+- tapOn: "Place Order"
+- runFlow: ../subflows/sign-in.yaml
+- tapOn: "Place Order"
+- extendedWaitUntil:
+    visible: "Your order has been placed!"
+    timeout: 15000

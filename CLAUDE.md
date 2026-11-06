@@ -19,6 +19,7 @@ LazyPizza is a showcase that mirrors a very large multi-module production app. T
 - One test class: add `--tests "com.example.cart.domain.usecase.AddCartItemUseCaseTest"`
 - Screenshot tests: `./gradlew verifyRoborazziDebug` fails when a preview no longer matches its reference image; `./gradlew recordRoborazziDebug` re-records them
 - Build: `./gradlew assembleDebug`
+- E2E flows (Maestro, on a local emulator): `scripts/e2e.sh` runs every flow, `scripts/e2e.sh cart,smoke` the flows tagged `cart` or `smoke`. Needs `.maestro/.env.local`, copied from `.maestro/.env.example`.
 - Dependency health: `./gradlew buildHealth`
 
 ## Workflow
@@ -47,6 +48,7 @@ The project follows Clean Architecture strictly: dependencies point toward `:dom
 ## Tests
 
 - Behavior a user can notice gets an acceptance test in the screen's `:ui-<screen>` module. It runs the real chain, from the ViewModel through the use cases to the repositories, and fakes only the data sources.
+- A journey through several screens gets a Maestro flow in `.maestro/<feature>/`, which runs the real app on an emulator. It checks that the screens work together, never the rules the acceptance tests already cover.
 - Add a unit test only where an acceptance test is the wrong tool: logic with many input cases, such as prices or pickup slots, or shared code no screen owns, such as `:core:*`. Don't repeat in a unit test what an acceptance test already covers.
 - A bug fix starts with a test that fails because of the bug. Then fix it and watch the test pass.
 
@@ -56,6 +58,7 @@ A change to Kotlin or Gradle code is done when:
 - it has its tests, and it follows this file and `.claude/rules/`
 - the Kotlin files it changes pass ktlint
 - `./gradlew unitTestAll verifyRoborazziDebug assembleDebug` passes. Show the command and the end of its output.
+- for a change a user can notice, `scripts/e2e.sh <feature>,smoke` passes after that. Show the end of its output too.
 
 ## Git
 

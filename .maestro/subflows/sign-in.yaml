@@ -1,0 +1,30 @@
+# Signs in with the test phone number from .maestro/.env.local.
+# Starts on the login screen and ends once the app has left it.
+appId: com.example.lazypizza.debug
+---
+- extendedWaitUntil:
+    visible: "Enter your phone number"
+    timeout: 10000
+- tapOn:
+    id: "phone_country_picker"
+- tapOn: "Search for countries"
+- inputText: ${TEST_PHONE_COUNTRY}
+- tapOn:
+    text: ${TEST_PHONE_COUNTRY}
+    index: 1 # 0 is the search field, which now shows the same text
+- tapOn:
+    id: "login_phone_input"
+- inputText: ${TEST_PHONE_NUMBER}
+- hideKeyboard
+- tapOn: "Continue"
+- extendedWaitUntil:
+    visible: "Enter code"
+    timeout: 30000
+- tapOn:
+    id: "login_code_input"
+- inputText: ${TEST_SMS_CODE}
+- hideKeyboard
+- tapOn: "Confirm"
+- extendedWaitUntil:
+    notVisible: "Welcome to LazyPizza"
+    timeout: 15000

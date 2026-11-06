@@ -3,6 +3,8 @@ paths:
   - "**/src/test/**"
   - "**/src/testFixtures/**"
   - "core/testing/**"
+  - ".maestro/**"
+  - "scripts/e2e.sh"
 ---
 
 # Tests
@@ -33,6 +35,20 @@ paths:
 - Its reference images are committed in the module's `src/test/screenshots/`. After a UI change, run `./gradlew :<module>:recordRoborazziDebug`, look at every image that changed, and commit the ones that show the intended change.
 - The generated tests are JUnit 4 and run on the JUnit Platform through the Vintage engine. Hand-written tests stay JUnit 6.
 - A compare passes when at most 0.01% of the pixels differ: references are recorded on macOS, and Linux CI anti-aliases a few pixels differently. PR Check runs `verifyRoborazziDebug` and uploads the diffs when it fails.
+
+## E2E flows (Maestro)
+
+- A Maestro flow walks one journey through the real app, as a user would: real navigation, the real Hilt graph, Firebase, and data that survives a restart. Flows run last, after the build, on an emulator with `scripts/e2e.sh`. Not in CI.
+- One journey per flow, in `.maestro/<feature>/<journey>.yaml`, named by what the user does: `cart/add-pizza-to-cart.yaml`. Rules and edge cases stay in the acceptance tests. A flow is slower and flakier, so it never repeats them.
+- A flow is tagged with its feature folder, plus `smoke` for the few journeys every change must keep working. `scripts/e2e.sh cart,smoke` runs the flows that have either tag.
+- Each flow starts with `launchApp: clearState: true`, so it never depends on another flow or on a previous run.
+- Select an element by the text the user reads, or for an icon by the content description TalkBack reads. Add a `testTag` only to an element that has neither, such as an input without a label. When an icon's description is wrong, fix the description instead of adding a tag. Tags are snake_case: `<screen>_<element>` (`login_code_input`) at the call site, `<component>_<part>` inside `:core:designsystem`. `MainActivity` exposes them to Maestro as resource ids.
+- Assert the texts the spec shows the user. A text with a price or a count in it is matched with a regex: `"Add to Cart for .*"`.
+- Steps that several flows share live in `.maestro/subflows/` and run with `runFlow`. `subflows/sign-in.yaml` signs in with the test phone number.
+- The test phone number and its code live only in `.maestro/.env.local`, which git ignores. A flow reads them as `${TEST_PHONE_NUMBER}`. Never write them in a flow, a commit or a log.
+- A flow never depends on the time of day. It picks the first pickup slot shown, never a specific time, and asserts nothing time-based. Time rules, such as pickup slots, the 15-minute margin or cart expiry, stay in the acceptance tests, which control the `Clock`.
+- Wait for anything that loads from the network with `extendedWaitUntil` and a timeout, never a fixed delay.
+- When a flow fails, read its screenshot and view hierarchy in `build/maestro/` first. Fix the app when the journey is broken. Change the flow only when the spec changed the journey.
 
 ## Style
 
