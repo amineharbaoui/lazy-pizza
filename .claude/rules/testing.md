@@ -33,6 +33,8 @@ paths:
 
 - In a module with `custom.screenshot.testing`, every `@Preview` is a screenshot test, generated at build time. Never write one by hand.
 - Its reference images are committed in the module's `src/test/screenshots/`. After a UI change, run `./gradlew :<module>:recordRoborazziDebug`, look at every image that changed, and commit the ones that show the intended change.
+- A PR lists every image it adds, changes or deletes under Changed screenshots. An image of a screen its spec doesn't name needs a reason there: it is often a change that leaked from shared code.
+- Renaming or deleting a preview leaves its old images behind. Delete them in the same PR.
 - The generated tests are JUnit 4 and run on the JUnit Platform through the Vintage engine. Hand-written tests stay JUnit 6.
 - A compare passes when at most 0.01% of the pixels differ: references are recorded on macOS, and Linux CI anti-aliases a few pixels differently. PR Check runs `verifyRoborazziDebug` and uploads the diffs when it fails.
 
@@ -50,7 +52,10 @@ paths:
 - A flow never depends on the time of day. It picks the first pickup slot shown, never a specific time, and asserts nothing time-based. Time rules, such as pickup slots, the 15-minute margin or cart expiry, stay in the acceptance tests, which control the `Clock`.
 - Wait for anything that loads from the network with `extendedWaitUntil` and a timeout, never a fixed delay.
 - Never use `hideKeyboard`: on Android it presses Back, which can leave the screen. Tap the next button instead.
-- When a flow fails, read its screenshot and view hierarchy in `build/maestro/` first. Fix the app when the journey is broken. Change the flow only when the spec changed the journey.
+- A flow is written from the spec, before the code: the journey's steps and the texts the spec shows. When a spec changes an existing journey, its flow is updated first in the same way.
+- Until a new or updated flow first passes, only its mechanics may change: a selector, a wait or a scroll. What it checks never changes: the journey's steps and the texts it asserts.
+- After its first pass, a flow changes only when a spec changes its journey. When it fails, read its screenshot and view hierarchy in `build/maestro/` first, and fix the app. When it is flaky, fix the wait, never the assertion.
+- A refactor never changes a flow. A change that needs one isn't a refactor.
 
 ## Style
 

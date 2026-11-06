@@ -9,7 +9,7 @@ LazyPizza is a showcase that mirrors a very large multi-module production app. T
 - Several squads work on the project, and any squad can change any part of it. Follow the project's conventions over your own preferences, so every module reads the same to whoever opens it next.
 - Scale is a reason for clear module boundaries, not for abstractions with no present use.
 - Scale shapes how code is built, never what a feature does. That comes from the spec.
-- Existing code that breaks a rule is listed under "Code not to copy" in `.claude/rules/`. Don't imitate it. Fix it only where your change already rewrites that code, and list anything bigger in the PR description as a follow-up.
+- Existing code that breaks a rule is listed under "Code not to copy" in `.claude/rules/`. Don't imitate it. When your change has to change or build on it, fix it first in a refactor PR of its own. List the rest you see in the PR description as a follow-up.
 
 ## Commands
 
@@ -26,6 +26,7 @@ LazyPizza is a showcase that mirrors a very large multi-module production app. T
 
 - A user-visible change starts with `/spec`, which writes its spec with the developer and creates it as a GitHub issue.
 - Specs are GitHub issues. Never edit one without asking the developer first.
+- `/implement <issue>` builds a spec: the developer approves the screens, then Claude writes the tests, the code and the pull request.
 
 ## Modules and dependencies
 
@@ -63,3 +64,5 @@ A change to Kotlin or Gradle code is done when:
 ## Git
 
 - Push only your own branch, by name (`git push -u origin <branch>`). Never push to `main`, never force-push.
+- A pull request does one thing, so it stays small and easy to review. A refactor, any change to existing code that keeps what the app does, gets its own PR, merged before the feature that needs it.
+- A pull request's description follows `.github/pull_request_template.md`.
