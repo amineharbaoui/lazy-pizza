@@ -15,7 +15,6 @@ appId: com.example.lazypizza.debug
 - tapOn:
     id: "login_phone_input"
 - inputText: ${TEST_PHONE_NUMBER}
-- hideKeyboard
 - tapOn: "Continue"
 - extendedWaitUntil:
     visible: "Enter code"
@@ -23,7 +22,6 @@ appId: com.example.lazypizza.debug
 - tapOn:
     id: "login_code_input"
 - inputText: ${TEST_SMS_CODE}
-- hideKeyboard
 - tapOn: "Confirm"
 - extendedWaitUntil:
     notVisible: "Welcome to LazyPizza"
