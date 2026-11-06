@@ -46,7 +46,7 @@ paths:
 - Assert the texts the spec shows the user. A text with a price or a count in it is matched with a regex: `"Add to Cart for .*"`.
 - Steps that several flows share live in `.maestro/subflows/` and run with `runFlow`. `subflows/sign-in.yaml` signs in with the test phone number.
 - Flows run against the real Firebase project, signed in with a Firebase test phone number. They rely on the real menu, and each run of an order flow places a real order for the test account.
-- The test phone number and its code live only in `.maestro/.env.local`, which git ignores. A flow reads them as `${TEST_PHONE_NUMBER}`. Never write them in a flow, a commit or a log.
+- The test phone number and its code live only in `.maestro/.env.local`, which git ignores. A flow reads them as `${TEST_PHONE_NUMBER}`. Never write them in a flow or a commit. Maestro's own logs, in `build/maestro/` and `~/.maestro/`, can show them as typed, so never paste those lines in a PR or a chat.
 - A flow never depends on the time of day. It picks the first pickup slot shown, never a specific time, and asserts nothing time-based. Time rules, such as pickup slots, the 15-minute margin or cart expiry, stay in the acceptance tests, which control the `Clock`.
 - Wait for anything that loads from the network with `extendedWaitUntil` and a timeout, never a fixed delay.
 - Never use `hideKeyboard`: on Android it presses Back, which can leave the screen. Tap the next button instead.

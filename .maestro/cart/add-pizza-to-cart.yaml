@@ -12,5 +12,7 @@ tags:
 - tapOn: "Margherita"
 - tapOn: "Add to Cart for .*"
 - tapOn: "Cart"
+- extendedWaitUntil: # the cart waits for its recommendations, which load from the network
+    visible: "Proceed to Checkout.*"
+    timeout: 15000
 - assertVisible: "Margherita"
-- assertVisible: "Proceed to Checkout.*"
