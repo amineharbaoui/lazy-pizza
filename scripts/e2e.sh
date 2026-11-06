@@ -8,8 +8,8 @@
 # Needs the Maestro CLI, the Android SDK and .maestro/.env.local (copy .maestro/.env.example;
 # a worktree uses the main checkout's copy). With no device connected, it starts the AVD named
 # by E2E_AVD (default device_for_test) without a window and leaves it running.
-# Results go to build/maestro/: report.xml, and for a failing flow its screenshot,
-# view hierarchy and logs.
+# It prints one line per flow. Results go to build/maestro/: report.xml, maestro.log,
+# and for a failing flow its screenshot, view hierarchy and logs.
 set -euo pipefail
 
 cd "$(dirname "$0")/.."
@@ -42,9 +42,11 @@ device_count() {
 
 if [ "$(device_count)" -eq 0 ]; then
   echo "e2e: no device connected, starting the $avd emulator"
+  # Fully detached, so the calling shell doesn't wait on it. It keeps running for the next run.
   nohup "$sdk/emulator/emulator" -avd "$avd" -no-window -no-audio -no-boot-anim \
-    > "$out_dir/emulator.log" 2>&1 &
+    < /dev/null > "$out_dir/emulator.log" 2>&1 &
   emulator_pid=$!
+  disown "$emulator_pid"
   for _ in $(seq 1 90); do
     [ "$("$adb" shell getprop sys.boot_completed 2> /dev/null | tr -d '\r')" = "1" ] && break
     kill -0 "$emulator_pid" 2> /dev/null || fail "the $avd emulator stopped, see $out_dir/emulator.log"
@@ -80,8 +82,18 @@ done < "$env_file"
 tag_args=()
 [ -n "$tags" ] && tag_args+=(--include-tags "$tags")
 
+# Maestro's live output goes to a log file. The console gets one line per flow and the paths.
+set +e
 maestro --device "$serial" test .maestro \
   "${tag_args[@]+"${tag_args[@]}"}" \
   "${env_args[@]+"${env_args[@]}"}" \
   --format junit --output "$out_dir/report.xml" \
-  --test-output-dir "$out_dir"
+  --test-output-dir "$out_dir" \
+  > "$out_dir/maestro.log" 2>&1
+result=$?
+set -e
+
+grep -E '^\[(Passed|Failed|Skipped)\]' "$out_dir/maestro.log" || tail -n 15 "$out_dir/maestro.log"
+echo "e2e: report $out_dir/report.xml, log $out_dir/maestro.log"
+[ "$result" -eq 0 ] || echo "e2e: FAILED. Each failing flow's screenshot and view hierarchy are under $out_dir/."
+exit "$result"
