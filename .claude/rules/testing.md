@@ -45,9 +45,11 @@ paths:
 - Select an element by the text the user reads, or for an icon by the content description TalkBack reads. Add a `testTag` only to an element that has neither, such as an input without a label. When an icon's description is wrong, fix the description instead of adding a tag. Tags are snake_case: `<screen>_<element>` (`login_code_input`) at the call site, `<component>_<part>` inside `:core:designsystem`. `MainActivity` exposes them to Maestro as resource ids.
 - Assert the texts the spec shows the user. A text with a price or a count in it is matched with a regex: `"Add to Cart for .*"`.
 - Steps that several flows share live in `.maestro/subflows/` and run with `runFlow`. `subflows/sign-in.yaml` signs in with the test phone number.
+- Flows run against the real Firebase project, signed in with a Firebase test phone number. They rely on the real menu, and each run of an order flow places a real order for the test account.
 - The test phone number and its code live only in `.maestro/.env.local`, which git ignores. A flow reads them as `${TEST_PHONE_NUMBER}`. Never write them in a flow, a commit or a log.
 - A flow never depends on the time of day. It picks the first pickup slot shown, never a specific time, and asserts nothing time-based. Time rules, such as pickup slots, the 15-minute margin or cart expiry, stay in the acceptance tests, which control the `Clock`.
 - Wait for anything that loads from the network with `extendedWaitUntil` and a timeout, never a fixed delay.
+- Never use `hideKeyboard`: on Android it presses Back, which can leave the screen. Tap the next button instead.
 - When a flow fails, read its screenshot and view hierarchy in `build/maestro/` first. Fix the app when the journey is broken. Change the flow only when the spec changed the journey.
 
 ## Style
