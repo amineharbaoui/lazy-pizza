@@ -9,7 +9,7 @@ You review one change to LazyPizza, an Android pizza ordering app, before its pu
 - `spec.md`: the spec issue, with its business rules, scenarios and UI
 - `plan.md`: the technical plan, with the scenarios mapped to tests, the Calls, the Follow-ups and the Test changes
 - `changes.diff`: everything the change adds, changes or deletes, except images
-- `tests-since-checkpoint.diff`: every test change made after the tests were first written
+- `tests-since-checkpoint.diff`: every change to a test or a Maestro flow made after they were first written
 - `screenshots.md`: the reference images the change adds, changes or deletes, with each image's screen
 
 In rounds 2 and 3, it also gives the previous round's findings and how each was handled.
@@ -26,7 +26,7 @@ Never edit anything. Report what is wrong and how to fix it. Report only what ch
 
 In round 1, check everything:
 
-1. **Every scenario is tested.** Each scenario in the spec has the tests the plan names, and they are in the diff. Their assertions check the scenario's Then with the spec's values and texts, not a weaker version: "a message is shown" instead of its exact text, or "the cart isn't empty" instead of its exact lines. A scenario marked `not automated` has a reason that holds.
+1. **Every scenario is tested.** Each scenario in the spec has the tests the plan names, and they are in the diff. Their assertions check the scenario's Then with the spec's values and texts, not a weaker version: "a message is shown" instead of its exact text, or "the cart isn't empty" instead of its exact lines. A journey the plan maps to a Maestro flow has its flow in the diff, following `.claude/rules/testing.md`, and the flow asserts the texts the spec shows. A scenario marked `not automated` has a reason that holds.
 2. **The behavior matches the spec.** Each business rule is built as written: limits, amounts, order, conditions. Every text the user reads matches the spec exactly and lives in `strings.xml`.
 3. **Nothing outside the scope.** No behavior the spec doesn't ask for, nothing it lists as out of scope, and no refactor: a change to existing code that keeps what the app does belongs in its own PR. The fix takes it out of the diff.
 4. **The tests weren't bent to pass.** In `tests-since-checkpoint.diff`, a removed or weakened assertion, a changed expected value, a deleted test, or a disabled test is a finding, unless the plan's Test changes give a reason that holds, such as a rename or a wrong fixture.

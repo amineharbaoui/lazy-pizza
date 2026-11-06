@@ -72,7 +72,7 @@ Write `plan.md` with these sections:
 - **Data**: repositories, data sources, Firestore and Room changes.
 - **UI**: per screen, its UI state, display models, and one preview per state the spec lists.
 - **Navigation**: routes and back-stack changes in `:app`.
-- **Scenarios and tests**: every scenario, with the test class and test name that will check it. A scenario no test can check, such as a back-stack behavior that lives in `:app`, is marked `not automated`, with the reason.
+- **Scenarios and tests**: every scenario, with the test class and test name that will check it. A journey through several screens also gets a Maestro flow, `.maestro/<feature>/<journey>.yaml`, as `.claude/rules/testing.md` says. A scenario only the real app can show, such as a back-stack behavior that lives in `:app`, is checked by its flow alone. A scenario neither can check is marked `not automated`, with the reason.
 - **Refactors**: the refactors the feature needs first, see step 3.
 - **Calls**: the technical choices a reviewer might question, each with its reason.
 - **Follow-ups**: Code not to copy and refactors you saw that the feature doesn't need.
@@ -119,10 +119,10 @@ When the spec's UI section is `None.`, go to step 5.
 
 ### 5. Tests first
 
-1. Write the tests the plan lists, following `.claude/rules/testing.md`. Each acceptance test runs the real chain, built from the data modules' `<Feature>TestData`, and checks one behavior. A scenario's Then becomes its test's assertions, with the spec's exact values and texts. Test names describe the behavior, never a scenario number: the PR maps scenarios to tests.
+1. Write the tests the plan lists, following `.claude/rules/testing.md`. Each acceptance test runs the real chain, built from the data modules' `<Feature>TestData`, and checks one behavior. A scenario's Then becomes its test's assertions, with the spec's exact values and texts. Test names describe the behavior, never a scenario number: the PR maps scenarios to tests. Write the Maestro flows the plan lists too, following `.claude/rules/testing.md`. Don't run them yet: they run in step 7, once the app does the journey.
 2. Add only the stubs the tests need to compile: new ViewModel functions, use case and repository signatures, UI state fields. A stub does nothing or returns a fixed value, never the behavior and never `TODO()`.
 3. Run the new test classes: `./gradlew :<module>:testDebugUnitTest --tests "<class>"` in an Android module, or `./gradlew :<module>:test --tests "<class>"` in a pure Kotlin module such as a `:domain`. Every new test must fail on an assertion. A test that already passes doesn't check the new behavior: fix it. A test that fails with an exception: fix the stub or the test setup.
-4. Commit the tests and stubs as a local checkpoint, never pushed: `test: checkpoint for #<issue>`. Write its hash in `plan.md`.
+4. Commit the tests, flows and stubs as a local checkpoint, never pushed: `test: checkpoint for #<issue>`. Write its hash in `plan.md`.
 
 ### 6. Build
 
@@ -140,6 +140,7 @@ Run the checks in as few commands as possible, so the developer isn't asked agai
 1. List the changed Kotlin files: `git diff --merge-base origin/main --name-only --diff-filter=d -- '*.kt' '*.kts'`. `--merge-base` compares with the commit the branch started from, including uncommitted changes, even after `main` moved on.
 2. Lint them and run the build, in one command: `ktlint --relative <files> && ./gradlew unitTestAll verifyRoborazziDebug assembleDebug`. Leave out the `ktlint` part when no Kotlin file changed: without files, it lints the whole project. If `ktlint` isn't installed, ask the developer to install the version `.github/workflows/ktlint.yml` uses.
 3. When a build file or `gradle/libs.versions.toml` changed, also run `./gradlew buildHealth` and apply its advice for the modules you touched.
+4. For a change a user can notice, run the Maestro flows last, once everything above passes. Run them in a command of their own, with a 10-minute timeout: `scripts/e2e.sh <features>,smoke`, with the tag of every feature the change touches, for example `scripts/e2e.sh order,cart,smoke`. The script starts the emulator when no device is connected, installs the debug build, and prints one line per flow. When a flow fails, read its screenshot and view hierarchy in `build/maestro/`, as `.claude/rules/testing.md` says. When the script stops because Maestro, the Android SDK or `.maestro/.env.local` is missing, ask the developer to set it up.
 
 Then check the screenshots against the spec:
 
@@ -152,7 +153,7 @@ Then check the screenshots against the spec:
 Write the reviewer's inputs to `.claude/implement-drafts/<issue>/review/`:
 
 - `changes.diff`: `git diff --merge-base origin/main -- . ':(exclude)*.png'`, everything the PR changes except the images
-- `tests-since-checkpoint.diff`: `git diff <checkpoint> -- '*/src/test/*' '*/src/testFixtures/*' ':(exclude)*.png'`, every test change since the checkpoint
+- `tests-since-checkpoint.diff`: `git diff <checkpoint> -- '*/src/test/*' '*/src/testFixtures/*' .maestro ':(exclude)*.png'`, every test and flow change since the checkpoint
 - `screenshots.md`: the image list from step 7, with each image's screen, and the reason for any outside the spec's screens
 
 Run the `implement-reviewer` subagent, at most 3 rounds. It reports findings and ends with a verdict.
@@ -174,7 +175,7 @@ When `origin` already has the branch, an earlier run folded and pushed it. When 
 
 1. Fold the test checkpoint into the rest of the work, so every pushed commit compiles and passes: `git reset --soft <checkpoint>~1`, then `git add -A` and commit, for example `feat: reorder a past order (#73)`.
 2. Push the branch by name: `git push -u origin <branch>`. Never push `main`, never force-push.
-3. Write `pr.md` from `.github/pull_request_template.md`, filling every section. A section that doesn't apply says `None.`. Paste the end of step 7's output under Verification.
+3. Write `pr.md` from `.github/pull_request_template.md`, filling every section. A section that doesn't apply says `None.`. Paste the end of step 7's output under Verification. From `scripts/e2e.sh`, paste only its per-flow lines, never a line from Maestro's logs: they can show the test phone number.
 4. Open the PR, taking its title from the issue so no text from it is ever typed into the command: `gh pr create --title "$(gh issue view <issue> --json title --jq .title)" --body-file .claude/implement-drafts/<issue>/pr.md`. A refactor PR gets a title you write.
 5. Give the developer the PR link, and point them to the Calls and any screenshot outside the spec's screens.
 

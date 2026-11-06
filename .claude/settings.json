@@ -3,6 +3,7 @@
     "allow": [
       "Bash(./gradlew *)",
       "Bash(ktlint *)",
+      "Bash(scripts/e2e.sh *)",
       "Bash(git status *)",
       "Bash(git diff *)",
       "Bash(git log *)",
