@@ -58,7 +58,7 @@ A change to Kotlin or Gradle code is done when:
 - it has its tests, and it follows this file and `.claude/rules/`
 - the Kotlin files it changes pass ktlint
 - `./gradlew unitTestAll verifyRoborazziDebug assembleDebug` passes. Show the command and the end of its output.
-- for a change a user can notice, `scripts/e2e.sh <feature>,smoke` passes after that. Show the end of its output too.
+- for a change a user can notice, `scripts/e2e.sh <features>,smoke` passes after that, with the tag of every feature the change touches (`scripts/e2e.sh order,cart,smoke`). Show its output too.
 
 ## Git
 
