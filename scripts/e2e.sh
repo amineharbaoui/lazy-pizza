@@ -27,7 +27,12 @@ fail() {
 # A git worktree has none of the untracked files, so it falls back to the main checkout's copies.
 main_checkout="$(git worktree list --porcelain | sed -n '1s/^worktree //p')"
 [ -f "$env_file" ] || [ ! -f "$main_checkout/$env_file" ] || env_file="$main_checkout/$env_file"
-sdk="${ANDROID_HOME:-$(sed -n 's/^sdk\.dir=//p' local.properties "$main_checkout/local.properties" 2> /dev/null | head -1)}"
+sdk="${ANDROID_HOME:-}"
+for props in local.properties "$main_checkout/local.properties"; do
+  if [ -z "$sdk" ] && [ -f "$props" ]; then
+    sdk="$(sed -n 's/^sdk\.dir=//p' "$props" | head -1)"
+  fi
+done
 
 command -v maestro > /dev/null || fail "Maestro CLI not found. Install it: curl -fsSL https://get.maestro.mobile.dev | bash"
 [ -n "$sdk" ] || fail "Android SDK not found. Set ANDROID_HOME, or open the project once in Android Studio."
@@ -72,10 +77,11 @@ if [[ "$serial" == emulator-* ]]; then
   done
 fi
 
-ANDROID_SERIAL="$serial" ./gradlew :app:installDebug --quiet
+ANDROID_HOME="$sdk" ANDROID_SERIAL="$serial" ./gradlew :app:installDebug --quiet
 
 env_args=()
-while IFS='=' read -r key value; do
+# `|| [ -n "$key" ]` keeps a last line that has no newline at its end.
+while IFS='=' read -r key value || [ -n "$key" ]; do
   [[ -z "$key" || "$key" == \#* ]] && continue
   value="${value%\"}"
   value="${value#\"}"
