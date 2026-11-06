@@ -271,7 +271,7 @@ private fun CountryRow(
     ) {
         Image(
             painter = painterResource(country.flagResId),
-            contentDescription = country.name,
+            contentDescription = null,
             modifier = Modifier
                 .size(28.dp)
                 .clip(CircleShape),
