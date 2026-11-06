@@ -10,4 +10,6 @@ tags:
 - assertVisible: "Not Signed In"
 - tapOn: "Sign In"
 - runFlow: ../subflows/sign-in.yaml
-- assertNotVisible: "Not Signed In"
+- extendedWaitUntil:
+    visible: "No Orders Yet|Order #.*"
+    timeout: 15000

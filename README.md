@@ -202,7 +202,7 @@ Reference images are committed in `<module>/src/test/screenshots`.
 [Maestro](https://maestro.dev) flows in `.maestro/<feature>/` walk the main journeys through the real app on an emulator: sign in, open a pizza, add it to the cart, place an order.
 
 1. Install the Maestro CLI: `curl -fsSL "https://get.maestro.mobile.dev" | bash` (needs Java 17+).
-2. Copy `.maestro/.env.example` to `.maestro/.env.local` and fill in a Firebase test phone number.
+2. Copy `.maestro/.env.example` to `.maestro/.env.local` and fill in a Firebase test phone number: its country, the number and its verification code.
 3. Run them:
 
 ```bash
