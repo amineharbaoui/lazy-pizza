@@ -26,7 +26,7 @@ LazyPizza is a showcase that mirrors a very large multi-module production app. T
 
 - A user-visible change starts with `/spec`, which writes its spec with the developer and creates it as a GitHub issue.
 - Specs are GitHub issues. Never edit one without asking the developer first.
-- `/implement <issue>` builds a spec: the developer approves the screens, then Claude writes the tests, the code and the pull request.
+- `/implement <issue>` builds a spec: the developer approves the screens, then Claude writes the tests and the code, verifies and reviews them, and leaves them on a local branch. The developer opens its pull request.
 
 ## Modules and dependencies
 
