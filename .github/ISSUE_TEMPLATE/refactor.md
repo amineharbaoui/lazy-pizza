@@ -4,11 +4,7 @@ about: A change to existing code that keeps what the app does, done before the f
 title: "Refactor: "
 ---
 
-<!-- A refactor keeps what the app does: no existing test's expected value, Maestro flow or reference image changes. Replace each comment with the section's content. -->
-
-## Prepares
-
-<!-- "#<issue>" for each feature issue this refactor blocks, or "None." when no feature waits for it. -->
+<!-- A refactor keeps what the app does: no existing test's expected value, Maestro flow or reference image changes. Replace each comment with the section's content. Once the issue exists, mark each feature it prepares as blocked by it, under the feature's Relationships. -->
 
 ## Change
 
