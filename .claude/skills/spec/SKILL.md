@@ -30,7 +30,7 @@ Write the spec in English. UI texts are exact, as the user will read them.
 
 - Run `gh auth status`. If it fails, stop and ask the developer to run `gh auth login`.
 - Run `gh --version`. Attaching sketches to the issue needs 2.99.0 or later. If it's older, stop and ask the developer to upgrade `gh`.
-- If `.claude/spec-drafts/` already holds drafts, and one matches the feature idea or the developer named it, offer to continue that draft instead of starting over.
+- If `.claude/spec-drafts/` already holds drafts, and one matches the feature idea or the developer named it, offer to continue that draft instead of starting over. When its folder has an `issue.md`, the issue already exists: continue from step 8 with the issue it names.
 - If the feature idea is empty, ask what the feature is.
 
 ### 2. Read the code first
@@ -129,6 +129,7 @@ Then:
 - If a command fails, check whether the issue was created anyway before you run it again, again taking the title from the draft: `gh issue list --search "$(head -n 1 "$draft" | sed 's/^# //')"`.
 - Check the issue body with `gh issue view <number>`: it must not contain a `.claude/spec-drafts/` path. If it does, a sketch didn't upload: keep the draft folder and tell the developer which sketch is missing.
 - Give the developer the issue URL.
+- Write the issue's URL, and each sub-issue's, in `.claude/spec-drafts/<feature-slug>/issue.md`. A later `/spec` that continues this draft then goes to step 8 with that issue, instead of creating it again.
 
 ### 8. Refactors first
 
@@ -147,4 +148,4 @@ Find what the feature needs before it can be built, as CLAUDE.md's "Refactors be
 
 ### 9. Clean up
 
-Delete the draft folder. The issues are now the only copy of the spec and its refactors.
+Delete the draft folder. The issues are now the only copy of the spec and its refactors. When step 7 found a sketch that didn't upload, keep the folder instead: it holds the only copy of that sketch. Tell the developer again which sketch is missing.

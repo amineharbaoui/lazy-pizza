@@ -13,7 +13,6 @@
       "Bash(git fetch *)",
       "Bash(git switch *)",
       "Bash(git reset --soft *)",
-      "Bash(git merge --ff-only origin/main)",
       "Bash(git rebase origin/main)",
       "Bash(git worktree list *)",
       "Bash(git worktree add *)",
