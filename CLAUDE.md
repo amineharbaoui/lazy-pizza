@@ -24,9 +24,19 @@ LazyPizza is a showcase that mirrors a very large multi-module production app. T
 
 ## Workflow
 
-- A user-visible change starts with `/spec`, which writes its spec with the developer and creates it as a GitHub issue.
+- A user-visible change starts with `/spec`, which writes its spec with the developer and creates it as a GitHub issue, then the refactor issues the feature needs first.
 - Specs are GitHub issues. Never edit one without asking the developer first.
-- `/implement <issue>` builds a spec: the developer approves the screens, then Claude writes the tests and the code, verifies and reviews them, and leaves them on a local branch. The developer opens its pull request.
+- `/implement <issue>` builds a spec once the refactor issues blocking it are closed: the developer approves the screens, then Claude writes the tests and the code, verifies and reviews them, and leaves them on a local branch. The developer opens its pull request. `/implement` builds a refactor issue the same way, without the screens.
+
+## Refactors before a feature
+
+A feature's PR holds only the feature. What the feature needs first is a refactor, with its own issue from `.github/ISSUE_TEMPLATE/refactor.md`, marked as blocking the feature's issue. A feature needs one when it lacks:
+
+- The test setup its tests need: fakes and a `<Feature>TestData` in the `src/testFixtures/` of each data module its acceptance tests run through, and `custom.screenshot.testing` in each screen module it changes, with packages that start with the module's namespace. Never work around missing test setup with MockK, a skipped test or a missing preview.
+- Code not to copy fixed, where the feature has to change or build on it.
+- Existing code reshaped so the feature fits, for example a component another screen will reuse, moved into the design system.
+
+A refactor the feature doesn't need goes in its Follow-ups.
 
 ## Modules and dependencies
 
