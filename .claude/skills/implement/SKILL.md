@@ -106,7 +106,7 @@ From what you read in step 2, list the refactors the feature still needs, in the
    When a command fails, check whether the issue was created anyway before you run it again, again taking the title from the draft: `gh issue list --search "$(head -n 1 "$draft" | sed 's/^# //')"`.
 3. Write each issue number in the plan's Refactors, and in its Progress that the run stopped for these blocking issues. Then stop. Give the developer each issue's URL. Tell them to build each one with `/implement <number>`, and to run `/implement <issue>` again once they're closed.
 
-On the next run, once step 1 finds none of them open, bring the feature branch up to the new main and continue, as item 3 of "Refactors found later" says. This step then runs again on the new code: a refactor whose issue was closed without its change shows up again, and gets an issue of its own.
+On the next run, once step 1 finds none of them open, bring the feature branch up to the new main, check the refactors are there, and continue, as item 3 of "Refactors found later" says.
 
 ### 4. UI checkpoint
 
@@ -209,7 +209,7 @@ When the UI checkpoint, the build or the review shows that the feature needs a r
    - When the last commit is the WIP one, that is when `git log -1 --format=%s` prints `wip: #<issue>`, undo it with `git reset --soft HEAD~1`. Never undo another commit: the screens and the test checkpoint stay as they are.
    - When the plan has a test checkpoint, write its new hash: `git log -1 --format=%h --grep='^test: checkpoint for #<issue>$'`.
 
-   Re-read the code the refactors changed, update the plan, and continue from the step you were at.
+   Re-read the code the refactors changed, and check that each refactor in the plan's Refactors is now there. One whose issue was closed without its change goes through step 3 again, from its question on. When they're all there, update the plan and continue from the step you were at.
 
 Once the branch is pushed, it never gets rebased: a refactor found then goes in Follow-ups, for its own PR after this one.
 
