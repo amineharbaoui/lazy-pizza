@@ -1,6 +1,6 @@
 ---
 name: spec
-description: Write a feature spec together with the developer, then create it as a GitHub issue. Use when the developer wants to specify a new feature or a user-visible change before it is implemented.
+description: Write a feature spec together with the developer, then create it as a GitHub issue, with the refactor issues its build needs first. Use when the developer wants to specify a new feature or a user-visible change before it is implemented.
 argument-hint: "[feature idea, or the name of a draft to continue]"
 disable-model-invocation: true
 ---
@@ -8,6 +8,8 @@ disable-model-invocation: true
 # /spec
 
 Write, with the developer, a complete spec for one feature, then create it as a GitHub issue. The spec gives a developer everything they need to build the feature, except the technical choices: the implementation makes those.
+
+Then create the refactor issues the feature needs first (step 8), so `/implement` can build it straight through once they're closed. They are separate issues: nothing technical goes into the spec.
 
 Feature idea: $ARGUMENTS
 
@@ -127,4 +129,22 @@ Then:
 - If a command fails, check with `gh issue list --search "<title>"` whether the issue was created anyway before you run it again.
 - Check the issue body with `gh issue view <number>`: it must not contain a `.claude/spec-drafts/` path. If it does, a sketch didn't upload: keep the draft folder and tell the developer which sketch is missing.
 - Give the developer the issue URL.
-- Delete the draft folder. The issue is now the only copy of the spec.
+
+### 8. Refactors first
+
+Find what the feature needs before it can be built, as CLAUDE.md's "Refactors before a feature" says. This is the only technical step of `/spec`, and its only question is the one below: how each refactor is done stays with `/implement`.
+
+1. Read the code the feature will change, beyond what step 2 read: the build files of the modules it touches, the data modules' `src/testFixtures/`, and the "Code not to copy" lists in `.claude/rules/`. List the refactors the feature needs. Look for open refactor issues that already cover one with `gh issue list --state open --search "Refactor in:title <keywords>"`, and reuse each one you find instead of writing it again.
+2. When the feature needs none, say so and go to step 9. Otherwise print the list, one issue per refactor, each small enough to review on its own, with why the feature needs it, for example "Fakes and `OrderTestData` for `:features:order:data`, so the Reorder acceptance tests can run the real chain". Ask with `AskUserQuestion`: "Create these refactor issues?", with the options `Yes` and `No`. On `No`, go to step 9: `/implement` will find them. When the developer answers something else, such as dropping one, follow it.
+3. Write each new one as a draft, `.claude/spec-drafts/<feature-slug>/refactors/<refactor-slug>.md`, following `.github/ISSUE_TEMPLATE/refactor.md` without its frontmatter. The first line is `# Refactor: <what changes>`, each comment is replaced by its section's content, and Prepares says `#<feature issue>`.
+4. Create each one the same way as the spec in step 7, from its draft. Then mark each one, new or reused, as blocking the feature. For a spec with sub-issues, the feature is the parent issue.
+
+   ```bash
+   gh api repos/{owner}/{repo}/issues/<feature issue>/dependencies/blocked_by -X POST -F issue_id="$(gh api repos/{owner}/{repo}/issues/<refactor issue> --jq .id)"
+   ```
+
+5. Give the developer each refactor issue's URL. Each one is built with `/implement <refactor issue>`, and the feature with `/implement <feature issue>` once they're all closed.
+
+### 9. Clean up
+
+Delete the draft folder. The issues are now the only copy of the spec and its refactors.

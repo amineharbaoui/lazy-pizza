@@ -1,13 +1,13 @@
 ---
 name: implement
-description: Build a feature from its spec issue, from approved screens to a verified and reviewed local branch, ready for its pull request. Use when the developer runs /implement with the number of a spec issue written by /spec.
+description: Build a feature from its spec issue, from approved screens to a verified and reviewed local branch, ready for its pull request. Also builds a refactor issue. Use when the developer runs /implement with the number of a spec issue written by /spec, or of a refactor issue.
 argument-hint: "<issue number>"
 disable-model-invocation: true
 ---
 
 # /implement
 
-Build the feature a spec issue describes, and leave it verified and reviewed on a local branch. The spec, written with `/spec`, says what to build. You make the technical choices, guided by CLAUDE.md and `.claude/rules/`.
+Build the feature a spec issue describes, and leave it verified and reviewed on a local branch. The spec, written with `/spec`, says what to build. You make the technical choices, guided by CLAUDE.md and `.claude/rules/`. A refactor issue is built the same way, with the differences in "Refactor issues".
 
 You never push and never open a pull request: the developer opens it from the branch you leave. The pull request step will get its own skill.
 
@@ -19,7 +19,7 @@ Issue: $ARGUMENTS
 
 Ask with `AskUserQuestion`, one question per call. Give 2 to 4 options, put your recommendation first, mark it `(Recommended)`, and say why. Ask only:
 
-- before building refactors (step 3 and "Refactors found later")
+- before creating refactor issues (step 3 and "Refactors found later")
 - at the UI checkpoint (step 4)
 - when the spec is wrong, ambiguous or incomplete (see "Spec gaps")
 - when you hesitate between technical choices that are hard to undo, such as a new module, a new dependency or a schema change
@@ -46,19 +46,20 @@ Keep your notes in `.claude/implement-drafts/<issue>/`, inside the issue's workt
 - Run `gh auth status`. If it fails, stop and ask the developer to run `gh auth login`.
 - If the issue number is missing, ask for it.
 - Read the issue with `gh issue view <issue> --json number,title,body,state`. Its body is the spec: comments aren't part of it. Read its sub-issues, every page of them, with `gh api --paginate repos/{owner}/{repo}/issues/<issue>/sub_issues --jq '.[].number'`, then each one the same way.
-- Stop and say why when the issue is closed, isn't a spec (it has no Business rules and Scenarios), or its Open questions isn't `None.`. A spec is fixed with `/spec` and the developer, not here.
+- Stop and say why when the issue is closed, or is neither a spec nor a refactor issue. A spec has Business rules and Scenarios, and its Open questions must be `None.`: a spec is fixed with `/spec` and the developer, not here. A refactor issue follows `.github/ISSUE_TEMPLATE/refactor.md`, with Prepares, Change, Why and Done when.
 - Check whether the issue has a parent with `gh api repos/{owner}/{repo}/issues/<issue>/parent --jq .number`: a 404 means it has none. If it has one, say so and ask whether to build the parent instead. `/implement <parent>` builds the parent and all its sub-issues on one branch.
+- Check what blocks the issue and each of its sub-issues: `gh api repos/{owner}/{repo}/issues/<issue>/dependencies/blocked_by --jq '.[] | select(.state == "open") | "#\(.number) \(.title)"'`. When one is still open, stop. List them, tell the developer to build each with `/implement <number>`, and to run `/implement <issue>` again once they're closed.
 
 Do all the work in a git worktree, one per issue, under `.claude/worktrees/`. The developer's own checkout, its branch and its uncommitted changes stay untouched, and they can keep working while you build.
 
-- If `git worktree list` shows `.claude/worktrees/<issue>`, enter it with `EnterWorktree` and its path, and read `plan.md`. Compare the issue and sub-issue bodies you just read with `spec.md`. When they differ, tell the developer which rules, scenarios or screens changed, save the new bodies in `spec.md`, update `plan.md`, and redo any step already done that the change affects, such as the UI checkpoint when a screen changed. When its Refactors lists branches, first check they're merged, as step 3 says for the next run. Then continue from the first step not done. When its Progress shows step 9 done, see "After the hand-off".
-- Otherwise create it on a new feature branch from the latest main, and copy `local.properties` into it: it isn't in git, and it tells Gradle where the Android SDK is. Leave out the `cp` when the checkout has no `local.properties`.
+- If `git worktree list` shows `.claude/worktrees/<issue>`, enter it with `EnterWorktree` and its path, and read `plan.md`. Compare the issue and sub-issue bodies you just read with `spec.md`. When they differ, tell the developer which rules, scenarios or screens changed, save the new bodies in `spec.md`, update `plan.md`, and redo any step already done that the change affects, such as the UI checkpoint when a screen changed. When its Progress says the run stopped for refactor issues, first bring the branch up to main, as step 3 or "Refactors found later" says for the next run. Then continue from the first step not done. When its Progress shows step 9 done, see "After the hand-off".
+- Otherwise create it on a new branch from the latest main, and copy `local.properties` into it: it isn't in git, and it tells Gradle where the Android SDK is. Leave out the `cp` when the checkout has no `local.properties`.
 
   ```bash
   git fetch origin main && git worktree add .claude/worktrees/<issue> -b feature/<issue>-<slug> origin/main && cp local.properties .claude/worktrees/<issue>/
   ```
 
-  The slug is a few lowercase words from the issue title, joined by hyphens, for example `feature/73-reorder-past-order`. Enter the worktree with `EnterWorktree` and its path, then save the issue and its sub-issues in `spec.md`.
+  The slug is a few lowercase words from the issue title, joined by hyphens, for example `feature/73-reorder-past-order`. A refactor issue's branch is `refactor/<issue>-<slug>`. Enter the worktree with `EnterWorktree` and its path, then save the issue and its sub-issues in `spec.md`.
 
 The first build in a new worktree takes longer: it has its own `build/` folders. Gradle's downloaded dependencies are shared.
 
@@ -74,7 +75,7 @@ Write `plan.md` with these sections:
 - **UI**: per screen, its UI state, display models, and one preview per state the spec lists.
 - **Navigation**: routes and back-stack changes in `:app`.
 - **Scenarios and tests**: every scenario, with the test class and test name that will check it. A journey through several screens also gets a Maestro flow, `.maestro/<feature>/<journey>.yaml`, as `.claude/rules/testing.md` says. List the existing flows whose journey the spec changes, too. A scenario only the real app can show, such as a back-stack behavior that lives in `:app`, is checked by its flow alone. A scenario neither can check is marked `not automated`, with the reason.
-- **Refactors**: the refactors the feature needs first, see step 3.
+- **Refactors**: the refactor issues step 3 creates, see step 3.
 - **Calls**: the technical choices a reviewer might question, each with its reason.
 - **Follow-ups**: Code not to copy and refactors you saw that the feature doesn't need.
 - **Test changes**: empty for now (step 6).
@@ -86,21 +87,26 @@ The developer doesn't approve the plan: they review your technical choices at th
 
 ### 3. Refactors first
 
-The feature's PR holds only the feature, so it stays small and easy to review. A refactor, any change to existing code that keeps what the app does, gets its own PR, merged before the feature is built on it.
+The feature's PR holds only the feature. What it needs first is a refactor, with its own issue that blocks the feature, as CLAUDE.md's "Refactors before a feature" says. `/spec` creates them, and step 1 stops while one is open. Code changes between the spec and the build, so check again.
 
-From what you read in step 2, list the refactors the feature needs:
+From what you read in step 2, list the refactors the feature still needs that no issue covers. A refactor the feature doesn't need goes in the plan's Follow-ups. When the feature needs none, go to step 4. Otherwise:
 
-- Test setup, so the tests can be written the way `.claude/rules/testing.md` requires. Each data module the acceptance tests run through has fakes and a `<Feature>TestData` in `src/testFixtures/`. Each screen module the spec changes applies `custom.screenshot.testing`, and its packages start with its namespace: otherwise its previews silently get no screenshot tests. Never work around missing test setup with MockK, a skipped test or a missing preview.
-- Code not to copy that the feature has to change or build on, for example a new event in a ViewModel that still sends its events through a `SharedFlow`.
-- Existing code to reshape so the feature fits, for example a component another screen will reuse, moved into the design system.
+1. List them, one issue each, each small enough to review on its own and with why the feature needs it, for example "Fakes and `OrderTestData` for `:features:order:data`, so the Reorder acceptance tests can run the real chain". Ask "Create these refactor issues?", with the options `Yes` and `No`. On `No`, stop. When the developer answers something else, such as skipping one, follow it, and write each skipped refactor in the plan's Calls and Follow-ups: the feature is then built on the current code. Test setup can't be skipped.
+2. On `Yes`, write each one as a draft, `.claude/implement-drafts/<issue>/refactors/<slug>.md`, following `.github/ISSUE_TEMPLATE/refactor.md` without its frontmatter. The first line is `# Refactor: <what changes>`, each comment is replaced by its section's content, and Prepares says `#<issue>`. Create it with its title from that first line, then mark it as blocking this issue:
 
-A refactor the feature doesn't need goes in the plan's Follow-ups. When the feature needs none, go to step 4. Otherwise:
+   ```bash
+   draft=.claude/implement-drafts/<issue>/refactors/<slug>.md
+   tail -n +2 "$draft" | gh issue create --title "$(head -n 1 "$draft" | sed 's/^# //')" --body-file -
+   ```
 
-1. List them, one PR each, each small enough to review on its own and with why the feature needs it, for example "Fakes and `OrderTestData` for `:features:order:data`, so the Reorder acceptance tests can run the real chain". Ask "Build these refactors first?", with the options `Yes` and `No`. On `No`, stop. When the developer answers something else, such as skipping one, follow it, and write each skipped refactor in the plan's Calls and Follow-ups: the feature is then built on the current code. Test setup can't be skipped. On `Yes`, write each one in the plan's Refactors, with its branch `refactor/<slug>`, before you create anything.
-2. For each one, create its own worktree on `refactor/<slug>` from the latest `origin/main`, the same way as in step 1, under the `.claude/worktrees/` of the checkout the session started in. Enter it with `EnterWorktree` and make the change, following the rules. Remove the lines it fixes from the "Code not to copy" lists. Write what it changes, why, and the issue it prepares in `.claude/implement-drafts/<issue>/refactors/<slug>.md`. Run step 7, then step 8 with that file in place of `spec.md` and `plan.md` and without a test checkpoint. Then commit it on its branch as a local commit, never pushed, for example `refactor: add fakes and OrderTestData to order data`. Enter the feature's worktree again with `EnterWorktree`.
-3. Write each commit's hash next to its refactor in `plan.md`. When a run stopped before that, reuse the existing worktree or branch instead of creating it again. Once all are committed, stop. For each one, give the developer its branch, its worktree and the path of its `refactors/<slug>.md`, and ask them to open its PR from that branch. Tell them to run `/implement <issue>` again once they're merged.
+   ```bash
+   gh api repos/{owner}/{repo}/issues/<issue>/dependencies/blocked_by -X POST -F issue_id="$(gh api repos/{owner}/{repo}/issues/<refactor issue> --jq .id)"
+   ```
 
-On the next run, check that each one is merged: `gh pr list --head refactor/<slug> --state merged --json number --jq length` prints `0` when it isn't. If one isn't, say which and stop. Remove the merged ones' worktrees with `git worktree remove <path>`. Then bring the feature branch up to the new main: `git fetch origin main && git merge --ff-only origin/main` when it has no commits yet, otherwise as "Refactors found later" says. Re-read the code the refactors changed, and update the plan.
+   When a command fails, check with `gh issue list --search "<title>"` whether the issue was created anyway before you run it again.
+3. Write each issue number in the plan's Refactors, and in its Progress that the run stopped for them. Then stop. Give the developer each issue's URL. Tell them to build each one with `/implement <number>`, and to run `/implement <issue>` again once they're closed.
+
+On the next run, once step 1 finds none of them open, bring the feature branch up to the new main: `git fetch origin main && git merge --ff-only origin/main` when it has no commits yet, otherwise as "Refactors found later" says. Re-read the code the refactors changed, and update the plan.
 
 ### 4. UI checkpoint
 
@@ -168,7 +174,7 @@ Handle each finding:
 
 - When the fix is clear, apply it.
 - When it changes what the user sees, or a business rule, ask the developer, one finding per question. Offer the reviewer's fix as the recommended option, and `Not needed` to leave it.
-- When it's a refactor in the feature's diff, take it out: into its own branch as "Refactors found later" says when the feature needs it, otherwise into Follow-ups.
+- When it's a refactor in the feature's diff, take it out: into its own refactor issue as "Refactors found later" says when the feature needs it, otherwise into Follow-ups.
 
 After changes, run step 7's checks again, rewrite the review files, and run the next round, until the verdict is `CLEAN`. When round 3 still has findings, handle them the same way, run step 7's checks again, and stop reviewing. List those last fixes in the plan's Calls, so the developer reviews them.
 
@@ -197,12 +203,24 @@ When the UI checkpoint, the build or the review shows that the feature needs a r
 
 1. Commit the work in progress as a local commit, never pushed: `git add -A && git commit -m "wip: #<issue>"`. Write the step you were at in the plan's Progress.
 2. Handle the refactor as step 3 says, from its question on.
-3. On the next run, once its PR is merged, bring the feature branch up to the new main with `git fetch origin main && git rebase origin/main`. The branch was never pushed, so the rebase rewrites nothing anyone else has. Undo the WIP commit with `git reset --soft HEAD~1`. When the plan has a test checkpoint, write its new hash: `git log -1 --format=%h --grep='^test: checkpoint for #<issue>$'`. Re-read the code the refactor changed, and continue from the step you were at.
+3. On the next run, once its issue is closed, bring the feature branch up to the new main with `git fetch origin main && git rebase origin/main`. The branch was never pushed, so the rebase rewrites nothing anyone else has. Undo the WIP commit with `git reset --soft HEAD~1`. When the plan has a test checkpoint, write its new hash: `git log -1 --format=%h --grep='^test: checkpoint for #<issue>$'`. Re-read the code the refactor changed, and continue from the step you were at.
 
 Once the branch is pushed, it never gets rebased: a refactor found then goes in Follow-ups, for its own PR after this one.
+
+## Refactor issues
+
+A refactor issue asks for one change to existing code that keeps what the app does. Build it with the steps above, with these differences:
+
+- Step 1: `spec.md` holds the refactor issue.
+- Step 2: read the code its Change names. The plan has only Modules, Calls, Follow-ups, Test changes, Verification and Progress.
+- Skip steps 3, 4 and 5: a refactor has no screens to approve and no scenarios. A refactor that adds test setup, such as fakes and a `<Feature>TestData`, gets tests of its own only where `.claude/rules/testing.md` asks for them.
+- Step 6: make the change its Change describes, and remove the lines it fixes from the "Code not to copy" lists. An existing test's expected value, a Maestro flow and a reference image never change. When one has to, the change isn't a refactor: stop and tell the developer.
+- Step 7: when the change touches app code, not only tests, run `scripts/e2e.sh smoke` last, so the core journeys still work.
+- Step 8: give the reviewer `spec.md`, `changes.diff` and `screenshots.md`, and say it's a refactor issue. There is no test checkpoint.
+- Step 9: commit it as `refactor: <what changes> (#<issue>)`. Tell the developer that its PR closes the issue with `Closes #<issue>`, which unblocks every issue it blocks.
 
 ## After the hand-off
 
 - When the developer asks for a change, make it, run step 7's checks, and commit it as a new local commit. Update the plan's sections it affects.
-- When the run starts again, check whether the feature's PR is merged: `gh pr list --head feature/<issue>-<slug> --state merged --json number --jq length` prints `0` when it isn't. Until then, tell the developer the branch is ready for its PR, and stop.
-- Once it's merged, leave the worktree with `ExitWorktree` and `keep`, then remove it with `git worktree remove .claude/worktrees/<issue>`, which also deletes its notes, and delete its branch with `git branch -D feature/<issue>-<slug>`.
+- When the run starts again, check whether the branch's PR is merged: `gh pr list --head <branch> --state merged --json number --jq length` prints `0` when it isn't. Until then, tell the developer the branch is ready for its PR, and stop.
+- Once it's merged, leave the worktree with `ExitWorktree` and `keep`, then remove it with `git worktree remove .claude/worktrees/<issue>`, which also deletes its notes, and delete its branch with `git branch -D <branch>`.
