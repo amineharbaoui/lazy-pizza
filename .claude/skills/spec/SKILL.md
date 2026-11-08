@@ -108,7 +108,9 @@ When it is done, print the full draft in the conversation, followed by your call
 
 ### 7. Create the issue
 
-Create it once, from the draft. The title comes from the draft's first line, so it is never retyped into the command:
+Create it once, from the draft. Before each `gh issue create` below, and before you run a failed command again, check whether that issue exists already, for example from a run that stopped right after creating it: `gh issue list --search "$(head -n 1 "$draft" | sed 's/^# //')"`. Use the issue you find instead of creating it again.
+
+The title comes from the draft's first line, so it is never retyped into the command:
 
 ```bash
 draft=.claude/spec-drafts/<feature-slug>/spec.md
@@ -126,7 +128,6 @@ gh api repos/{owner}/{repo}/issues/<parent number>/sub_issues -X POST -F sub_iss
 
 Then:
 
-- If a command fails, check whether the issue was created anyway before you run it again, again taking the title from the draft: `gh issue list --search "$(head -n 1 "$draft" | sed 's/^# //')"`.
 - Check the issue body with `gh issue view <number>`: it must not contain a `.claude/spec-drafts/` path. If it does, a sketch didn't upload: keep the draft folder and tell the developer which sketch is missing.
 - Give the developer the issue URL.
 - Write the issue's URL, and each sub-issue's, in `.claude/spec-drafts/<feature-slug>/issue.md`. A later `/spec` that continues this draft then goes to step 8 with that issue, instead of creating it again.
