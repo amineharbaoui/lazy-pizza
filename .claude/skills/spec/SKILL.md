@@ -108,7 +108,7 @@ When it is done, print the full draft in the conversation, followed by your call
 
 ### 7. Create the issue
 
-Create it once, from the draft. Before each `gh issue create` below, and before you run a failed command again, check whether that issue exists already, for example from a run that stopped right after creating it: `gh issue list --search "$(head -n 1 "$draft" | sed 's/^# //')"`. Use the issue you find instead of creating it again.
+Create it once, from the draft. Before each `gh issue create` below, and before you run a failed command again, check whether that issue exists already, for example from a run that stopped right after creating it: `gh issue list --search "$(head -n 1 "$draft" | sed 's/^# //')"`. The search also matches other issues with the same words: only an issue whose title is exactly the draft's title is that issue. Use it instead of creating it again.
 
 The title comes from the draft's first line, so it is never retyped into the command:
 
@@ -125,6 +125,8 @@ For sub-issues, create the parent first, then each sub-issue the same way, then 
 ```bash
 gh api repos/{owner}/{repo}/issues/<parent number>/sub_issues -X POST -F sub_issue_id="$(gh api repos/{owner}/{repo}/issues/<sub-issue number> --jq .id)"
 ```
+
+When a sub-issue existed already, first check whether it's linked, with `gh api --paginate repos/{owner}/{repo}/issues/<parent number>/sub_issues --jq '.[].number'`, and link it only when it isn't.
 
 Then:
 
