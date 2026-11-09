@@ -25,7 +25,7 @@ paths:
 
 - Immutable. A sealed interface `<Name>UiState` when the screen has distinct phases (`Loading`, `Ready`, `Error`), with `data object` for a phase without data.
 - One-off outcomes, such as navigating or showing a message, are state too, as Google recommends. A nullable field, for example `navigation: CheckoutNavigation?`, is handled by the screen in a `LaunchedEffect`, which then clears it with `viewModel.navigationHandled()`. No `SharedFlow` or `Channel` of events.
-- Display models are named `<Noun>DisplayModel` and carry text ready to show. Prices are formatted with `CurrencyFormatter`.
+- Display models are named `<Noun>DisplayModel` and carry values ready to show: names, dates, and prices formatted with `CurrencyFormatter`. A text that wraps them, such as `Order #%1$s`, is a `strings.xml` template the composable fills with `stringResource`.
 - An error in the state is a type, such as an enum or a sealed interface. The screen picks its text from `strings.xml`.
 
 ## Design system
