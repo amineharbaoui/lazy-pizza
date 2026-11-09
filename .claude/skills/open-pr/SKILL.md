@@ -54,13 +54,13 @@ Use the issue's notes from `/implement`, in `.claude/implement-drafts/<issue>/` 
 - Enter the worktree with `EnterWorktree` and its path, unless `/implement` sent you here from it, and read `plan.md`. When its Progress doesn't show `/implement` step 9 done, stop and tell the developer to finish the run with `/implement <issue>`.
 - Look for PRs already opened. A run can stop between a push and its note in the plan, so read GitHub as well as the plan's Pull requests: `gh pr list --head <branch> --state all --json number,state,headRefOid,url`, for the worktree's branch (`git branch --show-current`) and for each stack part's branch, `<branch>-domain` and `<branch>-data`. Write in the plan any PR it doesn't list yet.
 - When a PR's `headRefOid` isn't the commit its local branch points at, stop. When `git merge-base --is-ancestor <headRefOid> <local branch>` passes, the local branch has commits the PR doesn't, such as a fix made with `/implement` after the PR opened: tell the developer which ones, from `git log --oneline <headRefOid>..<local branch>`. Otherwise someone else pushed to the branch: ask the developer.
-- Otherwise, go by what you found:
+- Otherwise, go by what you found, in this order, and take the first case that matches:
   - No PR, and `git ls-remote --heads origin <branch>` shows nothing: go to step 2.
-  - A branch is pushed, but not every part has its PR: when the plan's Pull requests record the developer's `Open` from step 6, a run stopped while opening, so go to step 7 and do only what's missing. Otherwise the branch was pushed without `/open-pr`: stop and ask the developer.
-  - Every PR is open: when the plan's Pull requests show each PR's description set in step 7, give the developer their URLs and stop. Otherwise go to step 7 and finish the edits.
+  - A PR is closed without a merge: tell the developer, and stop. Never reopen it yourself.
   - The top part's PR, on the issue's branch, is merged: tell the developer to run `/implement <issue>`, which cleans up, and stop.
   - Only a lower part's PR is merged: give the developer the URLs of the open ones, name any part with no PR yet, and stop.
-  - A PR is closed without a merge: tell the developer, and stop. Never reopen it yourself.
+  - Every PR is open, and the plan's Pull requests show each one's description set in step 7: give the developer their URLs and stop.
+  - Otherwise a branch is pushed, but a part has no PR or a description isn't set yet. When the plan's Pull requests record the developer's `Open` from step 6, a run stopped while opening. Run `git hash-object` on each description file and video the plan lists: when every hash matches the one recorded with `Open`, go to step 7 and do only what's missing. When one changed, the developer hasn't seen what's there now: go back to step 6 and ask again. Without the `Open` record, the branch was pushed without `/open-pr`: stop and ask the developer.
 
 ### 2. Bring the branch up to main
 
@@ -101,10 +101,11 @@ Build the lower parts from the folded commit, bottom up. A lower part's branch c
 ```bash
 git switch -c <branch>-domain origin/main
 git diff --binary origin/main <branch> -- '<module dir>' '<module dir>' | git apply --index
+# Remove the lines that belong to a part above, then: git add '<build file>'
 git commit -m "feat: add the domain of <feature> (#<issue>)"
 ```
 
-The paths are the part's module directories, such as `'features/order/domain'`, each quoted, plus `'settings.gradle.kts'` and `'gradle/libs.versions.toml'` when this is the lowest part that needs their change. When such a file also holds lines for a part above, such as the `include` of a screen module, remove those lines before the commit. Right after each lower part's commit, run the checks of `/implement` step 7 that apply to it: always `./gradlew unitTestAll verifyRoborazziDebug assembleDebug`, `./gradlew buildHealth` when it changes a build file, and the Maestro flows of the features it touches when it changes code an existing screen runs. The next part starts from the one below it instead of `origin/main`, and takes its paths the same way. Then put the top part on the part right below it, with its own commit:
+The paths are the part's module directories, such as `'features/order/domain'`, each quoted, plus `'settings.gradle.kts'` and `'gradle/libs.versions.toml'` when this is the lowest part that needs their change. When such a file also holds lines for a part above, such as the `include` of a screen module, remove those lines and stage the file again with `git add`, before the commit. Right after each lower part's commit, run the checks of `/implement` step 7 that apply to it: always `./gradlew unitTestAll verifyRoborazziDebug assembleDebug`, `./gradlew buildHealth` when it changes a build file, and the Maestro flows of the features it touches when it changes code an existing screen runs. The next part starts from the one below it instead of `origin/main`, and takes its paths the same way. Then put the top part on the part right below it, with its own commit:
 
 ```bash
 git switch <branch> && git reset --soft <part below> && git commit -m "<step 3 message>"
@@ -150,14 +151,14 @@ Suggest up to 2 reviewers: the people who most recently changed the modules the 
 Print, for each PR: its title, its branch and base, the number of files it changes, and its description. Then the reviewers. Open the videos with one `open <paths>` call, so the developer watches them before they go public. Then ask "Open the PR?", or "Open the stacked PRs?" for a stack, with the options:
 
 - `Open` (Recommended)
-- `Change something`: apply a change to the split, a title, a description, the videos or the reviewers, then show and ask again. A change to the code goes through `/implement <issue>`, which runs the checks: stop, and tell the developer to run `/open-pr <issue>` again after it.
-- for a stack, `One PR instead`: delete the lower parts' branches with `git branch -D`, fold the top part into one commit again with step 3, and go back to step 4 without splitting
+- `Change something`: apply a change to the split while nothing is pushed, a title, a description, the videos or the reviewers, then show and ask again. A change to the code goes through `/implement <issue>`, which runs the checks: stop, and tell the developer to run `/open-pr <issue>` again after it.
+- for a stack with nothing pushed yet, `One PR instead`: delete the lower parts' branches with `git branch -D`, fold the top part into one commit again with step 3, and go back to step 4 without splitting
 
-On `Open`, write in the plan's Pull requests that the developer chose it, with the description files and reviewers they approved, before you push anything.
+On `Open`, write in the plan's Pull requests that the developer chose it, with the reviewers they approved and each description file and video they approved, with its `git hash-object <file>`, before you push anything. Step 1 compares these hashes when a run stopped while opening.
 
 ### 7. Open
 
-When step 1 sent you here to finish an opening that stopped, skip the pushes and PRs already done.
+When you're finishing an opening that stopped, skip the pushes and PRs already done.
 
 One PR:
 
