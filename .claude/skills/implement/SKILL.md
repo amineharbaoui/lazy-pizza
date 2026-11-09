@@ -40,6 +40,23 @@ Keep your notes in `.claude/implement-drafts/<issue>/`, inside the issue's workt
 - `plan.md`: the technical plan (step 2), with a Progress list of the steps done, so a later run can resume
 - `review/`: the files the reviewer reads (step 8)
 
+## Commits
+
+The branch's commits are what the reviewer reads, one at a time, and rebase merge puts each one on main as it is. So each commit holds one concern a reviewer checks on its own, and each one builds and passes on its own:
+
+- Commits go inside out, following the layers: each one uses only what the commits before it add. A layer with several concerns gets several commits.
+- Tests go in the commit of the code they check. A ViewModel's acceptance tests go with the ViewModel, a flow with the last commit its journey needs.
+- A mechanical change, such as a move, a rename or images recorded again, gets its own commit, so the reviewer can skim it.
+- Each message says what the commit does and ends with the issue, for example `feat: add the reorder use case (#80)`.
+
+**A feature**, for example Reorder: the use case and its test; the repository change, its fake and test; the ViewModel's reorder action and its acceptance tests; the Reorder button with its strings and reference images; the navigation to the cart in `:app` with its Maestro flow. Step 9 makes them.
+
+**A refactor issue** gets one commit per step, made in step 6 as each step passes: a pure move or rename first, then any tests that pin today's behavior, then one change per commit. For example: move the screen to its namespace's package, add the screenshot tests of its previews, rename its display models, take its texts from `strings.xml`, derive its state without an `onStart` collector.
+
+A feature's local commits on the way, the screens and the test checkpoint, are working steps that step 9 replaces: they never reach the PR. Its checkpoint is what proves the tests weren't bent to pass, so it stays on the branch until the review is over.
+
+A fix to a step already committed goes into that commit, never on top: `git commit --fixup <commit>`, then `git -c sequence.editor=: rebase -i --autosquash "$(git merge-base origin/main HEAD)"`. The branch is never pushed before `/open-pr`, so this rewrites nothing anyone else has. Once the PR is open, a fix is a new commit on top.
+
 ## Steps
 
 ### 1. Start
@@ -136,7 +153,7 @@ When the spec's UI section is `None.`, go to step 5.
 
 ### 6. Build
 
-Build from the inside out: domain, data, then the ViewModel and the screen's wiring, then the navigation in `:app`. Run the module's tests as you go. Don't commit before step 9.
+Build from the inside out: domain, data, then the ViewModel and the screen's wiring, then the navigation in `:app`. Run the module's tests as you go. A feature commits nothing more before step 9. A refactor issue commits each step once its modules' tests pass, as "Commits" says.
 
 - Follow CLAUDE.md and `.claude/rules/`. Change existing code only as far as the spec's behavior needs, and never refactor on the feature branch. When the feature turns out to need a refactor, see "Refactors found later". Add any other refactor you see to the plan's Follow-ups.
 - When a test fails, decide whether the code or the test is wrong. A test may change to follow a rename or to fix a wrong fixture. It never loses an assertion, gets a looser expected value, or gets deleted or disabled to pass. Until its first pass, a Maestro flow may also change its mechanics, such as a selector, a wait or a scroll, never what it checks. Write every test change and its reason in the plan's Test changes.
@@ -183,11 +200,30 @@ After changes, run step 7's checks again, rewrite the review files, and run the 
 
 The build ends here, on a local branch. Never push it yourself: only `/open-pr` pushes it.
 
-1. Commit the rest of the work as a local commit, never pushed, for example `feat: reorder a past order (#73)`. Keep the test checkpoint as its own commit.
-2. Write the end of step 7's output in the plan's Verification, with the commit it checked: `git rev-parse --short HEAD`. From `scripts/e2e.sh`, write only its per-flow lines, never a line from Maestro's logs: they can show the test phone number.
-3. Mark step 9 done in `plan.md`.
-4. Give the developer the branch, the worktree and the commits (`git log --oneline origin/main..HEAD`). Then the Calls, the Test changes, the Spec changes, the Follow-ups, any screenshot outside the spec's screens, and the Verification. Point them to `plan.md` for the scenarios and their tests.
-5. Ask "Open the pull request now?", and tell the developer they can also open it later with `/open-pr <issue>`. The options:
+1. Shape the commits, as "Commits" says. For a feature, build them from the checked tree, inside out:
+
+   ```bash
+   git add -A && git commit -m "wip: #<issue>" && checked=$(git rev-parse HEAD)
+   # Write $checked in the plan's Progress, so a run that stops here starts again from it.
+   git reset --hard "$(git merge-base origin/main HEAD)"
+   git diff --binary HEAD "$checked" -- '<path>' '<path>' | git apply --index
+   # Remove the lines that belong to a later commit, then: git add '<build file>'
+   git commit -m "feat: add the reorder use case (#80)"
+   ```
+
+   The paths are the commit's files or directories, such as `'features/order/domain'`, each quoted, plus `'settings.gradle.kts'` and `'gradle/libs.versions.toml'` when this is the first commit that needs their change. When such a file also holds lines for a later commit, such as the `include` of a screen module, remove those lines and stage it again before the commit. Two concerns in the same file stay in one commit. Each next commit takes its paths the same way. The last commit takes everything left, and its tree must be the checked one:
+
+   ```bash
+   git diff --binary HEAD "$checked" | git apply --index && git commit -m "feat: open the cart after a reorder (#80)"
+   git diff --quiet "$checked" HEAD
+   ```
+
+   A refactor issue's commits are already made: `git status --porcelain` must print nothing.
+2. Check every commit on its own, in one command: `git rebase --exec "./gradlew unitTestAll verifyRoborazziDebug assembleDebug" "$(git merge-base origin/main HEAD)"`, with `buildHealth` added to the Gradle tasks when a commit changes a build file. The last commit's tree passed step 7, Maestro included. When a commit fails, run `git rebase --abort` and fold it into the commit after it, keeping that commit's message, for example because it changes a signature the next commit's code calls. Then check again.
+3. Write the end of step 7's output in the plan's Verification, with the commit it checked, `git rev-parse --short HEAD`, and each commit with the end of its check. From `scripts/e2e.sh`, write only its per-flow lines, never a line from Maestro's logs: they can show the test phone number.
+4. Mark step 9 done in `plan.md`.
+5. Give the developer the branch, the worktree and the commits (`git log --oneline origin/main..HEAD`). Then the Calls, the Test changes, the Spec changes, the Follow-ups, any screenshot outside the spec's screens, and the Verification. Point them to `plan.md` for the scenarios and their tests.
+6. Ask "Open the pull request now?", and tell the developer they can also open it later with `/open-pr <issue>`. The options:
    - `Open it now` (Recommended): nothing goes public yet, because `/open-pr` shows the description, the reviewers and the videos, and asks once more before it pushes. Read `.claude/skills/open-pr/SKILL.md` and follow it for this issue from its step 1. You're already in the worktree.
    - `Later`: stop, and tell them to run `/open-pr <issue>` once they've reviewed the branch.
 
@@ -227,10 +263,10 @@ A refactor issue asks for one change to existing code that keeps what the app do
 - Step 6: make the change its Change describes, and remove the lines it fixes from the "Code not to copy" lists. An existing test's expected value, a Maestro flow and a reference image never change. When one has to, the change isn't a refactor: stop and tell the developer.
 - Step 7: when the change touches app code, not only tests, run `scripts/e2e.sh smoke` last, the way its item 4 runs the flows: in a command of its own, with a 10-minute timeout. The core journeys must still work.
 - Step 8: there is no test checkpoint, so write only `changes.diff` and `screenshots.md`. Give the reviewer those and `spec.md`, without `plan.md`, and say it's a refactor issue.
-- Step 9: commit it as `refactor: <what changes> (#<issue>)`. When you ask whether to open its PR, say that the PR closes the issue, which unblocks every issue it blocks.
+- Step 9: its commits are the steps made in step 6, each `refactor: <what the step changes> (#<issue>)` or `test: <what it pins> (#<issue>)`. When you ask whether to open its PR, say that the PR closes the issue, which unblocks every issue it blocks.
 
 ## After the hand-off
 
-- When the developer asks for a change, make it, run step 7's checks, and commit it as a new local commit. Update the plan's sections it affects, and the commit its Verification names.
+- When the developer asks for a change, make it and commit it into the commit it belongs to, as "Commits" says. Run step 7's checks and step 9's check of every commit again. Update the plan's sections it affects, and the commit its Verification names. Once the PR is open, commit the change on top instead.
 - When the run starts again, check whether the branch's PR is merged: `gh pr list --head <branch> --state merged --json number --jq length` prints `0` when it isn't. Until then, look for its open PR with `gh pr list --head <branch> --json url --jq '.[].url'`. When there is one, give its URL and stop. When there is none, ask step 9's "Open the pull request now?" again.
 - Once it's merged, leave the worktree with `ExitWorktree` and `keep`, then remove it with `git worktree remove .claude/worktrees/<issue>`, which also deletes its notes, and delete its branch with `git branch -D <branch>`.
