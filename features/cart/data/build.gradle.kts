@@ -8,6 +8,8 @@ plugins {
 android {
     namespace = "com.example.cart.data"
 
+    testFixtures { enable = true }
+
     buildFeatures { buildConfig = true }
 
     buildTypes {
@@ -31,4 +33,7 @@ dependencies {
 
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.firestore)
+
+    testFixturesApi(projects.features.cart.domain)
+    testFixturesImplementation(libs.kotlinx.coroutines.core)
 }
