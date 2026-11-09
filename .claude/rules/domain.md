@@ -22,5 +22,4 @@ paths:
 ## Code not to copy
 
 - `PlaceOrderUseCase` and `SignInWithSmsCodeUseCase` return `Result<T>` carrying raw Firebase exceptions.
-- `ObserveOrdersUseCase` calls `Instant.now()` instead of reading an injected `Clock`.
 - Prices in the cart, menu and order models are still `Double`. Moving them to `Money` is a separate task.
