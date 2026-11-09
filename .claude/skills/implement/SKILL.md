@@ -215,7 +215,7 @@ The build ends here, on a local branch. Never push it yourself: only `/open-pr` 
    git commit -m "feat: add the reorder use case (#80)"
    ```
 
-   The paths are the commit's files or directories, such as `'features/order/domain'`, each quoted, plus `'settings.gradle.kts'` and `'gradle/libs.versions.toml'` when this is the first commit that needs their change. When such a file also holds lines for a later commit, such as the `include` of a screen module, remove those lines and stage it again before the commit. Two concerns in the same file stay in one commit. Each next commit takes its paths the same way. The last commit takes everything left, and its tree must be the checked one:
+   The paths are the commit's files or directories, such as `'features/order/domain'`, each quoted, plus `'settings.gradle.kts'` and `'gradle/libs.versions.toml'` when this is the first commit that needs their change. When such a file also holds lines for a later commit, such as the `include` of a screen module, remove those lines with Edit, so the ktlint hook lints what's left, and stage it again before the commit. Two concerns in the same file stay in one commit. Each next commit takes its paths the same way. The last commit takes everything left, and its tree must be the checked one:
 
    ```bash
    git diff --binary HEAD <checked> | git apply --index && git commit -m "feat: open the cart after a reorder (#80)"
