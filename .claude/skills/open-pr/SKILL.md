@@ -9,7 +9,7 @@ disable-model-invocation: true
 
 Open the pull request for an issue `/implement` built and handed off. Two things matter most:
 
-- **Small PRs.** A person reviews each PR in one careful sitting. When the change is too big for that, it opens as stacked PRs.
+- **Small PRs.** A person reviews each PR in one careful sitting, one small commit at a time. When the change is too big for that, it opens as stacked PRs, cut between commits.
 - **A short description.** It gives the reviewer what they need and nothing more: the issue it closes, what changed and why, the screens before and after, and recordings of what the flows test. Everything else folds into one collapsed Details section, for AI tools and for anyone who wants the detail.
 
 `/implement` offers to run it at the end of its hand-off, and the developer can also run it any time later. The run ends once the PR is open. Reviews and the merge happen on GitHub. Once the PR is merged, `/implement <issue>` cleans up its worktree.
@@ -66,59 +66,35 @@ Use the issue's notes from `/implement`, in `.claude/implement-drafts/<issue>/` 
 
 - `git status --porcelain` must print nothing. When it lists changes, stop and tell the developer: a change after the hand-off is committed with `/implement`, which runs the checks first.
 - Read the issue with `gh issue view <issue> --json state,body`. It must be open, with no open issue blocking it, checked as `/implement` step 1 does.
-- Run `git fetch origin main`. When `git merge-base --is-ancestor origin/main HEAD` fails, main moved: run `git rebase origin/main`. The branch was never pushed, so the rebase rewrites nothing anyone else has.
+- Run `git fetch origin main`. When `git merge-base --is-ancestor origin/main HEAD` fails, main moved: run `git rebase --exec "./gradlew unitTestAll verifyRoborazziDebug assembleDebug" origin/main`, so every commit is checked again on the new main. The branch was never pushed, so the rebase rewrites nothing anyone else has. When a commit fails its check, stop and tell the developer to fix it with `/implement <issue>`.
   - Resolve a conflict yourself only when what both sides intend is clear, such as two imports or two entries added to the same list. Otherwise, and always for a reference image, run `git rebase --abort` and ask the developer.
-- The plan's Verification names the commit its checks ran on. When `HEAD` is a different commit, after the rebase or a later local commit, run `/implement` step 7's checks again, Maestro included when it applies, and write their output and the new commit in the plan's Verification.
+- The plan's Verification names the commit its checks ran on. When `HEAD` is a different commit, after the rebase, run `/implement` step 7's checks again on it, Maestro included when it applies, and write their output and the new commits in the plan's Verification.
 
-### 3. Shape the commits
+### 3. Check the commits
 
-Rebase merge puts every commit of the PR on main, so each one must build and pass. `/implement` leaves several local commits: the screens, the test checkpoint, the feature, and any change made after the hand-off. Only their sum passed the checks. Fold them into one:
-
-```bash
-git reset --soft "$(git merge-base origin/main HEAD)" && git commit -m "<message>"
-```
-
-The message is the subject of `/implement`'s step 9 commit, for example `feat: reorder a past order (#73)` or `refactor: add fakes to the order data (#82)`. The tree doesn't change, so the checks still hold: write the new commit in the plan's Verification.
-
-The tests stay honest without the checkpoint commit: the plan's Test changes lists every test changed after it was written, and the description shows that list.
+`/implement` leaves the commits the PR keeps: one per concern, inside out, each checked on its own (its "Commits" section and step 9). Never fold, reorder or rewrite them. Run `git log --oneline origin/main..HEAD`: when it shows a `wip:` commit or the `test: checkpoint` commit, the build wasn't handed off cleanly, so stop and tell the developer to finish it with `/implement <issue>`.
 
 ### 4. One PR or stacked PRs
 
 A refactor issue is always one PR: it was cut small when it was written.
 
-For a feature, judge whether a person can review the whole change in one careful sitting, under an hour. Read `git diff --stat origin/main...HEAD -- . ':(exclude)*.png'` and the diff itself. Split it when it mixes concerns, when a risky part hides in routine code, or when the reviewer would have to check more than 3 things. Mechanical or repetitive changes, such as reference images, a new module's build file or a renamed parameter, don't count toward the size.
+For a feature, judge whether a person can review the whole change in one careful sitting, under an hour, reading it commit by commit. Read `git diff --stat origin/main...HEAD -- . ':(exclude)*.png'` and the diff itself. Split it when it mixes concerns, when a risky part hides in routine code, or when the reviewer would have to check more than 3 things. Mechanical or repetitive changes, such as reference images, a new module's build file or a renamed parameter, don't count toward the size.
 
-A split is a GitHub stack, cut inside out. Each part depends only on the parts below it:
-
-1. **Domain**: the `:domain` modules and any `:core:*` change.
-2. **Data**: the `:data` modules, their fakes and their tests.
-3. **Screen**: the `:ui-*` modules, `:app` and its navigation, the acceptance tests, the Maestro flows and the reference images.
-
-Leave out a part with nothing in it. A build file, `settings.gradle.kts` or `gradle/libs.versions.toml` change goes in the lowest part that needs it. The top part keeps the issue's branch name. Each part below gets that name with its suffix, `-domain` or `-data`, for example `feature/73-reorder-past-order-domain`.
-
-Build the lower parts from the folded commit, bottom up. A lower part's branch can be left from an earlier run that stopped before step 7: when `git rev-parse --verify --quiet <branch>-domain` finds one and `git ls-remote --heads origin <branch>-domain` doesn't, delete it with `git branch -D` and build it again. The same goes for `-data`.
+A split is a GitHub stack, cut between commits, never inside one: each part takes one or more commits in a row, often cut where a layer ends, such as the domain and the data below the screen. Each commit already passed the checks on its own. The top part keeps the issue's branch name. Each part below gets a branch at its last commit, named with its layer's suffix, `-domain` or `-data`, for example `feature/73-reorder-past-order-domain`:
 
 ```bash
-git switch -c <branch>-domain origin/main
-git diff --binary origin/main <branch> -- '<module dir>' '<module dir>' | git apply --index
-# Remove the lines that belong to a part above, then: git add '<build file>'
-git commit -m "feat: add the domain of <feature> (#<issue>)"
+git branch <branch>-domain <last domain commit>
+git branch <branch>-data <last data commit>
 ```
 
-The paths are the part's module directories, such as `'features/order/domain'`, each quoted, plus `'settings.gradle.kts'` and `'gradle/libs.versions.toml'` when this is the lowest part that needs their change. When such a file also holds lines for a part above, such as the `include` of a screen module, remove those lines and stage the file again with `git add`, before the commit. Right after each lower part's commit, run the checks of `/implement` step 7 that apply to it: always `./gradlew unitTestAll verifyRoborazziDebug assembleDebug`, `./gradlew buildHealth` when it changes a build file, and the Maestro flows of the features it touches when it changes code an existing screen runs. The next part starts from the one below it instead of `origin/main`, and takes its paths the same way. Then put the top part on the part right below it, with its own commit:
-
-```bash
-git switch <branch> && git reset --soft <part below> && git commit -m "<step 3 message>"
-```
-
-The top part is the whole feature, already checked in step 2. When a part doesn't pass alone, for example because the domain changes a signature the screen calls, merge it into the part above and build again. When one part is left, it's one PR.
+A lower part's branch can be left from an earlier run that stopped before step 7: when `git rev-parse --verify --quiet <branch>-domain` finds one and `git ls-remote --heads origin <branch>-domain` doesn't, delete it with `git branch -D` and create it again. The same goes for `-data`.
 
 ### 5. Write the description
 
 Write it in `.claude/implement-drafts/<issue>/pr/`, following `.github/pull_request_template.md` without its comments. Take the content from `plan.md`, the issue and the diff. Write for a reviewer who hasn't read the plan, in short sentences. The template says which sections each kind of PR requires: keep those, and the optional ones that apply, each with its `##` title. `/open-pr` opens a feature or a refactor.
 
 - **Issue**: `Closes #<issue>`, and a `Closes #<sub-issue>` line for each sub-issue. A refactor says `Closes #<issue>`, then `Unblocks #<number>` for each issue it blocks, from `gh api --paginate repos/{owner}/{repo}/issues/<issue>/dependencies/blocking --jq '.[] | "#\(.number)"'`.
-- **What changed**: first why, in two to four lines. For a feature, the problem it solves for the user and the business, from the spec's Why. For a refactor, what the feature it unblocks can't do cleanly without it. Then the architecture decisions, as bullets, each with its reason, from the plan's Calls and Modules: a new module, where a rule lives, how data flows between layers, a schema change, a new dependency. Leave out choices that follow the rules as written. Add a Mermaid diagram when it helps: a `flowchart` of the modules and their dependencies when the change adds a module or a dependency, a `sequenceDiagram` when data crosses several layers, a `flowchart` of the screens when navigation changes. Draw only what the change touches, color it by what the PR does to each part as the template says, and keep it under about 12 nodes. Put it under the bullets, collapsed in its own block, so the section stays short to read: `<details><summary>Diagram: <what it shows></summary>`, the ```` ```mermaid ```` block, then `</details>`. GitHub draws the diagram when the reviewer opens it.
+- **What changed**: first why, in two to four lines. For a feature, the problem it solves for the user and the business, from the spec's Why. For a refactor, what the feature it unblocks can't do cleanly without it. Then the architecture decisions, as bullets, each with its reason, from the plan's Calls and Modules: a new module, where a rule lives, how data flows between layers, a schema change, a new dependency. Leave out choices that follow the rules as written. Add a Mermaid diagram when it helps: a `flowchart` of the modules and their dependencies when the change adds a module or a dependency, a `sequenceDiagram` when data crosses several layers, a `flowchart` of the screens when navigation changes. Draw only what the change touches, color it by what the PR does to each part as the template says, and keep it under about 12 nodes. Put it under the bullets, collapsed in its own block, so the section stays short to read: `<details><summary>Diagram: <what it shows></summary>`, the ```` ```mermaid ```` block, then `</details>`. GitHub draws the diagram when the reviewer opens it. When the PR has several commits, end the section with one line asking the reviewer to read it commit by commit.
 - **Screenshots**, only for a feature that adds or changes reference images: one row per preview whose images the PR adds or changes, `| Screen | Before | After |`. When a preview has several variants, show the light phone one here: the full list goes in Details.
 - **Screen recordings**, only for a feature that adds or changes Maestro flows: one video per flow the PR adds or changes, each under a one-line caption saying what it tests (see "Recordings" below).
 - **Details**: under its `## Details` title, one `<details>` block, `<summary>Tests, verification and follow-ups</summary>`, with the subsections the template requires for the PR's kind. Scenarios and tests is the plan's table. Changed screenshots lists every image added, changed or deleted, with the reason for any outside the spec's screens. Tests changed after they were written, and Spec changes for a feature, show even when empty, as `None.`, so the reviewer knows the tests weren't bent to pass.
@@ -134,7 +110,7 @@ In a stack:
 - Each part's Issue section says `Part <n> of <m> of #<issue>`. The part has its own What changed, and Details with its Verification.
 - Only the top part closes the issue, and carries the Screenshots, the Screen recordings and the full Details.
 
-The PR title is the commit message from step 3. In a stack, each part's title is its own commit message.
+The PR title says what the issue delivers, from its title, for example `feat: reorder a past order (#73)` or `refactor: clean up the Orders screen module (#81)`. In a stack, each lower part's title says what its commits add, like its commit message.
 
 #### Recordings
 
@@ -151,8 +127,8 @@ Suggest up to 2 reviewers: the people who most recently changed the modules the 
 Print, for each PR: its title, its branch and base, the number of files it changes, and its description. Then the reviewers. Open the videos with one `open <paths>` call, so the developer watches them before they go public. Then ask "Open the PR?", or "Open the stacked PRs?" for a stack, with the options:
 
 - `Open` (Recommended)
-- `Change something`: apply a change to the split while nothing is pushed, a title, a description, the videos or the reviewers, then show and ask again. A change to the code goes through `/implement <issue>`, which runs the checks: stop, and tell the developer to run `/open-pr <issue>` again after it.
-- for a stack with nothing pushed yet, `One PR instead`: delete the lower parts' branches with `git branch -D`, fold the top part into one commit again with step 3, and go back to step 4 without splitting
+- `Change something`: apply a change to where the stack is cut while nothing is pushed, a title, a description, the videos or the reviewers, then show and ask again. A change to the code goes through `/implement <issue>`, which runs the checks: stop, and tell the developer to run `/open-pr <issue>` again after it.
+- for a stack with nothing pushed yet, `One PR instead`: delete the lower parts' branches with `git branch -D`. The issue's branch already holds every commit, so write its description again with step 5, as one PR, then show and ask again
 
 On `Open`, write in the plan's Pull requests that the developer chose it, with the reviewers they approved and each description file and video they approved, with its `git hash-object <file>`, before you push anything. Step 1 compares these hashes when a run stopped while opening.
 
