@@ -111,14 +111,16 @@ The top part is the whole feature, already checked in step 2. When a part doesn'
 
 ### 5. Write the description
 
-Write it in `.claude/implement-drafts/<issue>/pr/`, following `.github/pull_request_template.md` without its comments. Take the content from `plan.md`, the issue and the diff. Write for a reviewer who hasn't read the plan, in short sentences. Leave out a section with nothing in it, except Why.
+Write it in `.claude/implement-drafts/<issue>/pr/`, following `.github/pull_request_template.md` without its comments. Take the content from `plan.md`, the issue and the diff. Write for a reviewer who hasn't read the plan, in short sentences. Give each section its `##` title from the template. Leave out a section with nothing in it, except Issue and Why.
 
-- **First line**: `Closes #<issue>`, and one more line for each sub-issue. A refactor says `Closes #<issue>`, then `Unblocks #<number>` for each issue it blocks, from `gh api --paginate repos/{owner}/{repo}/issues/<issue>/dependencies/blocking --jq '.[] | "#\(.number)"'`.
+- **Issue**: `Closes #<issue>`, and one more line for each sub-issue. A refactor says `Closes #<issue>`, then `Unblocks #<number>` for each issue it blocks, from `gh api --paginate repos/{owner}/{repo}/issues/<issue>/dependencies/blocking --jq '.[] | "#\(.number)"'`.
 - **Why**: two to four lines. For a feature, the problem it solves for the user and the business, from the spec's Why. For a refactor, what the feature it unblocks can't do cleanly without it.
-- **Architecture decisions**: the choices that shape the code, each with its reason, from the plan's Calls and Modules: a new module, where a rule lives, how data flows between layers, a schema change, a new dependency. Leave out choices that follow the rules as written. Add a Mermaid diagram when it helps: a `flowchart` of the modules and their dependencies when the change adds a module or a dependency, a `sequenceDiagram` when data crosses several layers, a `flowchart` of the screens when navigation changes. Draw only what the change touches, mark what's new, keep it under about 12 nodes. GitHub renders a ```` ```mermaid ```` block in place.
+- **Architecture decisions**: the choices that shape the code, each with its reason, from the plan's Calls and Modules: a new module, where a rule lives, how data flows between layers, a schema change, a new dependency. Leave out choices that follow the rules as written. Add a Mermaid diagram when it helps: a `flowchart` of the modules and their dependencies when the change adds a module or a dependency, a `sequenceDiagram` when data crosses several layers, a `flowchart` of the screens when navigation changes. Draw only what the change touches, mark what's new, keep it under about 12 nodes. Put it under the decisions, collapsed in its own block, so the section stays short to read: `<details><summary>Diagram: <what it shows></summary>`, the ```` ```mermaid ```` block, then `</details>`. GitHub draws the diagram when the reviewer opens it.
 - **Screenshots**: one row per preview whose images the PR adds or changes, `| Screen | Before | After |`. When a preview has several variants, show the light phone one here: the full list goes in Details.
 - **Screen recordings**: one video per Maestro flow the PR adds or changes, each under a one-line caption saying what it tests (see "Recordings" below).
-- **Details**: one `<details>` block, `<summary>Details</summary>`, holding Scenarios and tests (the plan's table), Tests changed after they were written, Spec changes, Changed screenshots (every image added, changed or deleted, with the reason for any outside the spec's screens), Follow-ups, and Verification. Tests changed after they were written and Spec changes always show, with `None.` when empty, so the reviewer knows the tests weren't bent to pass. Keep a blank line after `</summary>` and before `</details>`, or GitHub doesn't render the Markdown inside.
+- **Details**: under its `## Details` title, one `<details>` block, `<summary>Scenarios, tests, verification and follow-ups</summary>`, holding Scenarios and tests (the plan's table), Tests changed after they were written, Spec changes, Changed screenshots (every image added, changed or deleted, with the reason for any outside the spec's screens), Follow-ups, and Verification. Tests changed after they were written and Spec changes always show, with `None.` when empty, so the reviewer knows the tests weren't bent to pass.
+
+In every `<details>` block, keep a blank line after `</summary>` and before `</details>`, or GitHub doesn't render the Markdown inside.
 
 Images point at fixed commits, so they keep showing what the reviewer saw. The repository is public, so nothing is uploaded: `<img src="https://github.com/{owner}/{repo}/blob/<sha>/<path>?raw=true" width="240">`. The after image uses the PR's head commit, the before image the commit the branch starts from, `git merge-base origin/main HEAD`. A new image has no before: write `New`. Replace `{owner}/{repo}` with the output of `gh repo view --json nameWithOwner --jq .nameWithOwner`. Commit SHAs don't change when you push, so the links are right before the PR exists.
 
@@ -126,7 +128,7 @@ Verification takes the plan's Verification. From `scripts/e2e.sh`, take only its
 
 In a stack:
 
-- Each part's first line is `Part <n> of <m> of #<issue>`, followed by its own Why and Architecture decisions, and a Details block with its Verification.
+- Each part's Issue section says `Part <n> of <m> of #<issue>`. The part has its own Why and Architecture decisions, and Details with its Verification.
 - Only the top part closes the issue, and carries the Screenshots, the Screen recordings and the full Details.
 
 The PR title is the commit message from step 3. In a stack, each part's title is its own commit message.
