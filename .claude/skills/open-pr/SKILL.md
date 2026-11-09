@@ -52,11 +52,14 @@ Use the issue's notes from `/implement`, in `.claude/implement-drafts/<issue>/` 
 - If the issue number is missing, ask for it.
 - `git worktree list` must show `.claude/worktrees/<issue>`. Otherwise stop, and tell the developer to build the issue with `/implement <issue>` first.
 - Enter the worktree with `EnterWorktree` and its path, unless `/implement` sent you here from it, and read `plan.md`. When its Progress doesn't show `/implement` step 9 done, stop and tell the developer to finish the run with `/implement <issue>`.
-- Look for PRs already opened. A run can stop between a push and its note in the plan, so read GitHub as well as the plan's Pull requests: `gh pr list --head <branch> --state all --json number,state,headRefOid,url`, for the worktree's branch (`git branch --show-current`) and for each stack part's branch, `<branch>-domain` and `<branch>-data`. Write in the plan any PR it doesn't list yet. A PR whose `headRefOid` isn't the commit your local branch points at was pushed by someone else: stop and ask the developer.
+- Look for PRs already opened. A run can stop between a push and its note in the plan, so read GitHub as well as the plan's Pull requests: `gh pr list --head <branch> --state all --json number,state,headRefOid,url`, for the worktree's branch (`git branch --show-current`) and for each stack part's branch, `<branch>-domain` and `<branch>-data`. Write in the plan any PR it doesn't list yet.
+- When a PR's `headRefOid` isn't the commit its local branch points at, stop. When `git merge-base --is-ancestor <headRefOid> <local branch>` passes, the local branch has commits the PR doesn't, such as a fix made with `/implement` after the PR opened: tell the developer which ones, from `git log --oneline <headRefOid>..<local branch>`. Otherwise someone else pushed to the branch: ask the developer.
+- Otherwise, go by what you found:
   - No PR, and `git ls-remote --heads origin <branch>` shows nothing: go to step 2.
-  - No PR or not every part's PR, but the branches are pushed and point at your local commits: a run stopped while opening. Go to step 7 and do only what's missing.
-  - Every PR is open: give the developer their URLs, and stop.
-  - A PR is merged: tell the developer to run `/implement <issue>`, which cleans up, and stop.
+  - A branch is pushed, but not every part has its PR: when the plan's Pull requests record the developer's `Open` from step 6, a run stopped while opening, so go to step 7 and do only what's missing. Otherwise the branch was pushed without `/open-pr`: stop and ask the developer.
+  - Every PR is open: when the plan's Pull requests show each PR's description set in step 7, give the developer their URLs and stop. Otherwise go to step 7 and finish the edits.
+  - The top part's PR, on the issue's branch, is merged: tell the developer to run `/implement <issue>`, which cleans up, and stop.
+  - Only a lower part's PR is merged: give the developer the URLs of the open ones, name any part with no PR yet, and stop.
   - A PR is closed without a merge: tell the developer, and stop. Never reopen it yourself.
 
 ### 2. Bring the branch up to main
@@ -93,7 +96,7 @@ A split is a GitHub stack, cut inside out. Each part depends only on the parts b
 
 Leave out a part with nothing in it. A build file, `settings.gradle.kts` or `gradle/libs.versions.toml` change goes in the lowest part that needs it. The top part keeps the issue's branch name. Each part below gets that name with its suffix, `-domain` or `-data`, for example `feature/73-reorder-past-order-domain`.
 
-Build the lower parts from the folded commit, bottom up:
+Build the lower parts from the folded commit, bottom up. A lower part's branch can be left from an earlier run that stopped before step 7: when `git rev-parse --verify --quiet <branch>-domain` finds one and `git ls-remote --heads origin <branch>-domain` doesn't, delete it with `git branch -D` and build it again. The same goes for `-data`.
 
 ```bash
 git switch -c <branch>-domain origin/main
@@ -101,7 +104,7 @@ git diff --binary origin/main <branch> -- '<module dir>' '<module dir>' | git ap
 git commit -m "feat: add the domain of <feature> (#<issue>)"
 ```
 
-The paths are the part's module directories, such as `'features/order/domain'`, each quoted. Right after each lower part's commit, run `./gradlew unitTestAll verifyRoborazziDebug assembleDebug` on it. The next part starts from the one below it instead of `origin/main`, and takes its paths the same way. Then put the top part on the part right below it, with its own commit:
+The paths are the part's module directories, such as `'features/order/domain'`, each quoted, plus `'settings.gradle.kts'` and `'gradle/libs.versions.toml'` when this is the lowest part that needs their change. When such a file also holds lines for a part above, such as the `include` of a screen module, remove those lines before the commit. Right after each lower part's commit, run the checks of `/implement` step 7 that apply to it: always `./gradlew unitTestAll verifyRoborazziDebug assembleDebug`, `./gradlew buildHealth` when it changes a build file, and the Maestro flows of the features it touches when it changes code an existing screen runs. The next part starts from the one below it instead of `origin/main`, and takes its paths the same way. Then put the top part on the part right below it, with its own commit:
 
 ```bash
 git switch <branch> && git reset --soft <part below> && git commit -m "<step 3 message>"
@@ -113,7 +116,7 @@ The top part is the whole feature, already checked in step 2. When a part doesn'
 
 Write it in `.claude/implement-drafts/<issue>/pr/`, following `.github/pull_request_template.md` without its comments. Take the content from `plan.md`, the issue and the diff. Write for a reviewer who hasn't read the plan, in short sentences. The template says which sections each kind of PR requires: keep those, and the optional ones that apply, each with its `##` title. `/open-pr` opens a feature or a refactor.
 
-- **Issue**: `Closes #<issue>`, and one more line for each sub-issue. A refactor says `Closes #<issue>`, then `Unblocks #<number>` for each issue it blocks, from `gh api --paginate repos/{owner}/{repo}/issues/<issue>/dependencies/blocking --jq '.[] | "#\(.number)"'`.
+- **Issue**: `Closes #<issue>`, and a `Closes #<sub-issue>` line for each sub-issue. A refactor says `Closes #<issue>`, then `Unblocks #<number>` for each issue it blocks, from `gh api --paginate repos/{owner}/{repo}/issues/<issue>/dependencies/blocking --jq '.[] | "#\(.number)"'`.
 - **What changed**: first why, in two to four lines. For a feature, the problem it solves for the user and the business, from the spec's Why. For a refactor, what the feature it unblocks can't do cleanly without it. Then the architecture decisions, as bullets, each with its reason, from the plan's Calls and Modules: a new module, where a rule lives, how data flows between layers, a schema change, a new dependency. Leave out choices that follow the rules as written. Add a Mermaid diagram when it helps: a `flowchart` of the modules and their dependencies when the change adds a module or a dependency, a `sequenceDiagram` when data crosses several layers, a `flowchart` of the screens when navigation changes. Draw only what the change touches, color it by what the PR does to each part as the template says, and keep it under about 12 nodes. Put it under the bullets, collapsed in its own block, so the section stays short to read: `<details><summary>Diagram: <what it shows></summary>`, the ```` ```mermaid ```` block, then `</details>`. GitHub draws the diagram when the reviewer opens it.
 - **Screenshots**, only for a feature that adds or changes reference images: one row per preview whose images the PR adds or changes, `| Screen | Before | After |`. When a preview has several variants, show the light phone one here: the full list goes in Details.
 - **Screen recordings**, only for a feature that adds or changes Maestro flows: one video per flow the PR adds or changes, each under a one-line caption saying what it tests (see "Recordings" below).
@@ -134,7 +137,7 @@ The PR title is the commit message from step 3. In a stack, each part's title is
 
 #### Recordings
 
-Each Maestro flow records the journey it tests, from after sign-in to its end, as `.claude/rules/testing.md` says. `scripts/e2e.sh` leaves the videos in `build/maestro/`, named after their flow: find each with `find build/maestro -name '<journey>.mp4'`. Use the videos of the run whose output is in the plan's Verification.
+Each Maestro flow records the journey it tests, from after sign-in to its end, as `.claude/rules/testing.md` says. `scripts/e2e.sh` leaves the videos in `build/maestro/`, named `<feature>-<journey>` after their flow: find each with `find build/maestro -name '<feature>-<journey>.mp4'`. Use the videos of the run whose output is in the plan's Verification.
 
 - The PR is public. Never attach a video whose flow records before or during sign-in: it would show the test phone number and its code. Leave that flow's video out, and add a Follow-up to fix the flow.
 - GitHub takes videos up to 10 MB on a free plan. Leave out a bigger one and say so under its caption.
@@ -148,7 +151,9 @@ Print, for each PR: its title, its branch and base, the number of files it chang
 
 - `Open` (Recommended)
 - `Change something`: apply a change to the split, a title, a description, the videos or the reviewers, then show and ask again. A change to the code goes through `/implement <issue>`, which runs the checks: stop, and tell the developer to run `/open-pr <issue>` again after it.
-- for a stack, `One PR instead`: go back to step 4 without splitting
+- for a stack, `One PR instead`: delete the lower parts' branches with `git branch -D`, fold the top part into one commit again with step 3, and go back to step 4 without splitting
+
+On `Open`, write in the plan's Pull requests that the developer chose it, with the description files and reviewers they approved, before you push anything.
 
 ### 7. Open
 
@@ -163,14 +168,14 @@ gh pr create --base main --head <branch> --title "<title>" --body-file .claude/i
 
 Add `--reviewer <login>,<login>` when step 6 named reviewers. Leave out `--attach` when there's no video.
 
-Stacked PRs, with the `gh stack` extension. When `gh extension list` doesn't show `github/gh-stack`, ask the developer to run `gh extension install github/gh-stack` first.
+Stacked PRs, with the `gh stack` extension. When `gh extension list` doesn't show `github/gh-stack`, ask the developer to run `gh extension install github/gh-stack` first. Otherwise run `gh extension upgrade gh-stack`, so `submit` has the flags used below.
 
 ```bash
 gh stack init --base main <branch>-domain <branch>-data <branch>
 gh stack submit --auto --open
 ```
 
-Leave out a part step 4 left out. Then give each PR its title, description, assignee and reviewers: `gh pr edit <number> --title "<title>" --body-file <file> --add-assignee @me`, with `--add-reviewer` when step 6 named reviewers, and `--attach` for the videos on the top part.
+Leave out a part step 4 left out. Then give each PR its title, description, assignee and reviewers: `gh pr edit <number> --title "<title>" --body-file <file> --add-assignee @me`, with `--add-reviewer` when step 6 named reviewers, and `--attach` for the videos on the top part. After each edit, mark that PR's description set in the plan's Pull requests, so a run that stops here finishes the rest. A single PR's `gh pr create` sets everything at once: mark it right after.
 
 Then:
 

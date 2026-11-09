@@ -7,7 +7,7 @@ A PR does one thing: a refactor gets its own PR, merged before the feature that 
 ## Issue
 
 <!-- Required.
-- Feature: "Closes #<spec issue>", and one more line for each of its sub-issues.
+- Feature: "Closes #<spec issue>", and a "Closes #<sub-issue>" line for each of its sub-issues.
 - Bug fix: "Closes #<bug issue>".
 - Refactor: "Closes #<issue>", then "Unblocks #<issue>" for each issue it blocks.
 - Stacked PRs: "Part <n> of <m> of #<issue>". Only the top part closes the issue.
