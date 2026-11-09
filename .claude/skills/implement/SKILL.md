@@ -9,7 +9,7 @@ disable-model-invocation: true
 
 Build the feature a spec issue describes, and leave it verified and reviewed on a local branch. The spec, written with `/spec`, says what to build. You make the technical choices, guided by CLAUDE.md and `.claude/rules/`. A refactor issue is built the same way, with the differences in "Refactor issues".
 
-You never push and never open a pull request: `/pr <issue>` opens it from the branch you leave, then handles its reviews and cleans up after the merge.
+You never push and never open a pull request: `/open-pr <issue>` opens it from the branch you leave.
 
 The developer approves the screens once, near the start. That approval is their go for everything after it: tests, code, checks and review follow without another question, except in the cases below.
 
@@ -46,7 +46,7 @@ Keep your notes in `.claude/implement-drafts/<issue>/`, inside the issue's workt
 - Run `gh auth status`. If it fails, stop and ask the developer to run `gh auth login`.
 - If the issue number is missing, ask for it.
 - Read the issue with `gh issue view <issue> --json number,title,body,state`. Its body is the spec: comments aren't part of it. Read its sub-issues, every page of them, with `gh api --paginate repos/{owner}/{repo}/issues/<issue>/sub_issues --jq '.[].number'`, then each one the same way.
-- When the issue is closed and `git worktree list` shows `.claude/worktrees/<issue>`, read its `plan.md`. When its Progress shows step 9 done, the PR was probably merged: tell the developer to run `/pr <issue>`, which cleans up, and stop. Otherwise tell the developer the issue was closed before the hand-off, and stop. Also stop and say why when the issue is closed with no worktree, or is neither a spec nor a refactor issue. A spec has Business rules and Scenarios, and its Open questions must be `None.`: a spec is fixed with `/spec` and the developer, not here. A refactor issue follows `.github/ISSUE_TEMPLATE/refactor.md`, with Change, Why and Done when.
+- When the issue is closed and `git worktree list` shows `.claude/worktrees/<issue>`, read its `plan.md`. When its Progress shows step 9 done, the PR was probably merged: go to "After the hand-off" to clean up. Otherwise tell the developer the issue was closed before the hand-off, and stop. Also stop and say why when the issue is closed with no worktree, or is neither a spec nor a refactor issue. A spec has Business rules and Scenarios, and its Open questions must be `None.`: a spec is fixed with `/spec` and the developer, not here. A refactor issue follows `.github/ISSUE_TEMPLATE/refactor.md`, with Change, Why and Done when.
 - Check whether the issue has a parent with `gh api repos/{owner}/{repo}/issues/<issue>/parent --jq .number`: a 404 means it has none. If it has one, say so and ask whether to build the parent instead. `/implement <parent>` builds the parent and all its sub-issues on one branch.
 - Check what blocks the issue, every page of it: `gh api --paginate repos/{owner}/{repo}/issues/<issue>/dependencies/blocked_by --jq '.[] | select(.state == "open") | "#\(.number) \(.title)"'`. Run it again for its parent when it has one, and for each of its sub-issues. When one is still open, stop. List them. Tell the developer to build each spec or refactor issue with `/implement <number>`, to resolve any other blocker outside `/implement`, and to run `/implement <issue>` again once they're all closed. When `.claude/worktrees/<issue>` already exists, also write in its `plan.md` Progress that the run stopped for blocking issues, so the next run brings the branch up to main first.
 
@@ -185,9 +185,9 @@ The run ends here, on a local branch. Never push it and never open its pull requ
 1. Commit the rest of the work as a local commit, never pushed, for example `feat: reorder a past order (#73)`. Keep the test checkpoint as its own commit.
 2. Write the end of step 7's output in the plan's Verification, with the commit it checked: `git rev-parse --short HEAD`. From `scripts/e2e.sh`, write only its per-flow lines, never a line from Maestro's logs: they can show the test phone number.
 3. Mark step 9 done in `plan.md`.
-4. Give the developer the branch, the worktree and the commits (`git log --oneline origin/main..HEAD`). Then the Calls, the Test changes, the Spec changes, the Follow-ups, any screenshot outside the spec's screens, and the Verification. Point them to `plan.md` for the scenarios and their tests. Tell them to open the pull request with `/pr <issue>` once they've reviewed it.
+4. Give the developer the branch, the worktree and the commits (`git log --oneline origin/main..HEAD`). Then the Calls, the Test changes, the Spec changes, the Follow-ups, any screenshot outside the spec's screens, and the Verification. Point them to `plan.md` for the scenarios and their tests. Tell them to open its pull request with `/open-pr <issue>` once they've reviewed it.
 
-Keep the worktree and its notes: `/pr` writes the PR from them, and removes them once the PR is merged.
+Keep the worktree and its notes until the feature's PR is merged: a later run resumes in them.
 
 ## Spec gaps
 
@@ -211,7 +211,7 @@ When the UI checkpoint, the build or the review shows that the feature needs a r
 
    Re-read the code the refactors changed, and check that each refactor in the plan's Refactors is now there. One whose issue was closed without its change goes through step 3 again, from its question on. When they're all there, update the plan and continue from the step you were at.
 
-Once the branch is pushed, `/implement` never rebases it: a refactor found then goes in Follow-ups, for its own PR after this one.
+Once the branch is pushed, it never gets rebased: a refactor found then goes in Follow-ups, for its own PR after this one.
 
 ## Refactor issues
 
@@ -223,9 +223,10 @@ A refactor issue asks for one change to existing code that keeps what the app do
 - Step 6: make the change its Change describes, and remove the lines it fixes from the "Code not to copy" lists. An existing test's expected value, a Maestro flow and a reference image never change. When one has to, the change isn't a refactor: stop and tell the developer.
 - Step 7: when the change touches app code, not only tests, run `scripts/e2e.sh smoke` last, the way its item 4 runs the flows: in a command of its own, with a 10-minute timeout. The core journeys must still work.
 - Step 8: there is no test checkpoint, so write only `changes.diff` and `screenshots.md`. Give the reviewer those and `spec.md`, without `plan.md`, and say it's a refactor issue.
-- Step 9: commit it as `refactor: <what changes> (#<issue>)`. Tell the developer to open its PR with `/pr <issue>`: the PR closes the issue, which unblocks every issue it blocks.
+- Step 9: commit it as `refactor: <what changes> (#<issue>)`. Tell the developer to open its PR with `/open-pr <issue>`: the PR closes the issue, which unblocks every issue it blocks.
 
 ## After the hand-off
 
 - When the developer asks for a change, make it, run step 7's checks, and commit it as a new local commit. Update the plan's sections it affects, and the commit its Verification names.
-- When the run starts again, tell the developer to run `/pr <issue>`: it opens the PR, handles its review rounds and cleans up after the merge. Then stop.
+- When the run starts again, check whether the branch's PR is merged: `gh pr list --head <branch> --state merged --json number --jq length` prints `0` when it isn't. Until then, tell the developer the branch is ready for `/open-pr <issue>`, and stop.
+- Once it's merged, leave the worktree with `ExitWorktree` and `keep`, then remove it with `git worktree remove .claude/worktrees/<issue>`, which also deletes its notes, and delete its branch with `git branch -D <branch>`.
