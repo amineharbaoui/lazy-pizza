@@ -26,7 +26,7 @@ LazyPizza is a showcase that mirrors a very large multi-module production app. T
 
 - A user-visible change starts with `/spec`, which writes its spec with the developer and creates it as a GitHub issue, then the refactor issues the feature needs first.
 - Specs are GitHub issues. Never edit one without asking the developer first.
-- `/implement <issue>` builds a spec once the refactor issues blocking it are closed: the developer approves the screens, then Claude writes the tests and the code, verifies and reviews them, and leaves them on a local branch. `/implement` builds a refactor issue the same way, without the screens.
+- `/implement <issue>` builds a spec once the refactor issues blocking it are closed: the developer approves the screens, then Claude writes the tests and the code, verifies and reviews them, and leaves them on a local branch. At the end, it asks whether to open the pull request now. `/implement` builds a refactor issue the same way, without the screens.
 - `/open-pr <issue>` opens the pull request for that branch, as stacked PRs when it's too big to review in one sitting, with a short description: why, the architecture decisions, screenshots and recordings.
 
 ## Refactors before a feature

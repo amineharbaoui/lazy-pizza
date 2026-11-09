@@ -12,7 +12,7 @@ Open the pull request for an issue `/implement` built and handed off. Two things
 - **Small PRs.** A person reviews each PR in one careful sitting. When the change is too big for that, it opens as stacked PRs.
 - **A short description.** It gives the reviewer what they need and nothing more: the issue it closes, why, the architecture decisions, the screens before and after, and recordings of what the flows test. Everything else folds into one collapsed Details section, for AI tools and for anyone who wants the detail.
 
-The run ends once the PR is open. Reviews and the merge happen on GitHub. Once the PR is merged, `/implement <issue>` cleans up its worktree.
+`/implement` offers to run it at the end of its hand-off, and the developer can also run it any time later. The run ends once the PR is open. Reviews and the merge happen on GitHub. Once the PR is merged, `/implement <issue>` cleans up its worktree.
 
 Issue: $ARGUMENTS
 
@@ -51,7 +51,7 @@ Use the issue's notes from `/implement`, in `.claude/implement-drafts/<issue>/` 
 - Run `gh auth status`. If it fails, stop and ask the developer to run `gh auth login`. Run `gh --version`: attaching recordings needs 2.99.0 or later. If it's older, ask the developer to upgrade `gh`.
 - If the issue number is missing, ask for it.
 - `git worktree list` must show `.claude/worktrees/<issue>`. Otherwise stop, and tell the developer to build the issue with `/implement <issue>` first.
-- Enter the worktree with `EnterWorktree` and its path, and read `plan.md`. When its Progress doesn't show `/implement` step 9 done, stop and tell the developer to finish the run with `/implement <issue>`.
+- Enter the worktree with `EnterWorktree` and its path, unless `/implement` sent you here from it, and read `plan.md`. When its Progress doesn't show `/implement` step 9 done, stop and tell the developer to finish the run with `/implement <issue>`.
 - Look for PRs already opened. A run can stop between a push and its note in the plan, so read GitHub as well as the plan's Pull requests: `gh pr list --head <branch> --state all --json number,state,headRefOid,url`, for the worktree's branch (`git branch --show-current`) and for each stack part's branch, `<branch>-domain` and `<branch>-data`. Write in the plan any PR it doesn't list yet. A PR whose `headRefOid` isn't the commit your local branch points at was pushed by someone else: stop and ask the developer.
   - No PR, and `git ls-remote --heads origin <branch>` shows nothing: go to step 2.
   - No PR or not every part's PR, but the branches are pushed and point at your local commits: a run stopped while opening. Go to step 7 and do only what's missing.
