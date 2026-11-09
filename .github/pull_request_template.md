@@ -23,7 +23,14 @@ A PR does one thing: a refactor gets its own PR, merged before the feature that 
 
 Then the architecture decisions, as bullets, each with its reason: a new module, where a rule lives, how data flows between layers, a schema change, a new dependency. Leave this part out when the change follows the rules as written, as most bug fixes do.
 
-Optional: a diagram, when it helps more than the bullets: the modules and their dependencies, the data flow across layers, or the screens when navigation changes. Draw only what the change touches. Collapse it in its own <details><summary>Diagram: what it shows</summary>, with a blank line after </summary> and before </details>, around a ```mermaid block. -->
+Optional: a diagram, when it helps more than the bullets: the modules and their dependencies, the data flow across layers, or the screens when navigation changes. Draw only what the change touches. Collapse it in its own <details><summary>Diagram: what it shows</summary>, with a blank line after </summary> and before </details>, around a ```mermaid block.
+
+Color each part by what the PR does to it. In a flowchart, end the block with these lines, then `class <ids> new`, `class <ids> changed` and so on, and draw a new dependency as a thick arrow, ==>:
+  classDef new fill:#2da44e33,stroke:#2da44e,stroke-width:2px
+  classDef changed fill:#d4a72c33,stroke:#d4a72c,stroke-width:2px
+  classDef removed fill:#cf222e1a,stroke:#cf222e,stroke-dasharray:4 3
+  classDef unchanged fill:#8c959f1a,stroke:#8c959f,stroke-dasharray:4 3
+In a sequenceDiagram, wrap the new steps in `rect rgba(46, 160, 67, 0.2)` ... `end`, and the changed ones in `rect rgba(212, 167, 44, 0.2)` ... `end`. These see-through colors read in GitHub's light and dark themes. Under the diagram, one line names the colors it uses, such as "Green: new. Amber: changed. Grey: unchanged." -->
 
 ## Screenshots
 
