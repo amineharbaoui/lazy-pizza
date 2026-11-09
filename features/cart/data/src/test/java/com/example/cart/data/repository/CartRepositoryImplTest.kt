@@ -7,6 +7,9 @@ import com.example.cart.domain.model.CartOwner
 import io.mockk.bdd.coThen
 import io.mockk.mockk
 import org.junit.jupiter.api.Test
+import java.time.Clock
+import java.time.Instant
+import java.time.ZoneOffset
 
 class CartRepositoryImplTest {
 
@@ -17,6 +20,9 @@ class CartRepositoryImplTest {
         localDataSource = localDataSource,
         transferLocalDataSource = transferLocalDataSource,
         ownerToKeyMapper = CartOwnerToKeyMapper(),
+        clock = Clock.fixed(NOW, ZoneOffset.UTC),
+        cartTtlSeconds = CART_TTL_SECONDS,
+        cartTouchThrottleSeconds = CART_TOUCH_THROTTLE_SECONDS,
     )
 
     @Test
@@ -25,7 +31,7 @@ class CartRepositoryImplTest {
         repository.transferGuestCart(to = CartOwner.User(USER_ID))
 
         // Then
-        coThen { transferLocalDataSource.transferCart(fromOwnerKey = GUEST_KEY, toOwnerKey = USER_KEY) }
+        coThen { transferLocalDataSource.transferCart(fromOwnerKey = GUEST_KEY, toOwnerKey = USER_KEY, at = NOW) }
     }
 
     @Test
@@ -41,5 +47,8 @@ class CartRepositoryImplTest {
         const val USER_ID = "user-123"
         const val GUEST_KEY = "guest"
         const val USER_KEY = "user:user-123"
+        const val CART_TTL_SECONDS = 1800L
+        const val CART_TOUCH_THROTTLE_SECONDS = 60L
+        val NOW: Instant = Instant.parse("2026-11-09T12:00:00Z")
     }
 }
