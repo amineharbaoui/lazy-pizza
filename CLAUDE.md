@@ -26,7 +26,8 @@ LazyPizza is a showcase that mirrors a very large multi-module production app. T
 
 - A user-visible change starts with `/spec`, which writes its spec with the developer and creates it as a GitHub issue, then the refactor issues the feature needs first.
 - Specs are GitHub issues. Never edit one without asking the developer first.
-- `/implement <issue>` builds a spec once the refactor issues blocking it are closed: the developer approves the screens, then Claude writes the tests and the code, verifies and reviews them, and leaves them on a local branch. The developer opens its pull request. `/implement` builds a refactor issue the same way, without the screens.
+- `/implement <issue>` builds a spec once the refactor issues blocking it are closed: the developer approves the screens, then Claude writes the tests and the code, verifies and reviews them, and leaves them on a local branch. `/implement` builds a refactor issue the same way, without the screens.
+- `/pr <issue>` opens the pull request for that branch, as a stack when it's too big to review in one sitting. Run again, it handles each review round, and cleans up once the PR is merged.
 
 ## Refactors before a feature
 
@@ -73,6 +74,6 @@ A change to Kotlin or Gradle code is done when:
 
 ## Git
 
-- Push only your own branch, by name (`git push -u origin <branch>`). Never push to `main`, never force-push.
+- Push only your own branch, by name (`git push -u origin <branch>`). Never push to `main`, never force-push. One exception: `/pr` rewrites a branch it opened, with `--force-with-lease`, to rebase it onto main or to restack a stack.
 - A pull request does one thing, so it stays small and easy to review. A refactor, any change to existing code that keeps what the app does, gets its own PR, merged before the feature that needs it.
 - A pull request's description follows `.github/pull_request_template.md`.
