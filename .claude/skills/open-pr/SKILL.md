@@ -80,7 +80,13 @@ A refactor issue is always one PR: it was cut small when it was written.
 
 For a feature, judge whether a person can review the whole change in one careful sitting, under an hour, reading it commit by commit. Read `git diff --stat origin/main...HEAD -- . ':(exclude)*.png'` and the diff itself. Split it when it mixes concerns, when a risky part hides in routine code, or when the reviewer would have to check more than 3 things. Mechanical or repetitive changes, such as reference images, a new module's build file or a renamed parameter, don't count toward the size.
 
-A split is a GitHub stack, cut between commits, never inside one: each part takes one or more commits in a row, often cut where a layer ends, such as the domain and the data below the screen. Each commit already passed the checks on its own. The top part keeps the issue's branch name. Each part below gets a branch at its last commit, named with its layer's suffix, `-domain` or `-data`, for example `feature/73-reorder-past-order-domain`:
+A split is a GitHub stack, cut between commits where a layer ends, never inside a commit. Each part takes the commits in a row that touch only its layers, and depends only on the parts below it:
+
+1. **Domain**: the commits in the `:domain` modules and `:core:*`.
+2. **Data**: the commits in the `:data` modules, with their fakes and tests.
+3. **Screen**, on top: every commit after them, in the `:ui-*` modules and `:app`, with the acceptance tests, the reference images and the flows.
+
+Leave out a part with no commits. Each commit already passed the checks on its own. The top part keeps the issue's branch name. Each part below gets a branch at its last commit, named with its suffix, `-domain` or `-data`, for example `feature/73-reorder-past-order-domain`:
 
 ```bash
 git branch <branch>-domain <last domain commit>
