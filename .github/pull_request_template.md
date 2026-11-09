@@ -1,6 +1,8 @@
-<!-- A reviewer reads this in a few minutes: what the PR closes, why, the architecture decisions, the screens and recordings. Everything else goes in the collapsed Details. Leave out a section with nothing in it, except Why. A PR does one thing: a refactor gets its own PR, merged before the feature that needs it. -->
+<!-- A reviewer reads this in a few minutes: what the PR closes, why, the architecture decisions, the screens and recordings. Everything else goes in the collapsed Details. Give each section its ## title. Leave out a section with nothing in it, except Issue and Why. A PR does one thing: a refactor gets its own PR, merged before the feature that needs it. -->
 
-<!-- First line: "Closes #<issue>" for the spec issue, and one more line for each of its sub-issues. A refactor: "Closes #<issue>", then "Unblocks #<issue>" for each issue it blocks. In stacked PRs: "Part <n> of <m> of #<issue>", and only the top part closes the issue. A change without an issue: what it fixes or improves. -->
+## Issue
+
+<!-- "Closes #<issue>" for the spec issue, and one more line for each of its sub-issues. A refactor: "Closes #<issue>", then "Unblocks #<issue>" for each issue it blocks. In stacked PRs: "Part <n> of <m> of #<issue>", and only the top part closes the issue. A change without an issue: what it fixes or improves. -->
 
 ## Why
 
@@ -8,7 +10,7 @@
 
 ## Architecture decisions
 
-<!-- The choices that shape the code, each with its reason: a new module, where a rule lives, how data flows between layers, a schema change, a new dependency. Add a ```mermaid diagram when it helps: the modules and their dependencies, the data flow across layers, or the screens when navigation changes. Draw only what the change touches. -->
+<!-- The choices that shape the code, each with its reason: a new module, where a rule lives, how data flows between layers, a schema change, a new dependency. Add a ```mermaid diagram when it helps: the modules and their dependencies, the data flow across layers, or the screens when navigation changes. Draw only what the change touches. Put it under the decisions, collapsed in its own <details><summary>Diagram: what it shows</summary>, with a blank line after </summary> and before </details>. -->
 
 ## Screenshots
 
@@ -18,7 +20,9 @@
 
 <!-- One video per Maestro flow this PR adds or changes, under a one-line caption saying what it tests. Never a video that shows sign-in: it would show the test phone number. -->
 
-<details><summary>Details</summary>
+## Details
+
+<details><summary>Scenarios, tests, verification and follow-ups</summary>
 
 ### Scenarios and tests
 
