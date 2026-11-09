@@ -1,5 +1,7 @@
 package com.example.menu.data.di
 
+import com.example.menu.data.datasource.ProductRemoteDataSource
+import com.example.menu.data.datasource.ProductRemoteDataSourceImpl
 import com.example.menu.data.repository.MenuRepositoryImpl
 import com.example.menu.data.repository.RecommendedItemsRepositoryImpl
 import com.example.menu.domain.repository.MenuRepository
@@ -21,4 +23,7 @@ abstract class MenuDataModule {
     @Binds
     @Singleton
     abstract fun bindRecommendedItemsRepository(impl: RecommendedItemsRepositoryImpl): RecommendedItemsRepository
+
+    @Binds
+    abstract fun bindProductRemoteDataSource(impl: ProductRemoteDataSourceImpl): ProductRemoteDataSource
 }
