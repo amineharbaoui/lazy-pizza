@@ -1,10 +1,13 @@
 plugins {
     alias(libs.plugins.custom.android.module)
     alias(libs.plugins.custom.hilt)
+    alias(libs.plugins.custom.testing)
 }
 
 android {
     namespace = "com.example.menu.data"
+
+    testFixtures { enable = true }
 }
 
 dependencies {
@@ -16,4 +19,8 @@ dependencies {
     implementation(libs.firebase.firestore)
 
     implementation(libs.androidx.annotation)
+
+    testFixturesApi(projects.features.menu.domain)
+    testFixturesImplementation(projects.core.model)
+    testFixturesImplementation(libs.kotlinx.coroutines.core)
 }
