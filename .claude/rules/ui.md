@@ -45,11 +45,11 @@ paths:
 
 ## Code not to copy
 
-- ViewModels start collecting in `_uiState.onStart { viewModelScope.launch { ... } }`. Each time the screen comes back after 5 seconds in the background, this adds another collector that never stops.
+- `CartViewModel`, `MenuViewModel` and `CheckoutViewModel` start collecting in `_uiState.onStart { viewModelScope.launch { ... } }`. Each time the screen comes back after 5 seconds in the background, this adds another collector that never stops.
 - `CheckoutViewModel` and `PhoneAuthViewModel` send events through a `SharedFlow`, which drops them during a rotation.
 - `PhoneVerificationManager` and `PhoneAuthScreen` call `FirebaseAuth` from the UI.
 - `CartToOrderMapper` and `CheckoutUiStateFactory` hold business rules (order number, pickup slots) and read the clock directly.
-- `OrdersViewModel` and `CheckoutViewModel` put English text or `e.message` in the state, and `OrdersViewModel` logs with `Log.d`.
+- `CheckoutViewModel` puts English text or `e.message` in the state.
 - Checkout names its display models `...UiModel` and `...Ui`.
 - `toFormattedCurrency()` in `PriceFormatter.kt` duplicates `CurrencyFormatter`.
-- `DsTopBar` labels its account and back buttons "Phone Number Icon" and shrinks the account button to 32dp. `CartScreen`, `OrdersScreen` and `DsTopBar` hard-code their content descriptions in English.
+- `DsTopBar` labels its account and back buttons "Phone Number Icon" and shrinks the account button to 32dp. `CartScreen` and `DsTopBar` hard-code their content descriptions in English.

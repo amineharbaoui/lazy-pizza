@@ -1,4 +1,4 @@
-package com.example.checkout.order.ui.pastorders
+package com.example.order.ui.pastorders
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -16,6 +16,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.example.core.designsystem.components.DsStatusPill
@@ -27,7 +28,7 @@ import com.example.core.model.OrderStatus
 
 @Composable
 fun OrderCard(
-    orderUi: OrderUi,
+    order: OrderDisplayModel,
     modifier: Modifier = Modifier,
 ) {
     Card(
@@ -49,7 +50,7 @@ fun OrderCard(
                 modifier = Modifier.weight(1f),
             ) {
                 Text(
-                    text = orderUi.orderNumberLabel,
+                    text = stringResource(R.string.past_orders_order_number, order.orderNumber),
                     style = AppTypography.Title3SemiBold,
                     color = AppColors.TextPrimary,
                     maxLines = 1,
@@ -57,7 +58,7 @@ fun OrderCard(
                 )
 
                 Text(
-                    text = orderUi.dateTimeLabel,
+                    text = order.dateTimeLabel,
                     style = AppTypography.Body3Regular,
                     color = AppColors.TextSecondary,
                     maxLines = 1,
@@ -66,9 +67,9 @@ fun OrderCard(
 
                 Spacer(Modifier.height(16.dp))
 
-                orderUi.items.forEach { item ->
+                order.items.forEach { item ->
                     Text(
-                        text = item.name,
+                        text = stringResource(R.string.past_orders_order_line, item.quantity, item.name),
                         style = AppTypography.Body3Regular,
                         color = AppColors.TextPrimary,
                         maxLines = 1,
@@ -77,7 +78,7 @@ fun OrderCard(
                     item.toppings.forEach { topping ->
                         Text(
                             modifier = Modifier.padding(start = 16.dp),
-                            text = topping,
+                            text = stringResource(R.string.past_orders_order_line, topping.quantity, topping.name),
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
                             style = AppTypography.Body3Regular,
@@ -92,10 +93,10 @@ fun OrderCard(
                 horizontalAlignment = Alignment.End,
                 verticalArrangement = Arrangement.SpaceBetween,
             ) {
-                val (text, style) = when (orderUi.status) {
-                    OrderStatus.COMPLETED -> "Completed" to DsStatusPill.Style.COMPLETED
-                    OrderStatus.IN_PROGRESS -> "In Progress" to DsStatusPill.Style.IN_PROGRESS
-                    OrderStatus.CANCELED -> "Canceled" to DsStatusPill.Style.CANCELLED
+                val (text, style) = when (order.status) {
+                    OrderStatus.COMPLETED -> stringResource(R.string.past_orders_status_completed) to DsStatusPill.Style.COMPLETED
+                    OrderStatus.IN_PROGRESS -> stringResource(R.string.past_orders_status_in_progress) to DsStatusPill.Style.IN_PROGRESS
+                    OrderStatus.CANCELED -> stringResource(R.string.past_orders_status_canceled) to DsStatusPill.Style.CANCELLED
                 }
                 DsStatusPill.Pill(
                     text = text,
@@ -107,12 +108,12 @@ fun OrderCard(
                     horizontalAlignment = Alignment.End,
                 ) {
                     Text(
-                        text = "Total amount:",
+                        text = stringResource(R.string.past_orders_order_total_amount),
                         style = AppTypography.Body3Regular,
                         color = AppColors.TextSecondary,
                     )
                     Text(
-                        text = orderUi.totalAmountLabel,
+                        text = order.totalAmountLabel,
                         style = AppTypography.Title2SemiBold,
                         color = AppColors.TextPrimary,
                     )
@@ -127,22 +128,24 @@ fun OrderCard(
 private fun OrderCardPreview() {
     LazyPizzaTheme {
         OrderCard(
-            orderUi = OrderUi(
-                orderNumberLabel = "Order #12346",
+            order = OrderDisplayModel(
+                orderNumber = "12346",
                 dateTimeLabel = "September 25, 12:15",
                 items = listOf(
-                    OrderItem(
-                        name = "1 x Margherita",
+                    OrderItemDisplayModel(
+                        quantity = 1,
+                        name = "Margherita",
                         toppings = listOf(
-                            "1 x Extra cheese",
-                            "2 x Pepperoni",
+                            OrderToppingDisplayModel(quantity = 1, name = "Extra cheese"),
+                            OrderToppingDisplayModel(quantity = 2, name = "Pepperoni"),
                         ),
                     ),
-                    OrderItem(
-                        name = "1 x Margherita",
+                    OrderItemDisplayModel(
+                        quantity = 1,
+                        name = "Margherita",
                         toppings = listOf(
-                            "1 x Extra cheese",
-                            "2 x Pepperoni",
+                            OrderToppingDisplayModel(quantity = 1, name = "Extra cheese"),
+                            OrderToppingDisplayModel(quantity = 2, name = "Pepperoni"),
                         ),
                     ),
                 ),

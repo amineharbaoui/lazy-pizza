@@ -1,4 +1,4 @@
-package com.example.checkout.order.ui.pastorders
+package com.example.order.ui.pastorders
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -34,7 +34,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.example.core.designsystem.R
 import com.example.core.designsystem.components.DsButton
 import com.example.core.designsystem.components.DsTopBar
 import com.example.core.designsystem.theme.AppColors
@@ -43,6 +42,7 @@ import com.example.core.designsystem.theme.LazyPizzaThemePreview
 import com.example.core.designsystem.utils.PreviewPhoneTablet
 import com.example.core.designsystem.utils.isWideLayout
 import com.example.core.model.OrderStatus
+import com.example.core.designsystem.R as DsR
 
 @Composable
 fun OrdersScreen(
@@ -59,7 +59,7 @@ fun OrdersScreen(
             .padding(bottom = innerPadding.calculateBottomPadding())
             .windowInsetsPadding(windowInsets.only(WindowInsetsSides.Right)),
     ) {
-        DsTopBar.Secondary(title = stringResource(R.string.orders))
+        DsTopBar.Secondary(title = stringResource(DsR.string.orders))
         when (val state = uiState) {
             OrderUiState.Loading -> { }
 
@@ -69,14 +69,14 @@ fun OrdersScreen(
                 OrderScreenContent(orders = state.orders)
             }
 
-            is OrderUiState.Error -> ErrorState(state.message)
+            OrderUiState.Error -> ErrorState()
         }
     }
 }
 
 @Composable
 private fun OrderScreenContent(
-    orders: List<OrderUi>,
+    orders: List<OrderDisplayModel>,
     modifier: Modifier = Modifier,
 ) {
     val isEmpty = orders.isEmpty()
@@ -104,10 +104,10 @@ private fun OrderScreenContent(
                 } else {
                     items(
                         items = orders,
-                        key = { it.orderNumberLabel },
+                        key = { it.orderNumber },
                         contentType = { "OrderCard" },
-                    ) { orderUi ->
-                        OrderCard(orderUi = orderUi)
+                    ) { order ->
+                        OrderCard(order = order)
                     }
                 }
             }
@@ -124,10 +124,10 @@ private fun OrderScreenContent(
                 } else {
                     items(
                         items = orders,
-                        key = { it.orderNumberLabel },
+                        key = { it.orderNumber },
                         contentType = { "OrderCard" },
-                    ) { orderUi ->
-                        OrderCard(orderUi = orderUi)
+                    ) { order ->
+                        OrderCard(order = order)
                     }
                 }
                 item(contentType = "BottomSpacer") { Spacer(Modifier.height(24.dp)) }
@@ -150,23 +150,23 @@ private fun NotLoggedInState(
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Image(
-            painter = painterResource(R.drawable.not_logged_in),
-            contentDescription = stringResource(com.example.order.checkout.ui.pastorders.R.string.not_signed_in_image_description),
+            painter = painterResource(DsR.drawable.not_logged_in),
+            contentDescription = stringResource(R.string.not_signed_in_image_description),
             modifier = Modifier.size(128.dp),
         )
         Text(
-            text = stringResource(com.example.order.checkout.ui.pastorders.R.string.not_signed_in_title),
+            text = stringResource(R.string.not_signed_in_title),
             style = AppTypography.Title1SemiBold,
             color = AppColors.TextPrimary,
         )
         Text(
-            text = stringResource(com.example.order.checkout.ui.pastorders.R.string.not_signed_in_message),
+            text = stringResource(R.string.not_signed_in_message),
             style = AppTypography.Body3Regular,
             color = AppColors.TextSecondary,
         )
         Spacer(Modifier.height(16.dp))
         DsButton.Filled(
-            text = stringResource(com.example.order.checkout.ui.pastorders.R.string.sign_in),
+            text = stringResource(R.string.sign_in),
             onClick = onSignInClick,
         )
     }
@@ -183,29 +183,29 @@ private fun NoOrders(modifier: Modifier = Modifier) {
     ) {
         Image(
             modifier = Modifier.size(128.dp),
-            painter = painterResource(R.drawable.no_orders_yet),
-            contentDescription = "No Orders Yet",
+            painter = painterResource(DsR.drawable.no_orders_yet),
+            contentDescription = stringResource(R.string.past_orders_no_orders_image_description),
         )
         Text(
-            text = "No Orders Yet",
+            text = stringResource(R.string.past_orders_no_orders_title),
             style = AppTypography.Title1SemiBold,
             color = AppColors.TextPrimary,
         )
         Text(
-            text = "Your orders will appear here after your first purchase.",
+            text = stringResource(R.string.past_orders_no_orders_message),
             style = AppTypography.Body3Regular,
             color = AppColors.TextSecondary,
         )
         Spacer(Modifier.height(16.dp))
         DsButton.Filled(
-            text = "Start Shopping",
+            text = stringResource(R.string.past_orders_start_shopping),
             onClick = {},
         )
     }
 }
 
 @Composable
-private fun ErrorState(errorMessage: String) {
+private fun ErrorState() {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -215,12 +215,12 @@ private fun ErrorState(errorMessage: String) {
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Image(
-            painter = painterResource(R.drawable.error),
+            painter = painterResource(DsR.drawable.error),
             contentDescription = null,
             modifier = Modifier.size(128.dp),
         )
         Text(
-            text = errorMessage,
+            text = stringResource(R.string.past_orders_orders_load_error),
             style = AppTypography.Body1Medium,
             color = AppColors.TextPrimary,
         )
@@ -231,63 +231,69 @@ private fun ErrorState(errorMessage: String) {
 @Composable
 private fun OrderScreenContentPreview() {
     val orders = listOf(
-        OrderUi(
-            orderNumberLabel = "Order #123",
+        OrderDisplayModel(
+            orderNumber = "123",
             dateTimeLabel = "September 25, 12:15",
             items = listOf(
-                OrderItem(
-                    name = "1 x Margherita",
+                OrderItemDisplayModel(
+                    quantity = 1,
+                    name = "Margherita",
                     toppings = listOf(),
                 ),
-                OrderItem(
-                    name = "1 x Margherita",
+                OrderItemDisplayModel(
+                    quantity = 1,
+                    name = "Margherita",
                     toppings = listOf(
-                        "1 x Extra cheese",
-                        "2 x Pepperoni",
+                        OrderToppingDisplayModel(quantity = 1, name = "Extra cheese"),
+                        OrderToppingDisplayModel(quantity = 2, name = "Pepperoni"),
                     ),
                 ),
             ),
             totalAmountLabel = "$25.45",
             status = OrderStatus.COMPLETED,
         ),
-        OrderUi(
-            orderNumberLabel = "Order #1234",
+        OrderDisplayModel(
+            orderNumber = "1234",
             dateTimeLabel = "September 25, 12:15",
             items = listOf(
-                OrderItem(
-                    name = "1 x Margherita",
+                OrderItemDisplayModel(
+                    quantity = 1,
+                    name = "Margherita",
                     toppings = listOf(
-                        "1 x Extra cheese",
-                        "2 x Pepperoni",
+                        OrderToppingDisplayModel(quantity = 1, name = "Extra cheese"),
+                        OrderToppingDisplayModel(quantity = 2, name = "Pepperoni"),
                     ),
                 ),
-                OrderItem(
-                    name = "1 x Margherita",
+                OrderItemDisplayModel(
+                    quantity = 1,
+                    name = "Margherita",
                     toppings = listOf(
-                        "1 x Extra cheese",
-                        "2 x Pepperoni",
+                        OrderToppingDisplayModel(quantity = 1, name = "Extra cheese"),
+                        OrderToppingDisplayModel(quantity = 2, name = "Pepperoni"),
                     ),
                 ),
             ),
             totalAmountLabel = "$25.45",
             status = OrderStatus.IN_PROGRESS,
         ),
-        OrderUi(
-            orderNumberLabel = "Order #12346",
+        OrderDisplayModel(
+            orderNumber = "12346",
             dateTimeLabel = "September 25, 12:15",
             items = listOf(
-                OrderItem(
-                    name = "1 x Margherita",
+                OrderItemDisplayModel(
+                    quantity = 1,
+                    name = "Margherita",
                     toppings = listOf(
-                        "1 x Extra cheese",
-                        "2 x Pepperoni",
+                        OrderToppingDisplayModel(quantity = 1, name = "Extra cheese"),
+                        OrderToppingDisplayModel(quantity = 2, name = "Pepperoni"),
                     ),
                 ),
-                OrderItem(
-                    name = "1 x Margherita",
+                OrderItemDisplayModel(
+                    quantity = 1,
+                    name = "Margherita",
                     toppings = listOf(
-                        "1 x Extra cheese",
-                        "2 x Pepperoni",
+                        OrderToppingDisplayModel(quantity = 1, name = "Extra cheese"),
+                        OrderToppingDisplayModel(quantity = 2, name = "Pepperoni"),
                     ),
                 ),
             ),
@@ -314,7 +320,7 @@ private fun EmptyOrderStatePreview() {
 @Composable
 private fun ErrorCartPreview() {
     LazyPizzaThemePreview {
-        ErrorState("An error occurred while loading orders.")
+        ErrorState()
     }
 }
 
