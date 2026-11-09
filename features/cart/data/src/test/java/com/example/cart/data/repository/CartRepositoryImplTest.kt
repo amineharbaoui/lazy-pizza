@@ -1,7 +1,6 @@
 package com.example.cart.data.repository
 
 import com.example.cart.data.datasource.CartLocalDataSource
-import com.example.cart.data.datasource.CartTransferLocalDataSource
 import com.example.cart.data.mapper.CartOwnerToKeyMapper
 import com.example.cart.domain.model.CartOwner
 import io.mockk.bdd.coThen
@@ -14,11 +13,9 @@ import java.time.ZoneOffset
 class CartRepositoryImplTest {
 
     private val localDataSource: CartLocalDataSource = mockk(relaxUnitFun = true)
-    private val transferLocalDataSource: CartTransferLocalDataSource = mockk(relaxUnitFun = true)
 
     private val repository = CartRepositoryImpl(
         localDataSource = localDataSource,
-        transferLocalDataSource = transferLocalDataSource,
         ownerToKeyMapper = CartOwnerToKeyMapper(),
         clock = Clock.fixed(NOW, ZoneOffset.UTC),
         cartTtlSeconds = CART_TTL_SECONDS,
@@ -31,7 +28,7 @@ class CartRepositoryImplTest {
         repository.transferGuestCart(to = CartOwner.User(USER_ID))
 
         // Then
-        coThen { transferLocalDataSource.transferCart(fromOwnerKey = GUEST_KEY, toOwnerKey = USER_KEY, at = NOW) }
+        coThen { localDataSource.transferCart(fromOwnerKey = GUEST_KEY, toOwnerKey = USER_KEY, at = NOW) }
     }
 
     @Test

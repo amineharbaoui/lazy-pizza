@@ -1,7 +1,6 @@
 package com.example.cart.data.repository
 
 import com.example.cart.data.datasource.CartLocalDataSource
-import com.example.cart.data.datasource.CartTransferLocalDataSource
 import com.example.cart.data.di.CartTouchThrottle
 import com.example.cart.data.di.CartTtl
 import com.example.cart.data.mapper.CartOwnerToKeyMapper
@@ -20,7 +19,6 @@ import javax.inject.Inject
 
 class CartRepositoryImpl @Inject constructor(
     private val localDataSource: CartLocalDataSource,
-    private val transferLocalDataSource: CartTransferLocalDataSource,
     private val ownerToKeyMapper: CartOwnerToKeyMapper,
     private val clock: Clock,
     @param:CartTtl private val cartTtlSeconds: Long,
@@ -76,7 +74,7 @@ class CartRepositoryImpl @Inject constructor(
     }
 
     override suspend fun transferGuestCart(to: CartOwner.User) {
-        transferLocalDataSource.transferCart(
+        localDataSource.transferCart(
             fromOwnerKey = ownerToKeyMapper.map(CartOwner.Guest),
             toOwnerKey = ownerToKeyMapper.map(to),
             at = clock.instant(),
