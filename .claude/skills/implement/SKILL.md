@@ -53,7 +53,7 @@ The branch's commits are what the reviewer reads, one at a time, and rebase merg
 
 **A refactor issue** gets one commit per step, made in step 6 as each step passes: a pure move or rename first, then any tests that pin today's behavior, then one change per commit. For example: move the screen to its namespace's package, add the screenshot tests of its previews, rename its display models, take its texts from `strings.xml`, derive its state without an `onStart` collector.
 
-A feature's local commits on the way, the screens and the test checkpoint, are working steps that step 9 replaces: they never reach the PR. Its checkpoint is what proves the tests weren't bent to pass, so it stays on the branch until the review is over.
+A feature's local commits on the way, the screens and the test checkpoint, are working steps that step 9 replaces: they never reach the PR. Its checkpoint is what proves the tests weren't bent to pass, so it stays on the branch until step 8's review is over. After that, `review/tests-since-checkpoint.diff` keeps the proof.
 
 A fix to a step already committed goes into that commit, never on top: `git commit --fixup <commit>`, then `git -c sequence.editor=: rebase -i --autosquash "$(git merge-base origin/main HEAD)"`. The branch is never pushed before `/open-pr`, so this rewrites nothing anyone else has. Once the PR is open, a fix is a new commit on top.
 
@@ -203,10 +203,14 @@ The build ends here, on a local branch. Never push it yourself: only `/open-pr` 
 1. Shape the commits, as "Commits" says. For a feature, build them from the checked tree, inside out:
 
    ```bash
-   git add -A && git commit -m "wip: #<issue>" && checked=$(git rev-parse HEAD)
-   # Write $checked in the plan's Progress, so a run that stops here starts again from it.
+   git add -A && git commit -m "wip: #<issue>" && git rev-parse HEAD
+   ```
+
+   Write the printed hash in the plan's Progress as the checked commit, so a run that stops here starts again from it. The commands below use it as `<checked>`: a shell variable doesn't last from one command to the next.
+
+   ```bash
    git reset --hard "$(git merge-base origin/main HEAD)"
-   git diff --binary HEAD "$checked" -- '<path>' '<path>' | git apply --index
+   git diff --binary HEAD <checked> -- '<path>' '<path>' | git apply --index
    # Remove the lines that belong to a later commit, then: git add '<build file>'
    git commit -m "feat: add the reorder use case (#80)"
    ```
@@ -214,12 +218,14 @@ The build ends here, on a local branch. Never push it yourself: only `/open-pr` 
    The paths are the commit's files or directories, such as `'features/order/domain'`, each quoted, plus `'settings.gradle.kts'` and `'gradle/libs.versions.toml'` when this is the first commit that needs their change. When such a file also holds lines for a later commit, such as the `include` of a screen module, remove those lines and stage it again before the commit. Two concerns in the same file stay in one commit. Each next commit takes its paths the same way. The last commit takes everything left, and its tree must be the checked one:
 
    ```bash
-   git diff --binary HEAD "$checked" | git apply --index && git commit -m "feat: open the cart after a reorder (#80)"
-   git diff --quiet "$checked" HEAD
+   git diff --binary HEAD <checked> | git apply --index && git commit -m "feat: open the cart after a reorder (#80)"
+   git diff --quiet <checked> HEAD
    ```
 
+   When `git diff --quiet <checked> HEAD` already succeeds before the last commit, nothing is left: skip it.
+
    A refactor issue's commits are already made: `git status --porcelain` must print nothing.
-2. Check every commit on its own, in one command: `git rebase --exec "./gradlew unitTestAll verifyRoborazziDebug assembleDebug" "$(git merge-base origin/main HEAD)"`, with `buildHealth` added to the Gradle tasks when a commit changes a build file. The last commit's tree passed step 7, Maestro included. When a commit fails, run `git rebase --abort` and fold it into the commit after it, keeping that commit's message, for example because it changes a signature the next commit's code calls. Then check again.
+2. Check every commit on its own, in one command: `git rebase --exec "./gradlew unitTestAll verifyRoborazziDebug assembleDebug" "$(git merge-base origin/main HEAD)"`, with `buildHealth` added to the Gradle tasks when the branch changes a build file. The last commit's tree passed step 7, Maestro included. When a commit fails, run `git rebase --abort` and fold it into the commit after it, keeping that commit's message, for example because it changes a signature the next commit's code calls. Then check again.
 3. Write the end of step 7's output in the plan's Verification, with the commit it checked, `git rev-parse --short HEAD`, and each commit with the end of its check. From `scripts/e2e.sh`, write only its per-flow lines, never a line from Maestro's logs: they can show the test phone number.
 4. Mark step 9 done in `plan.md`.
 5. Give the developer the branch, the worktree and the commits (`git log --oneline origin/main..HEAD`). Then the Calls, the Test changes, the Spec changes, the Follow-ups, any screenshot outside the spec's screens, and the Verification. Point them to `plan.md` for the scenarios and their tests.
@@ -267,6 +273,7 @@ A refactor issue asks for one change to existing code that keeps what the app do
 
 ## After the hand-off
 
-- When the developer asks for a change, make it and commit it into the commit it belongs to, as "Commits" says. Run step 7's checks and step 9's check of every commit again. Update the plan's sections it affects, and the commit its Verification names. Once the PR is open, commit the change on top instead.
+- When the developer asks for a change, make it and commit it into the commit it belongs to, as "Commits" says. Run step 7's checks and step 9's check of every commit again. Update the plan's sections it affects, and the commit its Verification names. When `/open-pr` stopped because a commit fails on the new main, first bring the branch up to main, as item 3 of "Refactors found later" does.
+- Once the PR is open, commit the change on top instead, and run only step 7's checks: they check that new commit. Never rebase a pushed branch.
 - When the run starts again, check whether the branch's PR is merged: `gh pr list --head <branch> --state merged --json number --jq length` prints `0` when it isn't. Until then, look for its open PR with `gh pr list --head <branch> --json url --jq '.[].url'`. When there is one, give its URL and stop. When there is none, ask step 9's "Open the pull request now?" again.
 - Once it's merged, leave the worktree with `ExitWorktree` and `keep`, then remove it with `git worktree remove .claude/worktrees/<issue>`, which also deletes its notes, and delete its branch with `git branch -D <branch>`.
