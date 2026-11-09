@@ -55,12 +55,14 @@ Use the issue's notes from `/implement`, in `.claude/implement-drafts/<issue>/` 
 
 - Run `gh auth status`. If it fails, stop and ask the developer to run `gh auth login`.
 - If the issue number is missing, ask for it.
-- `git worktree list` must show `.claude/worktrees/<issue>`. Otherwise stop: there's nothing to open. Tell the developer to build the issue with `/implement <issue>` first, or, when its PR is already merged and cleaned up, that there's nothing left to do.
+- `git worktree list` must show `.claude/worktrees/<issue>`. When it doesn't, but `git branch --list 'feature/<issue>-*' 'refactor/<issue>-*'` still shows the issue's branches and their PR is merged, an earlier clean-up stopped halfway: finish it with step 12's items 2 and 5. Otherwise stop: tell the developer to build the issue with `/implement <issue>` first, or that there's nothing left to do.
 - Enter the worktree with `EnterWorktree` and its path, and read `plan.md`. When its Progress doesn't show `/implement` step 9 done, stop and tell the developer to finish the run with `/implement <issue>`.
-- Find the PR. When the plan's Pull requests lists one, read its state with `gh pr view <number> --json state`. Otherwise run `gh pr list --head "$(git branch --show-current)" --state all --json number,state,url`. In a stack, the top PR decides.
-  - None: go to step 2.
-  - `OPEN`: go to step 8.
-  - `MERGED`: go to step 12.
+- Find the PRs. A run can stop between a push and its note in the plan, so read GitHub as well as the plan's Pull requests: `gh pr list --head <branch> --state all --json number,state,baseRefName,headRefOid,url` for the worktree's branch (`git branch --show-current`), and for each stack part's branch, `<branch>-domain` and `<branch>-data`. Write in the plan any PR it doesn't list yet. Its pushed SHA is its `headRefOid` when that's the commit your local branch points at. When it isn't, stop and ask the developer.
+  - No PR, and `git ls-remote --heads origin <branch>` shows nothing: go to step 2.
+  - No PR or not every part's PR, but the branches are pushed and point at your local commits: a run stopped while opening. Go to step 7 and do only what's missing.
+  - Every PR `MERGED`: go to step 12.
+  - A stack with some parts merged and some open: tell the developer which, and stop.
+  - Any other PR `OPEN`: go to step 8.
   - `CLOSED` without a merge: tell the developer and stop. Never reopen it yourself.
 
 ### 2. Bring the branch up to main
@@ -101,11 +103,11 @@ Build the lower parts from the folded commit, bottom up:
 
 ```bash
 git switch -c <branch>-domain origin/main
-git diff --binary origin/main <branch> -- <paths of the part> | git apply --index
+git diff --binary origin/main <branch> -- '<module dir>' '<module dir>' | git apply --index
 git commit -m "feat: add the domain of <feature> (#<issue>)"
 ```
 
-Right after each lower part's commit, run `./gradlew unitTestAll verifyRoborazziDebug assembleDebug` on it. The next part starts from the one below it instead of `origin/main`, and takes its paths the same way. Then put the top part on the part right below it, with its own commit:
+Right after each lower part's commit, run `./gradlew unitTestAll verifyRoborazziDebug assembleDebug` on it. The paths are the part's module directories, such as `'features/order/domain'`, each quoted. The next part starts from the one below it instead of `origin/main`, and takes its paths the same way. Then put the top part on the part right below it, with its own commit:
 
 ```bash
 git switch <branch> && git reset --soft <part below> && git commit -m "<step 3 message>"
@@ -149,10 +151,12 @@ Suggest up to 2 reviewers: the people who most recently changed the modules the 
 Print, for each PR: its title, its branch and base, the number of files it changes, and its description. Then the reviewers. Then ask "Open the PR?", or "Open the stack?" for a stack, with the options:
 
 - `Open` (Recommended)
-- `Change something`: apply what the developer asks, then show and ask again
+- `Change something`: apply a change to the split, a title, a description or the reviewers, then show and ask again. A change to the code goes through `/implement <issue>`, which runs the checks: stop, and tell the developer to run `/pr <issue>` again after it.
 - for a stack, `One PR instead`: go back to step 4 without splitting
 
 ### 7. Open
+
+When step 1 sent you here to finish an opening that stopped, skip the pushes and PRs already done.
 
 One PR:
 
@@ -182,7 +186,7 @@ For each PR, the parts of a stack included:
 - the open review threads:
 
   ```bash
-  gh api graphql -F owner='{owner}' -F name='{repo}' -F number=<number> -f query='query($owner:String!,$name:String!,$number:Int!){repository(owner:$owner,name:$name){pullRequest(number:$number){reviewThreads(first:100){nodes{id isResolved path line comments(first:50){nodes{databaseId author{login} body createdAt}}}}}}}' --jq '.data.repository.pullRequest.reviewThreads.nodes[] | select(.isResolved | not)'
+  gh api graphql --paginate -F owner='{owner}' -F name='{repo}' -F number=<number> -f query='query($owner:String!,$name:String!,$number:Int!,$endCursor:String){repository(owner:$owner,name:$name){pullRequest(number:$number){reviewThreads(first:100,after:$endCursor){pageInfo{hasNextPage endCursor} nodes{id isResolved path line comments(last:100){nodes{databaseId author{login} body createdAt}}}}}}}' --jq '.data.repository.pullRequest.reviewThreads.nodes[] | select(.isResolved | not)'
   ```
 
 - `gh pr checks <number>`
@@ -216,7 +220,7 @@ Fixes follow CLAUDE.md, `.claude/rules/` and `/implement` step 6: a test never l
 
 1. Run `/implement` step 7's checks on the result, Maestro included when a fix touches app code.
 2. Commit the round's fixes as one new commit, for example `fix: keep drinks merged when the cart has a promo (#73)`. Never amend or fold a commit that was pushed.
-3. Push it with `git push origin <branch>`. In a stack, commit the fix on the part it belongs to, run `gh stack rebase`, check each part above it as in step 4, then run `gh stack push`. It pushes with `--force-with-lease`.
+3. Push it with `git push origin <branch>`. In a stack, commit the fix on the part it belongs to, and run step 4's Gradle command on that part alone. When it can't pass alone, the fix belongs in a part above. Then run `gh stack rebase`, check each part above it the same way, and run `gh stack push`. It pushes with `--force-with-lease`.
 4. Reply on each thread you handled with what you did and the commit, or why not, ending with `— /pr`:
 
    ```bash
@@ -245,9 +249,10 @@ GitHub can't rebase-merge a PR that conflicts with main. Rebase it:
 
 ### 12. Clean up
 
-Once the PR is merged, the top part for a stack:
+Once every PR is merged, each part of a stack included:
 
-- Check the issue is closed with `gh issue view <issue> --json state`. When it's still open, tell the developer, and leave it to them.
-- Leave the worktree with `ExitWorktree` and `keep`, then remove it with `git worktree remove .claude/worktrees/<issue>`, which also deletes its notes.
-- Delete the local branch with `git branch -D <branch>`, and each part's branch for a stack.
-- When the remote branches are still there, `git ls-remote --heads origin <branch>`, delete them with `git push origin --delete <branch>`.
+1. Check the issue is closed with `gh issue view <issue> --json state`. When it's still open, tell the developer, and leave it to them.
+2. Check that no work is left behind. For each branch, `git log --oneline <headRefOid>..<branch>` must print nothing, with its merged PR's `headRefOid`. When it lists commits, they never reached the PR: stop, keep everything, and tell the developer.
+3. Delete each remote branch that's still there, only while it points at its merged PR's `headRefOid`: compare it with `git ls-remote --heads origin <branch>`, then run `git push origin --delete <branch>`. When it points elsewhere, someone pushed after the merge: keep it and tell the developer.
+4. Leave the worktree with `ExitWorktree` and `keep`, then remove it with `git worktree remove .claude/worktrees/<issue>`, which also deletes its notes.
+5. Delete the local branches with `git branch -D <branch>`, and each part's branch for a stack.
