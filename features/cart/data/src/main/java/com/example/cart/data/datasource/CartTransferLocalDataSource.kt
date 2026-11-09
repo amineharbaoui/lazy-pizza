@@ -5,6 +5,7 @@ import com.example.cart.data.datasource.db.CartDatabase
 import com.example.cart.data.datasource.db.dao.CartDao
 import com.example.cart.data.datasource.db.dao.CartMetadataDao
 import com.example.cart.data.datasource.db.entity.CartMetadataEntity
+import java.time.Instant
 import javax.inject.Inject
 
 class CartTransferLocalDataSource @Inject constructor(
@@ -15,6 +16,7 @@ class CartTransferLocalDataSource @Inject constructor(
     suspend fun transferCart(
         fromOwnerKey: String,
         toOwnerKey: String,
+        at: Instant,
     ) = db.withTransaction {
         val sourceLines = cartDao.getCartLinesOnce(fromOwnerKey)
         if (sourceLines.isEmpty()) return@withTransaction
@@ -31,7 +33,7 @@ class CartTransferLocalDataSource @Inject constructor(
         metadataDao.upsert(
             CartMetadataEntity(
                 ownerKey = toOwnerKey,
-                lastUpdatedAtMillis = System.currentTimeMillis(),
+                lastUpdatedAtMillis = at.toEpochMilli(),
             ),
         )
     }
