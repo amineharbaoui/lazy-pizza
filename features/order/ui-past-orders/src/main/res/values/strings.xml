@@ -5,4 +5,15 @@
     <string name="not_signed_in_message">Please sign in to view your order history.</string>
     <string name="not_signed_in_image_description">Not Signed In</string>
     <string name="sign_in">Sign In</string>
+    <string name="past_orders_no_orders_title">No Orders Yet</string>
+    <string name="past_orders_no_orders_message">Your orders will appear here after your first purchase.</string>
+    <string name="past_orders_no_orders_image_description">No Orders Yet</string>
+    <string name="past_orders_start_shopping">Start Shopping</string>
+    <string name="past_orders_orders_load_error">Failed to load orders.</string>
+    <string name="past_orders_order_number">Order #%1$s</string>
+    <string name="past_orders_order_line">%1$d x %2$s</string>
+    <string name="past_orders_order_total_amount">Total amount:</string>
+    <string name="past_orders_status_completed">Completed</string>
+    <string name="past_orders_status_in_progress">In Progress</string>
+    <string name="past_orders_status_canceled">Canceled</string>
 </resources>

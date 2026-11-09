@@ -2,11 +2,13 @@ plugins {
     alias(libs.plugins.custom.android.module)
     alias(libs.plugins.custom.compose)
     alias(libs.plugins.custom.hilt)
+    alias(libs.plugins.custom.testing)
+    alias(libs.plugins.custom.screenshot.testing)
     alias(libs.plugins.kotlin.serialization)
 }
 
 android {
-    namespace = "com.example.order.checkout.ui.pastorders"
+    namespace = "com.example.order.ui.pastorders"
 }
 
 dependencies {
