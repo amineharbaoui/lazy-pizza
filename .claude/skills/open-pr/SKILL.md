@@ -10,7 +10,7 @@ disable-model-invocation: true
 Open the pull request for an issue `/implement` built and handed off. Two things matter most:
 
 - **Small PRs.** A person reviews each PR in one careful sitting. When the change is too big for that, it opens as stacked PRs.
-- **A short description.** It gives the reviewer what they need and nothing more: the issue it closes, why, the architecture decisions, the screens before and after, and recordings of what the flows test. Everything else folds into one collapsed Details section, for AI tools and for anyone who wants the detail.
+- **A short description.** It gives the reviewer what they need and nothing more: the issue it closes, what changed and why, the screens before and after, and recordings of what the flows test. Everything else folds into one collapsed Details section, for AI tools and for anyone who wants the detail.
 
 `/implement` offers to run it at the end of its hand-off, and the developer can also run it any time later. The run ends once the PR is open. Reviews and the merge happen on GitHub. Once the PR is merged, `/implement <issue>` cleans up its worktree.
 
@@ -111,14 +111,13 @@ The top part is the whole feature, already checked in step 2. When a part doesn'
 
 ### 5. Write the description
 
-Write it in `.claude/implement-drafts/<issue>/pr/`, following `.github/pull_request_template.md` without its comments. Take the content from `plan.md`, the issue and the diff. Write for a reviewer who hasn't read the plan, in short sentences. Give each section its `##` title from the template. Leave out a section with nothing in it, except Issue and Why.
+Write it in `.claude/implement-drafts/<issue>/pr/`, following `.github/pull_request_template.md` without its comments. Take the content from `plan.md`, the issue and the diff. Write for a reviewer who hasn't read the plan, in short sentences. The template says which sections each kind of PR requires: keep those, and the optional ones that apply, each with its `##` title. `/open-pr` opens a feature or a refactor.
 
 - **Issue**: `Closes #<issue>`, and one more line for each sub-issue. A refactor says `Closes #<issue>`, then `Unblocks #<number>` for each issue it blocks, from `gh api --paginate repos/{owner}/{repo}/issues/<issue>/dependencies/blocking --jq '.[] | "#\(.number)"'`.
-- **Why**: two to four lines. For a feature, the problem it solves for the user and the business, from the spec's Why. For a refactor, what the feature it unblocks can't do cleanly without it.
-- **Architecture decisions**: the choices that shape the code, each with its reason, from the plan's Calls and Modules: a new module, where a rule lives, how data flows between layers, a schema change, a new dependency. Leave out choices that follow the rules as written. Add a Mermaid diagram when it helps: a `flowchart` of the modules and their dependencies when the change adds a module or a dependency, a `sequenceDiagram` when data crosses several layers, a `flowchart` of the screens when navigation changes. Draw only what the change touches, mark what's new, keep it under about 12 nodes. Put it under the decisions, collapsed in its own block, so the section stays short to read: `<details><summary>Diagram: <what it shows></summary>`, the ```` ```mermaid ```` block, then `</details>`. GitHub draws the diagram when the reviewer opens it.
-- **Screenshots**: one row per preview whose images the PR adds or changes, `| Screen | Before | After |`. When a preview has several variants, show the light phone one here: the full list goes in Details.
-- **Screen recordings**: one video per Maestro flow the PR adds or changes, each under a one-line caption saying what it tests (see "Recordings" below).
-- **Details**: under its `## Details` title, one `<details>` block, `<summary>Scenarios, tests, verification and follow-ups</summary>`, holding Scenarios and tests (the plan's table), Tests changed after they were written, Spec changes, Changed screenshots (every image added, changed or deleted, with the reason for any outside the spec's screens), Follow-ups, and Verification. Tests changed after they were written and Spec changes always show, with `None.` when empty, so the reviewer knows the tests weren't bent to pass.
+- **What changed**: first why, in two to four lines. For a feature, the problem it solves for the user and the business, from the spec's Why. For a refactor, what the feature it unblocks can't do cleanly without it. Then the architecture decisions, as bullets, each with its reason, from the plan's Calls and Modules: a new module, where a rule lives, how data flows between layers, a schema change, a new dependency. Leave out choices that follow the rules as written. Add a Mermaid diagram when it helps: a `flowchart` of the modules and their dependencies when the change adds a module or a dependency, a `sequenceDiagram` when data crosses several layers, a `flowchart` of the screens when navigation changes. Draw only what the change touches, mark what's new, keep it under about 12 nodes. Put it under the bullets, collapsed in its own block, so the section stays short to read: `<details><summary>Diagram: <what it shows></summary>`, the ```` ```mermaid ```` block, then `</details>`. GitHub draws the diagram when the reviewer opens it.
+- **Screenshots**, only for a feature that adds or changes reference images: one row per preview whose images the PR adds or changes, `| Screen | Before | After |`. When a preview has several variants, show the light phone one here: the full list goes in Details.
+- **Screen recordings**, only for a feature that adds or changes Maestro flows: one video per flow the PR adds or changes, each under a one-line caption saying what it tests (see "Recordings" below).
+- **Details**: under its `## Details` title, one `<details>` block, `<summary>Tests, verification and follow-ups</summary>`, with the subsections the template requires for the PR's kind. Scenarios and tests is the plan's table. Changed screenshots lists every image added, changed or deleted, with the reason for any outside the spec's screens. Tests changed after they were written, and Spec changes for a feature, show even when empty, as `None.`, so the reviewer knows the tests weren't bent to pass.
 
 In every `<details>` block, keep a blank line after `</summary>` and before `</details>`, or GitHub doesn't render the Markdown inside.
 
@@ -128,7 +127,7 @@ Verification takes the plan's Verification. From `scripts/e2e.sh`, take only its
 
 In a stack:
 
-- Each part's Issue section says `Part <n> of <m> of #<issue>`. The part has its own Why and Architecture decisions, and Details with its Verification.
+- Each part's Issue section says `Part <n> of <m> of #<issue>`. The part has its own What changed, and Details with its Verification.
 - Only the top part closes the issue, and carries the Screenshots, the Screen recordings and the full Details.
 
 The PR title is the commit message from step 3. In a stack, each part's title is its own commit message.
