@@ -1,5 +1,7 @@
 package com.example.order.data.di
 
+import com.example.order.data.datasource.OrdersRemoteDataSource
+import com.example.order.data.datasource.OrdersRemoteDataSourceImpl
 import com.example.order.data.repository.OrdersRepositoryImpl
 import com.example.order.domain.repository.OrdersRepository
 import dagger.Binds
@@ -13,4 +15,7 @@ abstract class OrdersModule {
 
     @Binds
     abstract fun bindOrdersRepository(impl: OrdersRepositoryImpl): OrdersRepository
+
+    @Binds
+    abstract fun bindOrdersRemoteDataSource(impl: OrdersRemoteDataSourceImpl): OrdersRemoteDataSource
 }

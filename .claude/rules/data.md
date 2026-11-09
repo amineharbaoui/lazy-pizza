@@ -23,7 +23,7 @@ paths:
 
 ## Code not to copy
 
-- Every data source is a concrete class (`ProductRemoteDataSource`, `OrdersRemoteDataSource`, `PhoneAuthDataSource`, `CartLocalDataSource`), so tests can't fake it.
+- Every data source is a concrete class (`ProductRemoteDataSource`, `PhoneAuthDataSource`, `CartLocalDataSource`), so tests can't fake it.
 - Every class in the data modules is public.
 - `CartLocalDataSource` holds the cart expiry and touch-throttle logic and reads `System.currentTimeMillis()`.
 - `CartDatabaseModule` uses `fallbackToDestructiveMigration`, and the cart schemas aren't committed.
