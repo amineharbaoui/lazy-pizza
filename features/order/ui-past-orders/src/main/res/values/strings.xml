@@ -16,4 +16,10 @@
     <string name="past_orders_status_completed">Completed</string>
     <string name="past_orders_status_in_progress">In Progress</string>
     <string name="past_orders_status_canceled">Canceled</string>
+    <string name="past_orders_reorder">Reorder</string>
+    <string name="past_orders_reorder_description">Reorder order #%1$s</string>
+    <string name="past_orders_nothing_available_title">Can\'t reorder</string>
+    <string name="past_orders_nothing_available_message">None of the items in this order are available anymore.</string>
+    <string name="past_orders_reorder_failed_title">Couldn\'t reorder</string>
+    <string name="past_orders_reorder_failed_message">Something went wrong. Please try again.</string>
 </resources>

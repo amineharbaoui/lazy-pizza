@@ -11,6 +11,7 @@
     <string name="resend_code">Resend code</string>
     <string name="logout">Log out</string>
     <string name="cancel">Cancel</string>
+    <string name="ok">OK</string>
     <string name="logout_confirm_title">Are you sure you want to log out?</string>
     <string name="change_number">Change mobile number?</string>
     <string name="whooops">Whooops!</string>

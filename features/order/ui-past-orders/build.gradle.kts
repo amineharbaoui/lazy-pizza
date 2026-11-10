@@ -26,4 +26,10 @@ dependencies {
     testImplementation(testFixtures(projects.features.auth.data))
     testImplementation(projects.features.order.data)
     testImplementation(testFixtures(projects.features.order.data))
+    testImplementation(projects.features.cart.domain)
+    testImplementation(projects.features.cart.data)
+    testImplementation(testFixtures(projects.features.cart.data))
+    testImplementation(projects.features.menu.domain)
+    testImplementation(projects.features.menu.data)
+    testImplementation(testFixtures(projects.features.menu.data))
 }

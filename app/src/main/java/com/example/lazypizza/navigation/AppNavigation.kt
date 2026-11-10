@@ -94,6 +94,11 @@ fun AppNavigation(
                         onSignInClick = {
                             backStack.add(AuthRoute)
                         },
+                        onNavigateToCart = {
+                            // The same as tapping the Cart tab.
+                            backStack.clear()
+                            backStack.add(CartRoute)
+                        },
                     )
                 }
 
