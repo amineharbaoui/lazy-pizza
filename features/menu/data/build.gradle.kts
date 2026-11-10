@@ -23,4 +23,6 @@ dependencies {
     testFixturesApi(projects.features.menu.domain)
     testFixturesImplementation(projects.core.model)
     testFixturesImplementation(libs.kotlinx.coroutines.core)
+    testFixturesImplementation(platform(libs.firebase.bom))
+    testFixturesImplementation(libs.firebase.firestore)
 }

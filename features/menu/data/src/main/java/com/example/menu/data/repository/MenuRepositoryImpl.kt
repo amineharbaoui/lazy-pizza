@@ -3,12 +3,15 @@ package com.example.menu.data.repository
 import com.example.core.model.ProductCategory
 import com.example.menu.data.datasource.ProductRemoteDataSource
 import com.example.menu.data.mapper.ProductDtoToDomainMapper
+import com.example.menu.domain.model.CurrentMenuResult
 import com.example.menu.domain.model.MenuItem
 import com.example.menu.domain.model.MenuSection
 import com.example.menu.domain.model.Topping
 import com.example.menu.domain.repository.MenuRepository
+import com.google.firebase.firestore.FirebaseFirestoreException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
@@ -51,4 +54,12 @@ internal class MenuRepositoryImpl @Inject constructor(
     override fun observeToppings(): Flow<List<Topping>> = productRemoteDataSource
         .observeProductsByCategory(category = ProductCategory.TOPPING)
         .map(productMapper::mapListToToppings)
+
+    override suspend fun getCurrentMenu(): CurrentMenuResult = try {
+        combine(observeMenuSections(), observeToppings()) { sections, toppings ->
+            CurrentMenuResult.Loaded(items = sections.flatMap { it.items }, toppings = toppings)
+        }.first()
+    } catch (e: FirebaseFirestoreException) {
+        CurrentMenuResult.Unavailable
+    }
 }

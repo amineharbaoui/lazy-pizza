@@ -10,6 +10,7 @@ import com.example.menu.domain.model.MenuItem
 import com.example.menu.domain.model.Topping
 import com.example.menu.domain.repository.MenuRepository
 import com.example.menu.domain.repository.RecommendedItemsRepository
+import com.google.firebase.firestore.FirebaseFirestoreException
 
 class MenuTestData {
 
@@ -29,6 +30,11 @@ class MenuTestData {
 
     fun givenMenuFailure(error: Exception = IllegalStateException(FORCED_FAILURE)) {
         remoteDataSource.failure = error
+    }
+
+    /** The menu can't be loaded, as when Firestore answers with a server error. */
+    fun givenMenuUnavailable() {
+        remoteDataSource.failure = FirebaseFirestoreException(FORCED_FAILURE, FirebaseFirestoreException.Code.UNAVAILABLE)
     }
 
     private fun toDto(item: MenuItem) = ProductDto(
