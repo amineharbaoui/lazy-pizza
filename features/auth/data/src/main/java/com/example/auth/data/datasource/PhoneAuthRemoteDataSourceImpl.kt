@@ -12,13 +12,12 @@ import javax.inject.Inject
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 
-
-class PhoneAuthDataSource @Inject constructor(
+class PhoneAuthRemoteDataSourceImpl @Inject constructor(
     private val firebaseAuth: FirebaseAuth,
-) {
+) : PhoneAuthRemoteDataSource {
 
     // TODO Unify userIdFlow and isSignedIn
-    val userIdFlow: Flow<String?> = callbackFlow {
+    override val userIdFlow: Flow<String?> = callbackFlow {
         val listener = FirebaseAuth.AuthStateListener { auth ->
             trySend(auth.currentUser?.uid)
         }
@@ -27,7 +26,7 @@ class PhoneAuthDataSource @Inject constructor(
         awaitClose { firebaseAuth.removeAuthStateListener(listener) }
     }
 
-    val isSignedIn: Flow<Boolean> = callbackFlow {
+    override val isSignedIn: Flow<Boolean> = callbackFlow {
         val listener = FirebaseAuth.AuthStateListener { auth ->
             trySend(auth.currentUser != null)
         }
@@ -36,7 +35,7 @@ class PhoneAuthDataSource @Inject constructor(
         awaitClose { firebaseAuth.removeAuthStateListener(listener) }
     }
 
-    fun getCurrentUser(): RemoteUser? {
+    override fun getCurrentUser(): RemoteUser? {
         val user = firebaseAuth.currentUser ?: return null
         return RemoteUser(
             uid = user.uid,
@@ -44,11 +43,11 @@ class PhoneAuthDataSource @Inject constructor(
         )
     }
 
-    fun signOut() {
+    override fun signOut() {
         firebaseAuth.signOut()
     }
 
-    suspend fun signInWithCode(
+    override suspend fun signInWithCode(
         verificationId: String,
         smsCode: String,
     ): RemoteUser {

@@ -1,6 +1,6 @@
 package com.example.auth.data.repository
 
-import com.example.auth.data.datasource.PhoneAuthDataSource
+import com.example.auth.data.datasource.PhoneAuthRemoteDataSource
 import com.example.auth.data.model.RemoteUser
 import com.example.auth.domain.model.AuthUser
 import io.mockk.Runs
@@ -20,7 +20,7 @@ import org.junit.jupiter.api.extension.ExtendWith
 class PhoneAuthRepositoryImplTest {
 
     @MockK
-    private lateinit var phoneAuthDataSource: PhoneAuthDataSource
+    private lateinit var phoneAuthRemoteDataSource: PhoneAuthRemoteDataSource
 
     @InjectMockKs
     private lateinit var phoneAuthRepository: PhoneAuthRepositoryImpl
@@ -31,7 +31,7 @@ class PhoneAuthRepositoryImplTest {
         val mockRemoteUser = RemoteUser(uid = "uid123", phoneNumber = "+123456789")
         val expected = AuthUser(uid = "uid123", phoneNumber = "+123456789")
 
-        coGiven { phoneAuthDataSource.signInWithCode("", "") } returns mockRemoteUser
+        coGiven { phoneAuthRemoteDataSource.signInWithCode("", "") } returns mockRemoteUser
 
         // When
         val result = phoneAuthRepository.signInWithCode("", "")
@@ -39,7 +39,7 @@ class PhoneAuthRepositoryImplTest {
         // Then
         assertThat(result.isSuccess).isTrue
         assertThat(result.getOrNull()).isEqualTo(expected)
-        coThen { phoneAuthDataSource.signInWithCode("", "") }
+        coThen { phoneAuthRemoteDataSource.signInWithCode("", "") }
     }
 
     @Test
@@ -47,7 +47,7 @@ class PhoneAuthRepositoryImplTest {
         // Given
         val exception = IllegalStateException("Invalid code")
 
-        coGiven { phoneAuthDataSource.signInWithCode("", "") } throws exception
+        coGiven { phoneAuthRemoteDataSource.signInWithCode("", "") } throws exception
 
         // When
         val result = phoneAuthRepository.signInWithCode("", "")
@@ -55,18 +55,18 @@ class PhoneAuthRepositoryImplTest {
         // Then
         assertThat(result.isFailure).isTrue
         assertThat(result.exceptionOrNull()).isEqualTo(exception)
-        coThen { phoneAuthDataSource.signInWithCode("", "") }
+        coThen { phoneAuthRemoteDataSource.signInWithCode("", "") }
     }
 
     @Test
     suspend fun `signOut when called then invokes data source sign out`() {
         // Given
-        coGiven { phoneAuthDataSource.signOut() } just Runs
+        coGiven { phoneAuthRemoteDataSource.signOut() } just Runs
 
         // When
         phoneAuthRepository.signOut()
 
         // Then
-        coThen { phoneAuthDataSource.signOut() }
+        coThen { phoneAuthRemoteDataSource.signOut() }
     }
 }
