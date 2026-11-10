@@ -6,9 +6,12 @@ import com.example.cart.domain.model.CartItem
 import com.example.cart.domain.model.CartTopping
 import javax.inject.Inject
 
-class CartDomainToEntityMapper @Inject constructor() {
+internal class CartDomainToEntityMapper @Inject constructor() {
 
-    fun mapItem(input: CartItem, ownerKey: String): CartItemEntity = when (input) {
+    fun mapItem(
+        input: CartItem,
+        ownerKey: String,
+    ): CartItemEntity = when (input) {
         is CartItem.Other -> CartItemEntity(
             ownerKey = ownerKey,
             lineId = input.lineId,

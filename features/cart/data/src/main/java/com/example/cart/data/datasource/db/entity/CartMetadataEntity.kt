@@ -4,7 +4,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 @Entity(tableName = "cart_metadata")
-data class CartMetadataEntity(
+internal data class CartMetadataEntity(
     @PrimaryKey val ownerKey: String,
     val lastUpdatedAtMillis: Long,
 )

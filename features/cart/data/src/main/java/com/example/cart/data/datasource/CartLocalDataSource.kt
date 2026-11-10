@@ -5,7 +5,7 @@ import com.example.cart.domain.model.CartItem
 import kotlinx.coroutines.flow.Flow
 import java.time.Instant
 
-interface CartLocalDataSource {
+internal interface CartLocalDataSource {
     fun observeCart(ownerKey: String): Flow<Cart>
     suspend fun getLastUpdatedAt(ownerKey: String): Instant?
     suspend fun setLastUpdatedAt(

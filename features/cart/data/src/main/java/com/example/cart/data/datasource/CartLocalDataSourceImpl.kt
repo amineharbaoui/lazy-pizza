@@ -14,7 +14,7 @@ import kotlinx.coroutines.flow.map
 import java.time.Instant
 import javax.inject.Inject
 
-class CartLocalDataSourceImpl @Inject constructor(
+internal class CartLocalDataSourceImpl @Inject constructor(
     private val db: CartDatabase,
     private val cartDao: CartDao,
     private val cartMetadataDao: CartMetadataDao,

@@ -16,8 +16,8 @@ abstract class CartRepositoryModule {
 
     @Binds
     @Singleton
-    abstract fun bindCartRepository(impl: CartRepositoryImpl): CartRepository
+    internal abstract fun bindCartRepository(impl: CartRepositoryImpl): CartRepository
 
     @Binds
-    abstract fun bindCartLocalDataSource(impl: CartLocalDataSourceImpl): CartLocalDataSource
+    internal abstract fun bindCartLocalDataSource(impl: CartLocalDataSourceImpl): CartLocalDataSource
 }

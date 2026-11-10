@@ -18,7 +18,7 @@ object CartDatabaseModule {
 
     @Provides
     @Singleton
-    fun provideCartDatabase(@ApplicationContext context: Context): CartDatabase = Room.databaseBuilder(
+    internal fun provideCartDatabase(@ApplicationContext context: Context): CartDatabase = Room.databaseBuilder(
         context = context,
         klass = CartDatabase::class.java,
         name = "cart.db",
@@ -26,8 +26,8 @@ object CartDatabaseModule {
         .build()
 
     @Provides
-    fun provideCartDao(db: CartDatabase): CartDao = db.cartDao()
+    internal fun provideCartDao(db: CartDatabase): CartDao = db.cartDao()
 
     @Provides
-    fun provideCartMetadataDao(db: CartDatabase): CartMetadataDao = db.cartMetadataDao()
+    internal fun provideCartMetadataDao(db: CartDatabase): CartMetadataDao = db.cartMetadataDao()
 }

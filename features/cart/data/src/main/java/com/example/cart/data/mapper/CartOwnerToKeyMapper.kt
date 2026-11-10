@@ -3,7 +3,7 @@ package com.example.cart.data.mapper
 import com.example.cart.domain.model.CartOwner
 import javax.inject.Inject
 
-class CartOwnerToKeyMapper @Inject constructor() {
+internal class CartOwnerToKeyMapper @Inject constructor() {
 
     fun map(owner: CartOwner): String = when (owner) {
         CartOwner.Guest -> KEY_GUEST
