@@ -5,6 +5,8 @@ plugins {
 
 dependencies {
     implementation(projects.core.model)
+    api(projects.features.menu.domain)
+    api(projects.features.cart.domain)
 
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.javax.inject)
