@@ -66,7 +66,7 @@ fun OrdersScreen(
             OrderUiState.NotLoggedIn -> NotLoggedInState(onSignInClick = onSignInClick)
 
             is OrderUiState.Ready -> {
-                OrderScreenContent(orders = state.orders)
+                OrderList(orders = state.orders)
             }
 
             OrderUiState.Error -> ErrorState()
@@ -75,7 +75,7 @@ fun OrdersScreen(
 }
 
 @Composable
-private fun OrderScreenContent(
+private fun OrderList(
     orders: List<OrderDisplayModel>,
     modifier: Modifier = Modifier,
 ) {
@@ -302,7 +302,7 @@ private fun OrderScreenContentPreview() {
         ),
     )
     LazyPizzaThemePreview {
-        OrderScreenContent(
+        OrderList(
             orders = orders,
         )
     }
