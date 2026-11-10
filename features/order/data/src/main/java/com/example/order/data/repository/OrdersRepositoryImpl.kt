@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
-class OrdersRepositoryImpl @Inject constructor(
+internal class OrdersRepositoryImpl @Inject constructor(
     private val ordersRemoteDataSource: OrdersRemoteDataSource,
     private val toDto: OrderDomainToDtoMapper,
     private val toDomain: OrderDtoToDomainMapper,

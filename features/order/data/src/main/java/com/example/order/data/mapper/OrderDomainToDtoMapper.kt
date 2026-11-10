@@ -8,7 +8,7 @@ import com.example.order.domain.model.Order
 import com.example.order.domain.model.OrderItem
 import javax.inject.Inject
 
-class OrderDomainToDtoMapper @Inject constructor() {
+internal class OrderDomainToDtoMapper @Inject constructor() {
 
     fun map(order: Order): OrderDto = OrderDto(
         orderNumber = order.orderNumber,

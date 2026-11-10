@@ -6,7 +6,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
 
-class FakeOrdersRemoteDataSource : OrdersRemoteDataSource {
+internal class FakeOrdersRemoteDataSource : OrdersRemoteDataSource {
 
     val orders = MutableStateFlow<List<OrderDto>>(emptyList())
 

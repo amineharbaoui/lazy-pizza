@@ -3,7 +3,7 @@ package com.example.order.data.model
 import androidx.annotation.Keep
 
 @Keep
-data class OrderDto(
+internal data class OrderDto(
     val orderNumber: String = "",
     val userId: String = "",
     val createdAtEpochMs: Long = 0L,
@@ -16,7 +16,7 @@ data class OrderDto(
 )
 
 @Keep
-data class OrderItemDto(
+internal data class OrderItemDto(
     val productId: String = "",
     val name: String = "",
     val unitPrice: Double = 0.0,
@@ -26,7 +26,7 @@ data class OrderItemDto(
 )
 
 @Keep
-data class OrderToppingDto(
+internal data class OrderToppingDto(
     val id: String = "",
     val name: String = "",
     val unitPrice: Double = 0.0,
