@@ -5,8 +5,11 @@ import com.example.auth.data.AuthTestData
 import com.example.cart.data.CartTestData
 import com.example.cart.domain.model.CartItem
 import com.example.cart.domain.model.CartOwner
+import com.example.cart.domain.model.UnavailableItem
 import com.example.cart.domain.usecase.AddCartItemUseCase
+import com.example.cart.domain.usecase.DismissUnavailableItemsUseCase
 import com.example.cart.domain.usecase.ObserveCartUseCase
+import com.example.cart.domain.usecase.ObserveUnavailableItemsUseCase
 import com.example.cart.domain.usecase.RemoveCartItemUseCase
 import com.example.cart.domain.usecase.UpdateCartItemQuantityUseCase
 import com.example.cart.ui.cart.mapper.CartDomainToUiMapper
@@ -16,6 +19,9 @@ import com.example.core.ui.utils.formatting.DefaultCurrencyFormatter
 import com.example.menu.data.MenuTestData
 import com.example.menu.domain.model.MenuItem
 import com.example.menu.domain.usecase.ObserveRecommendedItemsUseCase
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Nested
@@ -25,6 +31,7 @@ import java.time.Clock
 import java.time.Instant
 import java.time.ZoneOffset
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class CartViewModelTest {
 
     @JvmField
@@ -46,6 +53,8 @@ class CartViewModelTest {
             removeCartItemUseCase = RemoveCartItemUseCase(cartRepository, sessionRepository),
             addCartItemUseCase = AddCartItemUseCase(cartRepository, sessionRepository),
             cartMapper = CartDomainToUiMapper(currencyFormatter),
+            observeUnavailableItemsUseCase = ObserveUnavailableItemsUseCase(cartTestData.unavailableItemsRepository),
+            dismissUnavailableItemsUseCase = DismissUnavailableItemsUseCase(cartTestData.unavailableItemsRepository),
         )
     }
 
@@ -114,6 +123,76 @@ class CartViewModelTest {
         }
     }
 
+    @Nested
+    inner class UnavailableItems {
+
+        @Test
+        fun `uiState when a reorder left items out then shows them`() = runTest {
+            // Given
+            authTestData.givenSignedOut()
+            menuTestData.givenMenu()
+            cartTestData.givenCart(CartOwner.Guest, cola(quantity = COLA_QUANTITY))
+            cartTestData.givenUnavailableItems(
+                UnavailableItem.Item(HAWAIIAN_NAME),
+                UnavailableItem.Topping(name = EXTRA_BACON_NAME, pizzaName = MARGHERITA_NAME),
+            )
+            val viewModel = viewModel()
+
+            viewModel.uiState.test {
+                assertThat(awaitItem()).isEqualTo(CartUiState.Loading)
+
+                // Then
+                val state = awaitItem()
+                assertThat(state).isInstanceOf(CartUiState.Success::class.java)
+                assertThat((state as CartUiState.Success).unavailableItems).containsExactly(
+                    UnavailableItemDisplayModel.Item(HAWAIIAN_NAME),
+                    UnavailableItemDisplayModel.Topping(name = EXTRA_BACON_NAME, pizzaName = MARGHERITA_NAME),
+                )
+            }
+        }
+
+        @Test
+        fun `dismissUnavailableItems then hides them`() = runTest {
+            // Given
+            authTestData.givenSignedOut()
+            menuTestData.givenMenu()
+            cartTestData.givenCart(CartOwner.Guest, cola(quantity = COLA_QUANTITY))
+            cartTestData.givenUnavailableItems(UnavailableItem.Item(HAWAIIAN_NAME))
+            val viewModel = viewModel()
+
+            viewModel.uiState.test {
+                assertThat(awaitItem()).isEqualTo(CartUiState.Loading)
+                assertThat(awaitItem()).isInstanceOf(CartUiState.Success::class.java)
+
+                // When
+                viewModel.dismissUnavailableItems()
+                advanceUntilIdle()
+
+                // Then
+                val state = expectMostRecentItem()
+                assertThat(state).isInstanceOf(CartUiState.Success::class.java)
+                assertThat((state as CartUiState.Success).unavailableItems).isEmpty()
+            }
+        }
+
+        @Test
+        fun `dismissUnavailableItems then clears them for the next visit`() = runTest {
+            // Given
+            authTestData.givenSignedOut()
+            menuTestData.givenMenu()
+            cartTestData.givenCart(CartOwner.Guest, cola(quantity = COLA_QUANTITY))
+            cartTestData.givenUnavailableItems(UnavailableItem.Item(HAWAIIAN_NAME))
+            val viewModel = viewModel()
+
+            // When
+            viewModel.dismissUnavailableItems()
+            advanceUntilIdle()
+
+            // Then
+            assertThat(cartTestData.unavailableItemsRepository.observeUnavailableItems().first()).isEmpty()
+        }
+    }
+
     private fun cola(quantity: Int) = CartItem.Other(
         lineId = COLA_LINE_ID,
         productId = COLA_ID,
@@ -142,6 +221,9 @@ class CartViewModelTest {
         const val SPRITE_ID = "sprite"
         const val SPRITE_NAME = "Sprite"
         const val SPRITE_PRICE = 2.49
+        const val HAWAIIAN_NAME = "Hawaiian"
+        const val MARGHERITA_NAME = "Margherita"
+        const val EXTRA_BACON_NAME = "Extra bacon"
         val NOW: Instant = Instant.parse("2026-11-10T12:00:00Z")
     }
 }

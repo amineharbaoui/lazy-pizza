@@ -6,6 +6,7 @@ sealed interface CartUiState {
     data class Success(
         val cart: CartDisplayModel,
         val recommendedItems: List<RecommendedItemDisplayModel>,
+        val unavailableItems: List<UnavailableItemDisplayModel> = emptyList(),
     ) : CartUiState
     data class Error(val message: String) : CartUiState
 }

@@ -26,3 +26,11 @@ data class RecommendedItemDisplayModel(
     val imageUrl: String,
     val category: ProductCategory,
 )
+
+sealed interface UnavailableItemDisplayModel {
+    data class Item(val name: String) : UnavailableItemDisplayModel
+    data class Topping(
+        val name: String,
+        val pizzaName: String,
+    ) : UnavailableItemDisplayModel
+}
