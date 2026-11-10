@@ -60,17 +60,27 @@ fun OrdersScreen(
             .windowInsetsPadding(windowInsets.only(WindowInsetsSides.Right)),
     ) {
         DsTopBar.Secondary(title = stringResource(DsR.string.orders))
-        when (val state = uiState) {
-            OrderUiState.Loading -> { }
+        OrdersScreenContent(
+            state = uiState,
+            onSignInClick = onSignInClick,
+        )
+    }
+}
 
-            OrderUiState.NotLoggedIn -> NotLoggedInState(onSignInClick = onSignInClick)
+@Composable
+fun OrdersScreenContent(
+    state: OrderUiState,
+    onSignInClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    when (state) {
+        OrderUiState.Loading -> { }
 
-            is OrderUiState.Ready -> {
-                OrderList(orders = state.orders)
-            }
+        OrderUiState.NotLoggedIn -> NotLoggedInState(onSignInClick = onSignInClick, modifier = modifier)
 
-            OrderUiState.Error -> ErrorState()
-        }
+        is OrderUiState.Ready -> OrderList(orders = state.orders, modifier = modifier)
+
+        OrderUiState.Error -> ErrorState(modifier = modifier)
     }
 }
 
@@ -205,9 +215,9 @@ private fun NoOrders(modifier: Modifier = Modifier) {
 }
 
 @Composable
-private fun ErrorState() {
+private fun ErrorState(modifier: Modifier = Modifier) {
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
             .padding(16.dp)
             .verticalScroll(rememberScrollState()),
@@ -302,8 +312,9 @@ private fun OrderScreenContentPreview() {
         ),
     )
     LazyPizzaThemePreview {
-        OrderList(
-            orders = orders,
+        OrdersScreenContent(
+            state = OrderUiState.Ready(orders = orders),
+            onSignInClick = {},
         )
     }
 }
@@ -320,7 +331,10 @@ private fun EmptyOrderStatePreview() {
 @Composable
 private fun ErrorCartPreview() {
     LazyPizzaThemePreview {
-        ErrorState()
+        OrdersScreenContent(
+            state = OrderUiState.Error,
+            onSignInClick = {},
+        )
     }
 }
 
@@ -328,6 +342,9 @@ private fun ErrorCartPreview() {
 @Composable
 private fun NotLoggedInStatePreview() {
     LazyPizzaThemePreview {
-        NotLoggedInState(onSignInClick = {})
+        OrdersScreenContent(
+            state = OrderUiState.NotLoggedIn,
+            onSignInClick = {},
+        )
     }
 }
