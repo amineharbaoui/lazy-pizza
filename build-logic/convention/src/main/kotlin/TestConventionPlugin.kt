@@ -1,3 +1,4 @@
+import com.android.build.api.dsl.CommonExtension
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.tasks.testing.Test
@@ -10,6 +11,10 @@ class TestConventionPlugin : Plugin<Project> {
             tasks.withType<Test>().configureEach {
                 useJUnitPlatform()
             }
+
+            // Android classes return defaults instead of throwing, so a fake can throw a Firebase exception
+            // (FirebaseFirestoreException.Code builds a SparseArray) for the repository to map.
+            extensions.findByType(CommonExtension::class.java)?.testOptions?.unitTests?.isReturnDefaultValues = true
 
             dependencies {
                 testImplementation(libs.junit.jupiter)
