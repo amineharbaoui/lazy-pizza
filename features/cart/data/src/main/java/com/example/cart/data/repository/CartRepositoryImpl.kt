@@ -17,7 +17,7 @@ import java.time.Duration
 import java.time.Instant
 import javax.inject.Inject
 
-class CartRepositoryImpl @Inject constructor(
+internal class CartRepositoryImpl @Inject constructor(
     private val localDataSource: CartLocalDataSource,
     private val ownerToKeyMapper: CartOwnerToKeyMapper,
     private val clock: Clock,

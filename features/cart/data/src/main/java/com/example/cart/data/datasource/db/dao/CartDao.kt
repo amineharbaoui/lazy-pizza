@@ -12,7 +12,7 @@ import com.example.cart.data.datasource.db.entity.CartToppingEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao
-interface CartDao {
+internal interface CartDao {
     @Transaction
     @Query("SELECT * FROM cart_items WHERE ownerKey = :ownerKey")
     fun observeCartLines(ownerKey: String): Flow<List<CartLineWithToppings>>

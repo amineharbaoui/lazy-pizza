@@ -4,7 +4,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 @Entity(tableName = "cart_toppings")
-data class CartToppingEntity(
+internal data class CartToppingEntity(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     val ownerKey: String,
     val lineId: String,

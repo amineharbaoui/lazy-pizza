@@ -5,7 +5,7 @@ import androidx.room.PrimaryKey
 import com.example.core.model.ProductCategory
 
 @Entity(tableName = "cart_items")
-data class CartItemEntity(
+internal data class CartItemEntity(
     @PrimaryKey val lineId: String,
     val ownerKey: String,
     val productId: String,

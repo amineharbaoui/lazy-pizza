@@ -7,7 +7,7 @@ import com.example.cart.domain.model.CartTopping
 import com.example.core.model.ProductCategory
 import javax.inject.Inject
 
-class CartEntityToDomainMapper @Inject constructor() {
+internal class CartEntityToDomainMapper @Inject constructor() {
 
     fun map(input: CartLineWithToppings): CartItem = when (input.item.category) {
         ProductCategory.PIZZA -> CartItem.Pizza(

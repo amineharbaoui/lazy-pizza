@@ -7,7 +7,7 @@ import androidx.room.Query
 import com.example.cart.data.datasource.db.entity.CartMetadataEntity
 
 @Dao
-interface CartMetadataDao {
+internal interface CartMetadataDao {
 
     @Query("SELECT * FROM cart_metadata WHERE ownerKey = :ownerKey")
     suspend fun getMetadata(ownerKey: String): CartMetadataEntity?

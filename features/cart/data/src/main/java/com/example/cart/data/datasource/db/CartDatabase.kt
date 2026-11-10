@@ -17,7 +17,7 @@ import com.example.cart.data.datasource.db.entity.CartToppingEntity
     version = 3,
     exportSchema = true,
 )
-abstract class CartDatabase : RoomDatabase() {
+internal abstract class CartDatabase : RoomDatabase() {
     abstract fun cartDao(): CartDao
     abstract fun cartMetadataDao(): CartMetadataDao
 }

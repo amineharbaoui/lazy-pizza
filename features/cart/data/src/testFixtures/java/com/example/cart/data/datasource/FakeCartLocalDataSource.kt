@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.update
 import java.time.Instant
 
-class FakeCartLocalDataSource : CartLocalDataSource {
+internal class FakeCartLocalDataSource : CartLocalDataSource {
 
     /** Each owner's lines, in insertion order, like the Room table. */
     val lines = MutableStateFlow<Map<String, List<CartItem>>>(emptyMap())
