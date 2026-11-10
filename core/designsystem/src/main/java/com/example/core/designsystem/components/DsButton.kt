@@ -12,7 +12,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -52,7 +52,7 @@ object DsButton {
         val interactionSource = remember { MutableInteractionSource() }
         Surface(
             modifier = modifier
-                .height(Height)
+                .heightIn(min = Height)
                 .clip(Shape)
                 .then(
                     if (enabled) {
@@ -95,7 +95,7 @@ object DsButton {
 
         Surface(
             modifier = modifier
-                .height(Height)
+                .heightIn(min = Height)
                 .clip(Shape)
                 .clickable(
                     interactionSource = interactionSource,
@@ -135,7 +135,7 @@ object DsButton {
 
         Surface(
             modifier = modifier
-                .height(Height)
+                .heightIn(min = Height)
                 .clip(Shape)
                 .clickable(
                     interactionSource = interactionSource,
@@ -202,7 +202,7 @@ object DsButton {
         val interactionSource = remember { MutableInteractionSource() }
         Surface(
             modifier = modifier
-                .height(Height)
+                .heightIn(min = Height)
                 .clip(shape)
                 .background(color = Color.Transparent, shape = shape)
                 .border(1.dp, AppColors.Outline, shape)
