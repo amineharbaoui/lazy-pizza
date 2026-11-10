@@ -18,12 +18,12 @@ abstract class MenuDataModule {
 
     @Binds
     @Singleton
-    abstract fun bindMenuRepository(impl: MenuRepositoryImpl): MenuRepository
+    internal abstract fun bindMenuRepository(impl: MenuRepositoryImpl): MenuRepository
 
     @Binds
     @Singleton
-    abstract fun bindRecommendedItemsRepository(impl: RecommendedItemsRepositoryImpl): RecommendedItemsRepository
+    internal abstract fun bindRecommendedItemsRepository(impl: RecommendedItemsRepositoryImpl): RecommendedItemsRepository
 
     @Binds
-    abstract fun bindProductRemoteDataSource(impl: ProductRemoteDataSourceImpl): ProductRemoteDataSource
+    internal abstract fun bindProductRemoteDataSource(impl: ProductRemoteDataSourceImpl): ProductRemoteDataSource
 }
