@@ -40,5 +40,5 @@ paths:
 
 ## Code not to copy
 
-- Most modules don't apply `custom.testing` yet, including every `:ui-*` module except `:ui-login` and `:ui-past-orders`. Add it with the module's first hand-written test: the generated screenshot tests don't need it.
+- Most modules don't apply `custom.testing` yet, including every `:ui-*` module except `:ui-login`, `:ui-past-orders` and `:ui-cart`. Add it with the module's first hand-written test: the generated screenshot tests don't need it.
 - `:features:cart:data` depends on Firebase Firestore without using it.
