@@ -4,7 +4,7 @@ import androidx.annotation.Keep
 import com.google.firebase.firestore.Exclude
 
 @Keep
-data class ProductDto(
+internal data class ProductDto(
     @get:Exclude @set:Exclude
     var id: String = "",
     var name: String = "",

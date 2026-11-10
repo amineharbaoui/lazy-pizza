@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
-class MenuRepositoryImpl @Inject constructor(
+internal class MenuRepositoryImpl @Inject constructor(
     private val productRemoteDataSource: ProductRemoteDataSource,
     private val productMapper: ProductDtoToDomainMapper,
 ) : MenuRepository {

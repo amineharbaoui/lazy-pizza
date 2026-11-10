@@ -6,7 +6,7 @@ import com.example.menu.domain.model.MenuItem
 import com.example.menu.domain.model.Topping
 import javax.inject.Inject
 
-class ProductDtoToDomainMapper @Inject constructor() {
+internal class ProductDtoToDomainMapper @Inject constructor() {
 
     fun mapToMenuItem(dto: ProductDto): MenuItem = when (val categoryEnum = mapToProductCategory(dto.category)) {
         ProductCategory.PIZZA -> MenuItem.PizzaItem(

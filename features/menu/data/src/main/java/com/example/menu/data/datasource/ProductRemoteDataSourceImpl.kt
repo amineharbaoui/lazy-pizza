@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import javax.inject.Inject
 
-class ProductRemoteDataSourceImpl @Inject constructor(
+internal class ProductRemoteDataSourceImpl @Inject constructor(
     private val firestore: FirebaseFirestore,
 ) : ProductRemoteDataSource {
     override fun observeProductsByCategory(category: ProductCategory): Flow<List<ProductDto>> = callbackFlow {
