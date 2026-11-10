@@ -23,7 +23,6 @@ paths:
 
 ## Code not to copy
 
-- `PhoneAuthDataSource` is a concrete class, so tests can't fake it.
 - Every class in the data modules is public.
 - `CartDatabaseModule` uses `fallbackToDestructiveMigration`, and the cart schemas aren't committed.
 - `OrdersRemoteDataSource.createOrder` wraps a suspend call in `runCatching`.
