@@ -47,6 +47,14 @@ internal class FakeCartLocalDataSource : CartLocalDataSource {
         updateLines(ownerKey) { current -> current.filterNot { it.lineId == item.lineId } + item }
     }
 
+    override suspend fun replaceItem(
+        ownerKey: String,
+        item: CartItem,
+    ) {
+        failIfAsked()
+        updateLines(ownerKey) { current -> current.map { if (it.lineId == item.lineId) item else it } }
+    }
+
     override suspend fun updateItemQuantity(
         ownerKey: String,
         lineId: String,
