@@ -48,6 +48,16 @@ internal class CartRepositoryImpl @Inject constructor(
         touchCart(ownerKey)
     }
 
+    override suspend fun replaceItem(
+        owner: CartOwner,
+        item: CartItem,
+    ) {
+        val ownerKey = ownerToKeyMapper.map(owner)
+        expireIfNeeded(ownerKey)
+        localDataSource.replaceItem(ownerKey = ownerKey, item = item)
+        touchCart(ownerKey)
+    }
+
     override suspend fun updateItemQuantity(
         owner: CartOwner,
         lineId: String,

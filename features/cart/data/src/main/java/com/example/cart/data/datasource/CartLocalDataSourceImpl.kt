@@ -49,6 +49,20 @@ internal class CartLocalDataSourceImpl @Inject constructor(
         }
     }
 
+    override suspend fun replaceItem(
+        ownerKey: String,
+        item: CartItem,
+    ) = db.withTransaction {
+        if (cartDao.getCartLinesOnce(ownerKey).none { it.item.lineId == item.lineId }) return@withTransaction
+
+        // An update keeps the row, so the line keeps its place: an insert with REPLACE would move it to the end.
+        cartDao.updateItem(domainToEntityMapper.mapItem(item, ownerKey))
+        cartDao.deleteToppingsForLine(item.lineId)
+        if (item is CartItem.Pizza) {
+            cartDao.insertToppings(domainToEntityMapper.mapToppings(input = item.toppings, ownerKey = ownerKey, lineId = item.lineId))
+        }
+    }
+
     override suspend fun updateItemQuantity(
         ownerKey: String,
         lineId: String,

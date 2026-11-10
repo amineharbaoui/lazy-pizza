@@ -17,6 +17,12 @@ internal interface CartLocalDataSource {
         item: CartItem,
     )
 
+    /** Replaces the line with [item]'s line id and its toppings, keeping its place. Does nothing when the line isn't there. */
+    suspend fun replaceItem(
+        ownerKey: String,
+        item: CartItem,
+    )
+
     /** Sets a line's quantity, or removes the line when [quantity] is 0 or less. Does nothing when the line isn't there. */
     suspend fun updateItemQuantity(
         ownerKey: String,

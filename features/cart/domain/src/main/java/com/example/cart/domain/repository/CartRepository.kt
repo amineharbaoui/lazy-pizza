@@ -12,6 +12,12 @@ interface CartRepository {
         item: CartItem,
     )
 
+    /** Replaces the line with [item]'s line id, keeping its place in the cart. Does nothing when the line isn't there. */
+    suspend fun replaceItem(
+        owner: CartOwner,
+        item: CartItem,
+    )
+
     suspend fun updateItemQuantity(
         owner: CartOwner,
         lineId: String,
