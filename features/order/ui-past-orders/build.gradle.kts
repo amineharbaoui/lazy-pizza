@@ -20,4 +20,10 @@ dependencies {
     implementation(projects.features.auth.domain)
 
     implementation(libs.hilt.navigation.compose)
+
+    testImplementation(projects.core.testing)
+    testImplementation(projects.features.auth.data)
+    testImplementation(testFixtures(projects.features.auth.data))
+    testImplementation(projects.features.order.data)
+    testImplementation(testFixtures(projects.features.order.data))
 }
