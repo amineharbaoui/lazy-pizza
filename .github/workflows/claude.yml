@@ -38,3 +38,7 @@ jobs:
               uses: anthropics/claude-code-action@v1
               with:
                   claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+                  # By default Claude can only edit its own comment: this lets it comment on PR lines.
+                  claude_args: |
+                      --allowedTools "mcp__github_inline_comment__create_inline_comment"
+                      --append-system-prompt "When you review a pull request or a commit, post each finding as an inline comment on the line it is about, and keep a short summary in your own comment."
