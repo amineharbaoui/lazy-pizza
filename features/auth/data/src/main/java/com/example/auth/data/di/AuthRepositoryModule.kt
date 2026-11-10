@@ -1,5 +1,7 @@
 package com.example.auth.data.di
 
+import com.example.auth.data.datasource.PhoneAuthRemoteDataSource
+import com.example.auth.data.datasource.PhoneAuthRemoteDataSourceImpl
 import com.example.auth.data.repository.PhoneAuthRepositoryImpl
 import com.example.auth.data.repository.SessionRepositoryImpl
 import com.example.auth.domain.repository.PhoneAuthRepository
@@ -20,4 +22,7 @@ abstract class AuthRepositoryModule {
     @Binds
     @Singleton
     abstract fun bindSessionRepository(impl: SessionRepositoryImpl): SessionRepository
+
+    @Binds
+    abstract fun bindPhoneAuthRemoteDataSource(impl: PhoneAuthRemoteDataSourceImpl): PhoneAuthRemoteDataSource
 }

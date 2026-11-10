@@ -24,7 +24,7 @@ import org.junit.jupiter.api.extension.ExtendWith
 
 @ExtendWith(MockKExtension::class)
 @OptIn(ExperimentalCoroutinesApi::class)
-class PhoneAuthDataSourceTest {
+class PhoneAuthRemoteDataSourceImplTest {
 
     @MockK(relaxed = true)
     lateinit var firebaseAuth: FirebaseAuth
@@ -33,7 +33,7 @@ class PhoneAuthDataSourceTest {
     lateinit var firebaseUser: FirebaseUser
 
     @InjectMockKs
-    lateinit var phoneAuthDataSource: PhoneAuthDataSource
+    lateinit var phoneAuthRemoteDataSource: PhoneAuthRemoteDataSourceImpl
 
     @Test
     suspend fun `userIdFlow when auth state changes and uid is not null then emits user id`() {
@@ -43,7 +43,7 @@ class PhoneAuthDataSourceTest {
         given { firebaseUser.uid } returns mockUserId
 
         // When
-        val userIdFlowResult = phoneAuthDataSource.userIdFlow.first()
+        val userIdFlowResult = phoneAuthRemoteDataSource.userIdFlow.first()
 
         // Then
         assertThat(userIdFlowResult).isEqualTo(mockUserId)
@@ -55,7 +55,7 @@ class PhoneAuthDataSourceTest {
         given { firebaseAuth.currentUser } returns null
 
         // When
-        val userIdFlowResult = phoneAuthDataSource.userIdFlow.first()
+        val userIdFlowResult = phoneAuthRemoteDataSource.userIdFlow.first()
 
         // Then
         assertThat(userIdFlowResult).isNull()
@@ -67,7 +67,7 @@ class PhoneAuthDataSourceTest {
         given { firebaseAuth.currentUser } returns null
 
         // When
-        val emittedUserId = phoneAuthDataSource.userIdFlow.first()
+        val emittedUserId = phoneAuthRemoteDataSource.userIdFlow.first()
 
         // Then
         assertThat(emittedUserId).isNull()
@@ -79,7 +79,7 @@ class PhoneAuthDataSourceTest {
         given { firebaseAuth.currentUser } returns firebaseUser
 
         // When
-        val isSignedIn = phoneAuthDataSource.isSignedIn.first()
+        val isSignedIn = phoneAuthRemoteDataSource.isSignedIn.first()
 
         // Then
         assertThat(isSignedIn).isTrue
@@ -91,7 +91,7 @@ class PhoneAuthDataSourceTest {
         given { firebaseAuth.currentUser } returns null
 
         // When
-        val isSignedIn = phoneAuthDataSource.isSignedIn.first()
+        val isSignedIn = phoneAuthRemoteDataSource.isSignedIn.first()
 
         // Then
         assertThat(isSignedIn).isFalse
@@ -125,7 +125,7 @@ class PhoneAuthDataSourceTest {
         given { task.addOnFailureListener(any()) } returns task
 
         // When
-        val result = phoneAuthDataSource.signInWithCode(verificationId, smsCode)
+        val result = phoneAuthRemoteDataSource.signInWithCode(verificationId, smsCode)
 
         // Then
         assertThat(result.uid).isEqualTo(expectedUid)
@@ -155,7 +155,7 @@ class PhoneAuthDataSourceTest {
         given { task.addOnFailureListener(any()) } returns task
 
         // When
-        val result = runCatching { phoneAuthDataSource.signInWithCode(verificationId, smsCode) }
+        val result = runCatching { phoneAuthRemoteDataSource.signInWithCode(verificationId, smsCode) }
 
         // Then
         assertThat(result.exceptionOrNull()).isInstanceOf(IllegalStateException::class.java)
@@ -171,7 +171,7 @@ class PhoneAuthDataSourceTest {
         given { firebaseUser.phoneNumber } returns mockPhoneNumber
 
         // When
-        val result = phoneAuthDataSource.getCurrentUser()
+        val result = phoneAuthRemoteDataSource.getCurrentUser()
 
         // Then
         assertThat(result?.uid).isEqualTo(mockUid)
@@ -184,7 +184,7 @@ class PhoneAuthDataSourceTest {
         given { firebaseAuth.currentUser } returns null
 
         // When
-        val result = phoneAuthDataSource.getCurrentUser()
+        val result = phoneAuthRemoteDataSource.getCurrentUser()
 
         // Then
         assertThat(result).isNull()
@@ -196,7 +196,7 @@ class PhoneAuthDataSourceTest {
         given { firebaseAuth.signOut() } just Runs
 
         // When
-        phoneAuthDataSource.signOut()
+        phoneAuthRemoteDataSource.signOut()
 
         // Then
         then { firebaseAuth.signOut() }
