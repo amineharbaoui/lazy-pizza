@@ -14,8 +14,8 @@ import dagger.hilt.components.SingletonComponent
 abstract class OrdersModule {
 
     @Binds
-    abstract fun bindOrdersRepository(impl: OrdersRepositoryImpl): OrdersRepository
+    internal abstract fun bindOrdersRepository(impl: OrdersRepositoryImpl): OrdersRepository
 
     @Binds
-    abstract fun bindOrdersRemoteDataSource(impl: OrdersRemoteDataSourceImpl): OrdersRemoteDataSource
+    internal abstract fun bindOrdersRemoteDataSource(impl: OrdersRemoteDataSourceImpl): OrdersRemoteDataSource
 }

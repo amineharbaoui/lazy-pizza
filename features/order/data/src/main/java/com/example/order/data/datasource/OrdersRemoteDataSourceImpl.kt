@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
-class OrdersRemoteDataSourceImpl @Inject constructor(
+internal class OrdersRemoteDataSourceImpl @Inject constructor(
     private val firestore: FirebaseFirestore,
 ) : OrdersRemoteDataSource {
     override suspend fun createOrder(order: OrderDto): Result<Unit> = runCatching {

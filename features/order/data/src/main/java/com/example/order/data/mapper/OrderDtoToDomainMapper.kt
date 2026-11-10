@@ -10,7 +10,7 @@ import com.example.order.domain.model.PickupType
 import java.time.Instant
 import javax.inject.Inject
 
-class OrderDtoToDomainMapper @Inject constructor() {
+internal class OrderDtoToDomainMapper @Inject constructor() {
     fun map(dto: OrderDto) = Order(
         orderNumber = dto.orderNumber,
         userId = dto.userId,
