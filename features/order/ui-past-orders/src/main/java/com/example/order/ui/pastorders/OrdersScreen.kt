@@ -24,6 +24,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults.windowInsets
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -35,6 +36,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.core.designsystem.components.DsButton
+import com.example.core.designsystem.components.DsDialog
 import com.example.core.designsystem.components.DsTopBar
 import com.example.core.designsystem.theme.AppColors
 import com.example.core.designsystem.theme.AppTypography
@@ -48,10 +50,19 @@ import com.example.core.designsystem.R as DsR
 fun OrdersScreen(
     innerPadding: PaddingValues,
     onSignInClick: () -> Unit,
+    onNavigateToCart: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: OrdersViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
+    val navigation = (uiState as? OrderUiState.Ready)?.navigation
+    LaunchedEffect(navigation) {
+        if (navigation == OrdersNavigation.CART) {
+            onNavigateToCart()
+            viewModel.navigationHandled()
+        }
+    }
 
     Column(
         modifier = modifier
@@ -63,6 +74,8 @@ fun OrdersScreen(
         OrdersScreenContent(
             state = uiState,
             onSignInClick = onSignInClick,
+            onReorderClick = viewModel::reorder,
+            onDismissDialog = viewModel::dismissDialog,
         )
     }
 }
@@ -71,6 +84,8 @@ fun OrdersScreen(
 fun OrdersScreenContent(
     state: OrderUiState,
     onSignInClick: () -> Unit,
+    onReorderClick: (orderNumber: String) -> Unit,
+    onDismissDialog: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     when (state) {
@@ -78,7 +93,17 @@ fun OrdersScreenContent(
 
         OrderUiState.NotLoggedIn -> NotLoggedInState(onSignInClick = onSignInClick, modifier = modifier)
 
-        is OrderUiState.Ready -> OrderList(orders = state.orders, modifier = modifier)
+        is OrderUiState.Ready -> {
+            OrderList(
+                orders = state.orders,
+                isReorderEnabled = !state.isReordering,
+                onReorderClick = onReorderClick,
+                modifier = modifier,
+            )
+            state.dialog?.let { dialog ->
+                ReorderResultDialog(dialog = dialog, onDismiss = onDismissDialog)
+            }
+        }
 
         OrderUiState.Error -> ErrorState(modifier = modifier)
     }
@@ -87,6 +112,8 @@ fun OrdersScreenContent(
 @Composable
 private fun OrderList(
     orders: List<OrderDisplayModel>,
+    isReorderEnabled: Boolean,
+    onReorderClick: (orderNumber: String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val isEmpty = orders.isEmpty()
@@ -117,7 +144,11 @@ private fun OrderList(
                         key = { it.orderNumber },
                         contentType = { "OrderCard" },
                     ) { order ->
-                        OrderCard(order = order)
+                        OrderCard(
+                            order = order,
+                            isReorderEnabled = isReorderEnabled,
+                            onReorderClick = { onReorderClick(order.orderNumber) },
+                        )
                     }
                 }
             }
@@ -137,7 +168,11 @@ private fun OrderList(
                         key = { it.orderNumber },
                         contentType = { "OrderCard" },
                     ) { order ->
-                        OrderCard(order = order)
+                        OrderCard(
+                            order = order,
+                            isReorderEnabled = isReorderEnabled,
+                            onReorderClick = { onReorderClick(order.orderNumber) },
+                        )
                     }
                 }
                 item(contentType = "BottomSpacer") { Spacer(Modifier.height(24.dp)) }
@@ -145,6 +180,27 @@ private fun OrderList(
         }
         Spacer(Modifier.height(16.dp))
     }
+}
+
+@Composable
+private fun ReorderResultDialog(
+    dialog: ReorderDialog,
+    onDismiss: () -> Unit,
+) {
+    val (title, message) = when (dialog) {
+        ReorderDialog.NOTHING_AVAILABLE ->
+            R.string.past_orders_nothing_available_title to R.string.past_orders_nothing_available_message
+        ReorderDialog.FAILED ->
+            R.string.past_orders_reorder_failed_title to R.string.past_orders_reorder_failed_message
+    }
+    DsDialog.Confirm(
+        title = stringResource(title),
+        message = stringResource(message),
+        primaryButtonText = stringResource(DsR.string.ok),
+        onPrimaryClick = onDismiss,
+        onDismissRequest = onDismiss,
+        showSecondaryButton = false,
+    )
 }
 
 @Composable
@@ -237,84 +293,126 @@ private fun ErrorState(modifier: Modifier = Modifier) {
     }
 }
 
+private val previewOrders = listOf(
+    OrderDisplayModel(
+        orderNumber = "123",
+        dateTimeLabel = "September 25, 12:15",
+        items = listOf(
+            OrderItemDisplayModel(
+                quantity = 1,
+                name = "Margherita",
+                toppings = listOf(),
+            ),
+            OrderItemDisplayModel(
+                quantity = 1,
+                name = "Margherita",
+                toppings = listOf(
+                    OrderToppingDisplayModel(quantity = 1, name = "Extra cheese"),
+                    OrderToppingDisplayModel(quantity = 2, name = "Pepperoni"),
+                ),
+            ),
+        ),
+        totalAmountLabel = "$25.45",
+        status = OrderStatus.COMPLETED,
+    ),
+    OrderDisplayModel(
+        orderNumber = "1234",
+        dateTimeLabel = "September 25, 12:15",
+        items = listOf(
+            OrderItemDisplayModel(
+                quantity = 1,
+                name = "Margherita",
+                toppings = listOf(
+                    OrderToppingDisplayModel(quantity = 1, name = "Extra cheese"),
+                    OrderToppingDisplayModel(quantity = 2, name = "Pepperoni"),
+                ),
+            ),
+            OrderItemDisplayModel(
+                quantity = 1,
+                name = "Margherita",
+                toppings = listOf(
+                    OrderToppingDisplayModel(quantity = 1, name = "Extra cheese"),
+                    OrderToppingDisplayModel(quantity = 2, name = "Pepperoni"),
+                ),
+            ),
+        ),
+        totalAmountLabel = "$25.45",
+        status = OrderStatus.IN_PROGRESS,
+    ),
+    OrderDisplayModel(
+        orderNumber = "12346",
+        dateTimeLabel = "September 25, 12:15",
+        items = listOf(
+            OrderItemDisplayModel(
+                quantity = 1,
+                name = "Margherita",
+                toppings = listOf(
+                    OrderToppingDisplayModel(quantity = 1, name = "Extra cheese"),
+                    OrderToppingDisplayModel(quantity = 2, name = "Pepperoni"),
+                ),
+            ),
+            OrderItemDisplayModel(
+                quantity = 1,
+                name = "Margherita",
+                toppings = listOf(
+                    OrderToppingDisplayModel(quantity = 1, name = "Extra cheese"),
+                    OrderToppingDisplayModel(quantity = 2, name = "Pepperoni"),
+                ),
+            ),
+        ),
+        totalAmountLabel = "$25.45",
+        status = OrderStatus.CANCELED,
+    ),
+)
+
 @PreviewPhoneTablet
 @Composable
 private fun OrderScreenContentPreview() {
-    val orders = listOf(
-        OrderDisplayModel(
-            orderNumber = "123",
-            dateTimeLabel = "September 25, 12:15",
-            items = listOf(
-                OrderItemDisplayModel(
-                    quantity = 1,
-                    name = "Margherita",
-                    toppings = listOf(),
-                ),
-                OrderItemDisplayModel(
-                    quantity = 1,
-                    name = "Margherita",
-                    toppings = listOf(
-                        OrderToppingDisplayModel(quantity = 1, name = "Extra cheese"),
-                        OrderToppingDisplayModel(quantity = 2, name = "Pepperoni"),
-                    ),
-                ),
-            ),
-            totalAmountLabel = "$25.45",
-            status = OrderStatus.COMPLETED,
-        ),
-        OrderDisplayModel(
-            orderNumber = "1234",
-            dateTimeLabel = "September 25, 12:15",
-            items = listOf(
-                OrderItemDisplayModel(
-                    quantity = 1,
-                    name = "Margherita",
-                    toppings = listOf(
-                        OrderToppingDisplayModel(quantity = 1, name = "Extra cheese"),
-                        OrderToppingDisplayModel(quantity = 2, name = "Pepperoni"),
-                    ),
-                ),
-                OrderItemDisplayModel(
-                    quantity = 1,
-                    name = "Margherita",
-                    toppings = listOf(
-                        OrderToppingDisplayModel(quantity = 1, name = "Extra cheese"),
-                        OrderToppingDisplayModel(quantity = 2, name = "Pepperoni"),
-                    ),
-                ),
-            ),
-            totalAmountLabel = "$25.45",
-            status = OrderStatus.IN_PROGRESS,
-        ),
-        OrderDisplayModel(
-            orderNumber = "12346",
-            dateTimeLabel = "September 25, 12:15",
-            items = listOf(
-                OrderItemDisplayModel(
-                    quantity = 1,
-                    name = "Margherita",
-                    toppings = listOf(
-                        OrderToppingDisplayModel(quantity = 1, name = "Extra cheese"),
-                        OrderToppingDisplayModel(quantity = 2, name = "Pepperoni"),
-                    ),
-                ),
-                OrderItemDisplayModel(
-                    quantity = 1,
-                    name = "Margherita",
-                    toppings = listOf(
-                        OrderToppingDisplayModel(quantity = 1, name = "Extra cheese"),
-                        OrderToppingDisplayModel(quantity = 2, name = "Pepperoni"),
-                    ),
-                ),
-            ),
-            totalAmountLabel = "$25.45",
-            status = OrderStatus.CANCELED,
-        ),
-    )
     LazyPizzaThemePreview {
         OrdersScreenContent(
-            state = OrderUiState.Ready(orders = orders),
+            state = OrderUiState.Ready(orders = previewOrders),
             onSignInClick = {},
+            onReorderClick = {},
+            onDismissDialog = {},
+        )
+    }
+}
+
+@PreviewPhoneTablet
+@Composable
+private fun ReorderingPreview() {
+    LazyPizzaThemePreview {
+        OrdersScreenContent(
+            state = OrderUiState.Ready(orders = previewOrders, isReordering = true),
+            onSignInClick = {},
+            onReorderClick = {},
+            onDismissDialog = {},
+        )
+    }
+}
+
+@PreviewPhoneTablet
+@Composable
+private fun NothingAvailableDialogPreview() {
+    LazyPizzaThemePreview {
+        OrdersScreenContent(
+            state = OrderUiState.Ready(orders = previewOrders, dialog = ReorderDialog.NOTHING_AVAILABLE),
+            onSignInClick = {},
+            onReorderClick = {},
+            onDismissDialog = {},
+        )
+    }
+}
+
+@PreviewPhoneTablet
+@Composable
+private fun ReorderFailedDialogPreview() {
+    LazyPizzaThemePreview {
+        OrdersScreenContent(
+            state = OrderUiState.Ready(orders = previewOrders, dialog = ReorderDialog.FAILED),
+            onSignInClick = {},
+            onReorderClick = {},
+            onDismissDialog = {},
         )
     }
 }
@@ -334,6 +432,8 @@ private fun ErrorCartPreview() {
         OrdersScreenContent(
             state = OrderUiState.Error,
             onSignInClick = {},
+            onReorderClick = {},
+            onDismissDialog = {},
         )
     }
 }
@@ -345,6 +445,8 @@ private fun NotLoggedInStatePreview() {
         OrdersScreenContent(
             state = OrderUiState.NotLoggedIn,
             onSignInClick = {},
+            onReorderClick = {},
+            onDismissDialog = {},
         )
     }
 }

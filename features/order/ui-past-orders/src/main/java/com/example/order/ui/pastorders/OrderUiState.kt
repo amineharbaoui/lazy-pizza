@@ -7,9 +7,21 @@ sealed interface OrderUiState {
     data object NotLoggedIn : OrderUiState
     data class Ready(
         val orders: List<OrderDisplayModel>,
+        val isReordering: Boolean = false,
+        val dialog: ReorderDialog? = null,
+        val navigation: OrdersNavigation? = null,
     ) : OrderUiState
 
     data object Error : OrderUiState
+}
+
+enum class ReorderDialog {
+    NOTHING_AVAILABLE,
+    FAILED,
+}
+
+enum class OrdersNavigation {
+    CART,
 }
 
 data class OrderDisplayModel(

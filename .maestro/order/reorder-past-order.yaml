@@ -1,0 +1,20 @@
+# A signed-in user reorders a past order from Orders and lands on the Cart screen.
+# The test account always has past orders: every run of an order flow places one.
+appId: com.example.lazypizza.debug
+tags:
+  - order
+---
+- launchApp:
+    clearState: true
+- tapOn: "Orders"
+- tapOn: "Sign In"
+- runFlow: ../subflows/sign-in.yaml
+- startRecording: order-reorder-past-order
+- extendedWaitUntil:
+    visible: "Reorder order #.*"
+    timeout: 15000
+- tapOn: "Reorder order #.*"
+- extendedWaitUntil:
+    visible: "Proceed to Checkout.*"
+    timeout: 15000
+- stopRecording
