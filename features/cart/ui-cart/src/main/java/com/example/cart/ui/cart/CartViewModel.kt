@@ -9,11 +9,9 @@ import com.example.cart.domain.usecase.UpdateCartItemQuantityUseCase
 import com.example.cart.ui.cart.mapper.CartDomainToUiMapper
 import com.example.menu.domain.usecase.ObserveRecommendedItemsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -21,35 +19,24 @@ import kotlin.time.Duration.Companion.seconds
 
 @HiltViewModel
 class CartViewModel @Inject constructor(
-    private val observeCartUseCase: ObserveCartUseCase,
-    private val observeRecommendedItemsUseCase: ObserveRecommendedItemsUseCase,
+    observeCartUseCase: ObserveCartUseCase,
+    observeRecommendedItemsUseCase: ObserveRecommendedItemsUseCase,
     private val updateCartItemQuantityUseCase: UpdateCartItemQuantityUseCase,
     private val removeCartItemUseCase: RemoveCartItemUseCase,
     private val addCartItemUseCase: AddCartItemUseCase,
     private val cartMapper: CartDomainToUiMapper,
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow<CartUiState>(CartUiState.Loading)
-    val uiState: StateFlow<CartUiState> = _uiState.onStart {
-        observeCart()
+    val uiState: StateFlow<CartUiState> = combine(
+        observeCartUseCase(),
+        observeRecommendedItemsUseCase(),
+    ) { cart, recommendedItems ->
+        cartMapper.mapToCartUiState(cart = cart, recommendedItems = recommendedItems)
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5.seconds.inWholeMilliseconds),
         initialValue = CartUiState.Loading,
     )
-
-    private fun observeCart() {
-        viewModelScope.launch {
-            combine(
-                observeCartUseCase(),
-                observeRecommendedItemsUseCase(),
-            ) { cart, recommendedItems ->
-                cartMapper.mapToCartUiState(cart = cart, recommendedItems = recommendedItems)
-            }.collect { state ->
-                _uiState.value = state
-            }
-        }
-    }
 
     fun updateLineQuantity(
         item: CartLineDisplayModel,
