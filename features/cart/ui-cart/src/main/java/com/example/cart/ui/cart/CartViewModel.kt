@@ -3,7 +3,9 @@ package com.example.cart.ui.cart
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.cart.domain.usecase.AddCartItemUseCase
+import com.example.cart.domain.usecase.DismissUnavailableItemsUseCase
 import com.example.cart.domain.usecase.ObserveCartUseCase
+import com.example.cart.domain.usecase.ObserveUnavailableItemsUseCase
 import com.example.cart.domain.usecase.RemoveCartItemUseCase
 import com.example.cart.domain.usecase.UpdateCartItemQuantityUseCase
 import com.example.cart.ui.cart.mapper.CartDomainToUiMapper
@@ -25,13 +27,16 @@ class CartViewModel @Inject constructor(
     private val removeCartItemUseCase: RemoveCartItemUseCase,
     private val addCartItemUseCase: AddCartItemUseCase,
     private val cartMapper: CartDomainToUiMapper,
+    observeUnavailableItemsUseCase: ObserveUnavailableItemsUseCase,
+    private val dismissUnavailableItemsUseCase: DismissUnavailableItemsUseCase,
 ) : ViewModel() {
 
     val uiState: StateFlow<CartUiState> = combine(
         observeCartUseCase(),
         observeRecommendedItemsUseCase(),
-    ) { cart, recommendedItems ->
-        cartMapper.mapToCartUiState(cart = cart, recommendedItems = recommendedItems)
+        observeUnavailableItemsUseCase(),
+    ) { cart, recommendedItems, unavailableItems ->
+        cartMapper.mapToCartUiState(cart = cart, recommendedItems = recommendedItems, unavailableItems = unavailableItems)
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5.seconds.inWholeMilliseconds),
@@ -63,6 +68,12 @@ class CartViewModel @Inject constructor(
     fun addItemToCart(item: RecommendedItemDisplayModel) {
         viewModelScope.launch {
             addCartItemUseCase(cartMapper.mapToCartItem(item))
+        }
+    }
+
+    fun dismissUnavailableItems() {
+        viewModelScope.launch {
+            dismissUnavailableItemsUseCase()
         }
     }
 }

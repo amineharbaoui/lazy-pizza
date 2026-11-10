@@ -3,4 +3,7 @@
     <string name="recommended_title">RECOMMENDED TO ADD TO YOUR ORDER</string>
     <string name="start_ordering">Start Ordering</string>
     <string name="proceed_to_checkout">Proceed to Checkout  %1$s</string>
+    <string name="cart_unavailable_items_title">Some items weren\'t added</string>
+    <string name="cart_unavailable_items_message">These items are no longer available:</string>
+    <string name="cart_unavailable_topping">%1$s (on %2$s)</string>
 </resources>

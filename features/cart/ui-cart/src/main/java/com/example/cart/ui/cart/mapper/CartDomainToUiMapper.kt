@@ -2,10 +2,12 @@ package com.example.cart.ui.cart.mapper
 
 import com.example.cart.domain.model.Cart
 import com.example.cart.domain.model.CartItem
+import com.example.cart.domain.model.UnavailableItem
 import com.example.cart.ui.cart.CartDisplayModel
 import com.example.cart.ui.cart.CartLineDisplayModel
 import com.example.cart.ui.cart.CartUiState
 import com.example.cart.ui.cart.RecommendedItemDisplayModel
+import com.example.cart.ui.cart.UnavailableItemDisplayModel
 import com.example.core.ui.utils.formatting.CurrencyFormatter
 import com.example.menu.domain.model.MenuItem
 import javax.inject.Inject
@@ -17,13 +19,20 @@ class CartDomainToUiMapper @Inject constructor(
     fun mapToCartUiState(
         cart: Cart,
         recommendedItems: List<MenuItem>,
+        unavailableItems: List<UnavailableItem>,
     ): CartUiState = if (cart.items.isEmpty()) {
         CartUiState.Empty
     } else {
         CartUiState.Success(
             cart = mapToCartDisplayModel(cart),
             recommendedItems = recommendedItems.map(::mapToRecommendedItemDisplayModel),
+            unavailableItems = unavailableItems.map(::mapToUnavailableItemDisplayModel),
         )
+    }
+
+    private fun mapToUnavailableItemDisplayModel(item: UnavailableItem): UnavailableItemDisplayModel = when (item) {
+        is UnavailableItem.Item -> UnavailableItemDisplayModel.Item(name = item.name)
+        is UnavailableItem.Topping -> UnavailableItemDisplayModel.Topping(name = item.name, pizzaName = item.pizzaName)
     }
 
     private fun mapToCartDisplayModel(cart: Cart) = CartDisplayModel(

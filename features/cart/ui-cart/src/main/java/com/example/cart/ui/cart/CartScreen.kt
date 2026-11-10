@@ -30,6 +30,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.rememberAsyncImagePainter
 import com.example.cart.ui.cart.components.RecommendationsSection
 import com.example.core.designsystem.components.DsButton
+import com.example.core.designsystem.components.DsDialog
 import com.example.core.designsystem.components.DsTopBar
 import com.example.core.designsystem.components.card.DsCardRow
 import com.example.core.designsystem.theme.AppColors
@@ -69,6 +70,7 @@ fun CartScreen(
                 onAddToCart = viewModel::addItemToCart,
                 onLineQuantityChange = viewModel::updateLineQuantity,
                 onRemoveLine = viewModel::removeLine,
+                onDismissUnavailableItems = viewModel::dismissUnavailableItems,
             )
         }
     }
@@ -82,7 +84,14 @@ fun CartScreenContent(
     onAddToCart: (item: RecommendedItemDisplayModel) -> Unit,
     onLineQuantityChange: (item: CartLineDisplayModel, newQuantity: Int) -> Unit,
     onRemoveLine: (lineId: String) -> Unit,
+    onDismissUnavailableItems: () -> Unit,
 ) {
+    if (cartUiState.unavailableItems.isNotEmpty()) {
+        UnavailableItemsDialog(
+            items = cartUiState.unavailableItems,
+            onDismiss = onDismissUnavailableItems,
+        )
+    }
     if (isWideLayout()) {
         Row(
             modifier = Modifier
@@ -156,6 +165,28 @@ fun CartScreenContent(
             Spacer(Modifier.height(32.dp))
         }
     }
+}
+
+@Composable
+private fun UnavailableItemsDialog(
+    items: List<UnavailableItemDisplayModel>,
+    onDismiss: () -> Unit,
+) {
+    val lines = items.map { item ->
+        when (item) {
+            is UnavailableItemDisplayModel.Item -> item.name
+            is UnavailableItemDisplayModel.Topping ->
+                stringResource(R.string.cart_unavailable_topping, item.name, item.pizzaName)
+        }
+    }
+    DsDialog.Confirm(
+        title = stringResource(R.string.cart_unavailable_items_title),
+        message = (listOf(stringResource(R.string.cart_unavailable_items_message)) + lines).joinToString("\n"),
+        primaryButtonText = stringResource(DS_R.string.ok),
+        onPrimaryClick = onDismiss,
+        onDismissRequest = onDismiss,
+        showSecondaryButton = false,
+    )
 }
 
 @Composable
@@ -245,7 +276,7 @@ private fun CartItemsSection(
         items.forEach { item ->
             val image = rememberImagePainterPreviewAware(
                 previewDrawableResId = DS_R.drawable.pizza,
-                painterProvider = { rememberAsyncImagePainter(item.imageUrl) }
+                painterProvider = { rememberAsyncImagePainter(item.imageUrl) },
             )
             DsCardRow.CartItem(
                 title = item.name,
@@ -262,62 +293,85 @@ private fun CartItemsSection(
     }
 }
 
+private val previewCartState = CartUiState.Success(
+    cart = CartDisplayModel(
+        items = listOf(
+            CartLineDisplayModel(
+                lineId = "1",
+                productId = "p1",
+                name = "Margherita",
+                imageUrl = "",
+                unitPriceFormatted = "$8.99",
+                quantity = 2,
+                lineTotalFormatted = "$17.98",
+                subtitleLines = emptyList(),
+            ),
+            CartLineDisplayModel(
+                lineId = "2",
+                productId = "p2",
+                name = "Pepperoni",
+                imageUrl = "",
+                unitPriceFormatted = "$12.99",
+                quantity = 1,
+                lineTotalFormatted = "$12.99",
+                subtitleLines = emptyList(),
+            ),
+        ),
+        totalPriceFormatted = "$12.99",
+    ),
+    recommendedItems = listOf(
+        RecommendedItemDisplayModel(
+            id = "",
+            name = "Chocolate Ice Cream",
+            unitPrice = 2.44,
+            unitPriceFormatted = "$2.44",
+            imageUrl = "",
+            category = ProductCategory.ICE_CREAM,
+        ),
+        RecommendedItemDisplayModel(
+            id = "",
+            name = "Ice Cream",
+            unitPrice = 2.44,
+            unitPriceFormatted = "$2.44",
+            imageUrl = "",
+            category = ProductCategory.ICE_CREAM,
+        ),
+        RecommendedItemDisplayModel(
+            id = "",
+            name = "Chocolate Ice Cream",
+            unitPrice = 2.44,
+            unitPriceFormatted = "$2.44",
+            imageUrl = "",
+            category = ProductCategory.ICE_CREAM,
+        ),
+    ),
+)
+
 @PreviewPhoneTablet
 @Composable
 private fun CartScreenPreview() {
     LazyPizzaThemePreview {
         CartScreenContent(
-            cartUiState = CartUiState.Success(
-                cart = CartDisplayModel(
-                    items = listOf(
-                        CartLineDisplayModel(
-                            lineId = "1",
-                            productId = "p1",
-                            name = "Margherita",
-                            imageUrl = "",
-                            unitPriceFormatted = "$8.99",
-                            quantity = 2,
-                            lineTotalFormatted = "$17.98",
-                            subtitleLines = emptyList(),
-                        ),
-                        CartLineDisplayModel(
-                            lineId = "2",
-                            productId = "p2",
-                            name = "Pepperoni",
-                            imageUrl = "",
-                            unitPriceFormatted = "$12.99",
-                            quantity = 1,
-                            lineTotalFormatted = "$12.99",
-                            subtitleLines = emptyList(),
-                        ),
-                    ),
-                    totalPriceFormatted = "$12.99",
-                ),
-                recommendedItems = listOf(
-                    RecommendedItemDisplayModel(
-                        id = "",
-                        name = "Chocolate Ice Cream",
-                        unitPrice = 2.44,
-                        unitPriceFormatted = "$2.44",
-                        imageUrl = "",
-                        category = ProductCategory.ICE_CREAM,
-                    ),
-                    RecommendedItemDisplayModel(
-                        id = "",
-                        name = "Ice Cream",
-                        unitPrice = 2.44,
-                        unitPriceFormatted = "$2.44",
-                        imageUrl = "",
-                        category = ProductCategory.ICE_CREAM,
-                    ),
-                    RecommendedItemDisplayModel(
-                        id = "",
-                        name = "Chocolate Ice Cream",
-                        unitPrice = 2.44,
-                        unitPriceFormatted = "$2.44",
-                        imageUrl = "",
-                        category = ProductCategory.ICE_CREAM,
-                    ),
+            cartUiState = previewCartState,
+            onLineQuantityChange = { _, _ -> },
+            onRemoveLine = {},
+            onAddToCart = {},
+            onNavigateToCheckout = {},
+            onNavigateToDetails = { _, _ -> },
+            onDismissUnavailableItems = {},
+        )
+    }
+}
+
+@PreviewPhoneTablet
+@Composable
+private fun UnavailableItemsDialogPreview() {
+    LazyPizzaThemePreview {
+        CartScreenContent(
+            cartUiState = previewCartState.copy(
+                unavailableItems = listOf(
+                    UnavailableItemDisplayModel.Item(name = "Hawaiian"),
+                    UnavailableItemDisplayModel.Topping(name = "Extra bacon", pizzaName = "Margherita"),
                 ),
             ),
             onLineQuantityChange = { _, _ -> },
@@ -325,6 +379,7 @@ private fun CartScreenPreview() {
             onAddToCart = {},
             onNavigateToCheckout = {},
             onNavigateToDetails = { _, _ -> },
+            onDismissUnavailableItems = {},
         )
     }
 }
