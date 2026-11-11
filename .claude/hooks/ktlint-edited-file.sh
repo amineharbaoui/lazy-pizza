@@ -3,8 +3,7 @@
 # like CI does for the files a PR changes. Skipped when the ktlint CLI isn't installed.
 # Exit code 2 shows the violations to Claude so it fixes them.
 
-input=$(cat)
-file=$(printf '%s' "$input" | grep -oE '"file_path"[[:space:]]*:[[:space:]]*"([^"\\]|\\.)*"' | head -1 | sed -E 's/^"file_path"[[:space:]]*:[[:space:]]*"(.*)"$/\1/')
+file=$(jq -r '.tool_input.file_path // empty')
 
 case "$file" in
   *.kt | *.kts) ;;
