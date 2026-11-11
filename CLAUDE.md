@@ -7,7 +7,9 @@ Android pizza ordering app: Kotlin, Jetpack Compose (Material 3), Hilt, Room, Fi
 LazyPizza is a showcase that mirrors a very large multi-module production app. The app is small today, but every change is built as if it were that app: open to scale-up and easy to maintain.
 
 - Several squads work on the project, and any squad can change any part of it. Follow the project's conventions over your own preferences, so every module reads the same to whoever opens it next.
-- Scale is a reason for clear module boundaries, not for abstractions with no present use.
+- Scale is a reason for clear module boundaries, not for abstractions with no present use. An interface at a module boundary, or one with a fake in `src/testFixtures/`, has one.
+- Before writing code, reuse what exists: the module's own code, `:core:*`, the Kotlin standard library, a library in the catalog.
+- Fix a bug where every caller goes through, not only in the caller the report names.
 - Scale shapes how code is built, never what a feature does. That comes from the spec.
 - Existing code that breaks a rule is listed under "Code not to copy" in `.claude/rules/`. Don't imitate it. When your change has to change or build on it, fix it first in a refactor PR of its own. List the rest you see in the PR description as a follow-up.
 
