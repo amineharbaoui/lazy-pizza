@@ -40,7 +40,7 @@ One row per preview: | Screen | Before | After |, with the light phone variant w
 ## Screen recordings
 
 <!-- Optional: when the PR adds or changes a Maestro flow. A refactor never does.
-One video per flow, under a one-line caption saying what it tests. Never a video that shows sign-in: it would show the test phone number. -->
+One video per flow, under a one-line caption saying what it tests. -->
 
 ## Details
 

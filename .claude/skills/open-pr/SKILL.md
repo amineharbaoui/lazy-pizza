@@ -109,7 +109,7 @@ In every `<details>` block, keep a blank line after `</summary>` and before `</d
 
 Images point at fixed commits, so they keep showing what the reviewer saw. The repository is public, so nothing is uploaded: `<img src="https://github.com/{owner}/{repo}/blob/<sha>/<path>?raw=true" width="240">`. The after image uses the PR's head commit, the before image the commit the branch starts from, `git merge-base origin/main HEAD`. A new image has no before: write `New`. Replace `{owner}/{repo}` with the output of `gh repo view --json nameWithOwner --jq .nameWithOwner`. Commit SHAs don't change when you push, so the links are right before the PR exists.
 
-Verification takes the plan's Verification. From `scripts/e2e.sh`, take only its per-flow lines, never a line from Maestro's logs: they can show the test phone number.
+Verification takes the plan's Verification. From `scripts/e2e.sh`, take only its per-flow lines.
 
 In a stack:
 
@@ -122,7 +122,6 @@ The PR title says what the issue delivers, from its title, for example `feat: re
 
 Each Maestro flow records the journey it tests, from after sign-in to its end, as `.claude/rules/maestro.md` says. `scripts/e2e.sh` leaves the videos in `build/maestro/`, named `<feature>-<journey>` after their flow: find each with `find build/maestro -name '<feature>-<journey>.mp4'`. Use the videos of the run whose output is in the plan's Verification.
 
-- The PR is public. Never attach a video whose flow records before or during sign-in: it would show the test phone number and its code. Leave that flow's video out, and add a Follow-up to fix the flow.
 - GitHub takes videos up to 10 MB on a free plan. Leave out a bigger one and say so under its caption.
 - In the description, put each video alone in its own paragraph, as `![](<path>)`, with the same path you'll pass to `--attach` in step 7. `gh` uploads it and rewrites the line to its URL, and GitHub shows a player.
 
