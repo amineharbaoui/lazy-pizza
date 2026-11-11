@@ -226,7 +226,7 @@ The build ends here, on a local branch. Never push it yourself: only `/open-pr` 
 
    A refactor issue's commits are already made: `git status --porcelain` must print nothing.
 2. Check every commit on its own, in one command: `git rebase --exec "./gradlew unitTestAll verifyRoborazziDebug assembleDebug" "$(git merge-base origin/main HEAD)"`, with `buildHealth` added to the Gradle tasks when the branch changes a build file. The last commit's tree passed step 7, Maestro included. When a commit fails, run `git rebase --abort` and fold it into the commit after it, keeping that commit's message, for example because it changes a signature the next commit's code calls. Then check again.
-3. Write the end of step 7's output in the plan's Verification, with the commit it checked, `git rev-parse --short HEAD`, and each commit with the end of its check. From `scripts/e2e.sh`, write only its per-flow lines, never a line from Maestro's logs: they can show the test phone number.
+3. Write the end of step 7's output in the plan's Verification, with the commit it checked, `git rev-parse --short HEAD`, and each commit with the end of its check. From `scripts/e2e.sh`, write only its per-flow lines.
 4. Mark step 9 done in `plan.md`.
 5. Give the developer the branch, the worktree and the commits (`git log --oneline origin/main..HEAD`). Then the Calls, the Test changes, the Spec changes, the Follow-ups, any screenshot outside the spec's screens, and the Verification. Point them to `plan.md` for the scenarios and their tests.
 6. Ask "Open the pull request now?", and tell the developer they can also open it later with `/open-pr <issue>`. The options:
