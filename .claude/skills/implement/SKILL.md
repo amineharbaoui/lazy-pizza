@@ -49,7 +49,7 @@ The branch's commits are what the reviewer reads, one at a time, and rebase merg
 - A mechanical change, such as a move, a rename or images recorded again, gets its own commit, so the reviewer can skim it.
 - Each message says what the commit does and ends with the issue, for example `feat: add the reorder use case (#80)`.
 
-**A feature**, for example Reorder: the use case and its test; the repository change, its fake and test; the ViewModel's reorder action and its acceptance tests; the Reorder button with its strings and reference images; the navigation to the cart in `:app` with its Maestro flow. Step 9 makes them.
+**A feature**, for example Reorder: the use case; the repository change and its fake; the ViewModel's reorder action and its acceptance tests, which cover the use case and the repository; the Reorder button with its strings and reference images; the navigation to the cart in `:app` with its Maestro flow. A unit test joins its code's commit only where CLAUDE.md's Tests asks for one, such as a price rule with many input cases. Step 9 makes them.
 
 **A refactor issue** gets one commit per step, made in step 6 as each step passes: a pure move or rename first, then any tests that pin today's behavior, then one change per commit. For example: move the screen to its namespace's package, add the screenshot tests of its previews, rename its display models, take its texts from `strings.xml`, derive its state without an `onStart` collector.
 
