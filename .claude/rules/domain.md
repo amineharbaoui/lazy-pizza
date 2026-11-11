@@ -1,6 +1,7 @@
 ---
 paths:
   - "features/*/domain/**"
+  - "core/model/**"
 ---
 
 # Domain modules
@@ -22,4 +23,4 @@ paths:
 ## Code not to copy
 
 - `PlaceOrderUseCase` and `SignInWithSmsCodeUseCase` return `Result<T>` carrying raw Firebase exceptions.
-- Prices in the cart, menu and order models are still `Double`. Moving them to `Money` is a separate task.
+- `Money` doesn't exist yet: prices in the cart, menu and order models are `Double`. Adding `Money` to `:core:model` and moving the prices to it is a refactor of its own.
