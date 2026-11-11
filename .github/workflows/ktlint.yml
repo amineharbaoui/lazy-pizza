@@ -49,9 +49,11 @@ jobs:
 
             - name: Run ktlint + generate checkstyle report
               if: steps.changed.outputs.count != '0'
+              env:
+                  CHANGED_FILES: ${{ steps.changed.outputs.files }}
               run: |
                   mkdir -p build
-                  mapfile -t files <<< "${{ steps.changed.outputs.files }}"
+                  mapfile -t files <<< "$CHANGED_FILES"
 
                   echo "Linting ${#files[@]} file(s):"
                   printf '%s\n' "${files[@]}"
