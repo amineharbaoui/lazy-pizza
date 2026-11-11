@@ -56,6 +56,7 @@ The project follows Clean Architecture strictly: dependencies point toward `:dom
 - Read the time from an injected `java.time.Clock`, never `System.currentTimeMillis()`, `Instant.now()` or `LocalDate.now()`, so time-based logic can be tested.
 - Every text a user reads lives in a `strings.xml`, never in Kotlin.
 - A user never sees an exception message. The UI maps a failure to one of its own texts.
+- Code explains itself through names and structure. A comment says only what the code can't: why a non-obvious choice was made, a workaround with a link to its bug, or a known limit and when to lift it. Never a comment that repeats what the code does, no KDoc, no commented-out code, and no TODO without an issue number. When code needs a comment to explain what it does, rename or extract instead. Tests keep their `// Given`, `// When`, `// Then` markers.
 
 ## Tests
 
