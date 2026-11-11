@@ -43,6 +43,16 @@
       "Bash(gh api * --raw-field*)",
       "Bash(gh api * --input*)",
       "Bash(open *://*)"
+    ],
+    "deny": [
+      "Bash(git push --force*)",
+      "Bash(git push -f*)",
+      "Bash(git push * --force*)",
+      "Bash(git push * -f*)",
+      "Bash(git push * main)",
+      "Bash(git push * HEAD:main)",
+      "Bash(gh pr merge*)",
+      "Bash(gh pr review *--approve*)"
     ]
   },
   "hooks": {
