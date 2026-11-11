@@ -120,7 +120,7 @@ The PR title says what the issue delivers, from its title, for example `feat: re
 
 #### Recordings
 
-Each Maestro flow records the journey it tests, from after sign-in to its end, as `.claude/rules/testing.md` says. `scripts/e2e.sh` leaves the videos in `build/maestro/`, named `<feature>-<journey>` after their flow: find each with `find build/maestro -name '<feature>-<journey>.mp4'`. Use the videos of the run whose output is in the plan's Verification.
+Each Maestro flow records the journey it tests, from after sign-in to its end, as `.claude/rules/maestro.md` says. `scripts/e2e.sh` leaves the videos in `build/maestro/`, named `<feature>-<journey>` after their flow: find each with `find build/maestro -name '<feature>-<journey>.mp4'`. Use the videos of the run whose output is in the plan's Verification.
 
 - The PR is public. Never attach a video whose flow records before or during sign-in: it would show the test phone number and its code. Leave that flow's video out, and add a Follow-up to fix the flow.
 - GitHub takes videos up to 10 MB on a free plan. Leave out a bigger one and say so under its caption.
