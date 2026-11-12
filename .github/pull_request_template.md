@@ -2,7 +2,7 @@
 
 Each section's comment says whether it's required, and where an alert goes. Alerts follow `.claude/rules/github.md`. Leave out an optional section that doesn't apply, title and all. Give each section you keep its title.
 
-A PR does one thing: a refactor gets its own PR, merged before the feature that needs it. -->
+A PR does one thing: a refactor gets its own PR, merged before the feature that needs it. Only a small one, as CLAUDE.md defines it, comes first in the feature's PR, in commits of its own. -->
 
 ## Issue
 
@@ -21,7 +21,7 @@ A PR does one thing: a refactor gets its own PR, merged before the feature that 
 - Refactor: what the feature it unblocks can't do cleanly without it.
 - Other: what it makes easier or safer.
 
-Then the architecture decisions, as bullets, each with its reason: a new module, where a rule lives, how data flows between layers, a schema change, a new dependency. Leave this part out when the change follows the rules as written, as most bug fixes do.
+Then the architecture decisions, as bullets, each with its reason, and one bullet per small refactor the PR makes first, naming its commit: a new module, where a rule lives, how data flows between layers, a schema change, a new dependency. Leave this part out when the change follows the rules as written, as most bug fixes do.
 
 Optional, right after the why: one risk alert, saying where the risk is and what to check. [!CAUTION] when the PR holds something that can't be undone once released, such as a database migration or a change to stored data. Otherwise [!WARNING] for the part that needs the reviewer's closest look, such as a price rule, sign-in or deleting data.
 

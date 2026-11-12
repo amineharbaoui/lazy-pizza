@@ -49,7 +49,7 @@ The branch's commits are what the reviewer reads, one at a time, and rebase merg
 - A mechanical change, such as a move, a rename or images recorded again, gets its own commit, so the reviewer can skim it.
 - Each message says what the commit does and ends with the issue, for example `feat: add the reorder use case (#80)`.
 
-**A feature**, for example Reorder: the use case; the repository change and its fake; the ViewModel's reorder action and its acceptance tests, which cover the use case and the repository; the Reorder button with its strings and reference images; the navigation to the cart in `:app` with its Maestro flow. A unit test joins its code's commit only where CLAUDE.md's Tests asks for one, such as a price rule with many input cases. Step 9 makes them.
+**A feature**, for example Reorder: first, one commit for each small refactor the plan makes in this branch, `refactor: <what it changes> (#80)`; then the use case; the repository change and its fake; the ViewModel's reorder action and its acceptance tests, which cover the use case and the repository; the Reorder button with its strings and reference images; the navigation to the cart in `:app` with its Maestro flow. A unit test joins its code's commit only where CLAUDE.md's Tests asks for one, such as a price rule with many input cases. Step 9 makes them.
 
 **A refactor issue** gets one commit per step, made in step 6 as each step passes: a pure move or rename first, then any tests that pin today's behavior, then one change per commit. For example: move the screen to its namespace's package, add the screenshot tests of its previews, rename its display models, take its texts from `strings.xml`, derive its state without an `onStart` collector.
 
@@ -93,7 +93,7 @@ Write `plan.md` with these sections:
 - **UI**: per screen, its UI state, display models, and one preview per state the spec lists.
 - **Navigation**: routes and back-stack changes in `:app`.
 - **Scenarios and tests**: every scenario, with the test class and test name that will check it. A journey through several screens also gets a Maestro flow, `.maestro/<feature>/<journey>.yaml`, as `.claude/rules/maestro.md` says. List the existing flows whose journey the spec changes, too. A scenario only the real app can show, such as a back-stack behavior that lives in `:app`, is checked by its flow alone. A scenario neither can check is marked `not automated`, with the reason.
-- **Refactors**: the refactor issues step 3 creates, see step 3.
+- **Refactors**: the refactor issues step 3 creates, and the small refactors made in this branch, each with its files, see step 3.
 - **Calls**: the technical choices a reviewer might question, each with its reason.
 - **Follow-ups**: Code not to copy and refactors you saw that the feature doesn't need.
 - **Test changes**: empty for now (step 6).
@@ -105,9 +105,11 @@ The developer doesn't approve the plan: they review your technical choices at th
 
 ### 3. Refactors first
 
-The feature's PR holds only the feature. What it needs first is a refactor, with its own issue that blocks the feature, as CLAUDE.md's "Refactors before a feature" says. `/spec` creates them, and step 1 stops while one is open. Code changes between the spec and the build, so check again.
+The feature's PR holds only the feature. What it needs first is a refactor, with its own issue that blocks the feature, or, when it's small, first commits of its own in this branch, as CLAUDE.md's "Refactors before a feature" says. `/spec` creates them, and step 1 stops while one is open. Code changes between the spec and the build, so check again.
 
-From what you read in step 2, list the refactors the feature still needs, in the code as it is now, that no open issue blocking it covers. Look for an open refactor issue that already covers one with `gh issue list --state open --search "Refactor in:title <keywords>"`: reuse it instead of writing a new one. A refactor the feature doesn't need goes in the plan's Follow-ups. When the feature needs none, go to step 4. Otherwise:
+From what you read in step 2, list the refactors the feature still needs, in the code as it is now, that no open issue blocking it covers. Look for an open refactor issue that already covers one with `gh issue list --state open --search "Refactor in:title <keywords>"`: reuse it instead of writing a new one. A refactor the feature doesn't need goes in the plan's Follow-ups. When the feature needs none, go to step 4.
+
+When some of them are small, as CLAUDE.md's "Refactors before a feature" defines it, ask first, with `multiSelect`: "Which of these small refactors go in this branch, as its first commits?", one option per refactor, with its size and what it changes. Recommend each one: it saves a PR and a wait, and its own commit keeps it as easy to review. Make each one chosen now, in the worktree, and run its modules' tests: they must pass unchanged. Write it in the plan's Refactors with its files. When every refactor was chosen, go to step 4. Otherwise, the rest get an issue each:
 
 1. List them, one issue each, each small enough to review on its own, with its size and why the feature needs it, for example "`size: S`: fakes and `OrderTestData` for `:features:order:data`, so the Reorder acceptance tests can run the real chain". The size is the one `size:` label whose description fits the change, read with `gh label list --search "size:"`: how many modules and layers it touches, not how long the issue is. Ask "Create these refactor issues?", with the options `Yes` and `No`. On `No`, stop. When the developer answers something else, such as skipping one, follow it, and write each skipped refactor in the plan's Calls and Follow-ups: the feature is then built on the current code. Test setup can't be skipped.
 2. On `Yes`, write each new one as a draft, `.claude/implement-drafts/<issue>/refactors/<slug>.md`, following `.github/ISSUE_TEMPLATE/refactor.md` without its frontmatter. The first line is `# Refactor: <what changes>`, and each comment is replaced by its section's content. Create it with its title from that first line. Then mark each one, new or reused, as blocking this issue:
@@ -155,7 +157,7 @@ When the spec's UI section is `None.`, go to step 5.
 
 Build from the inside out: domain, data, then the ViewModel and the screen's wiring, then the navigation in `:app`. Run the module's tests as you go. A feature commits nothing more before step 9. A refactor issue commits each step once its modules' tests pass, as "Commits" says.
 
-- Follow CLAUDE.md and `.claude/rules/`. Change existing code only as far as the spec's behavior needs, and never refactor on the feature branch. When the feature turns out to need a refactor, see "Refactors found later". Add any other refactor you see to the plan's Follow-ups.
+- Follow CLAUDE.md and `.claude/rules/`. Change existing code only as far as the spec's behavior needs, and never refactor on the feature branch beyond the plan's Refactors made in this branch. When the feature turns out to need a refactor, see "Refactors found later". Add any other refactor you see to the plan's Follow-ups.
 - When a test fails, decide whether the code or the test is wrong. A test may change to follow a rename or to fix a wrong fixture. It never loses an assertion, gets a looser expected value, or gets deleted or disabled to pass. Until its first pass, a Maestro flow may also change its mechanics, such as a selector, a wait or a scroll, never what it checks. Write every test change and its reason in the plan's Test changes.
 - When the same check fails 3 times for the same reason, stop and tell the developer what you tried.
 - When the spec turns out wrong, ambiguous or incomplete, see "Spec gaps".
@@ -192,7 +194,7 @@ Handle each finding:
 
 - When the fix is clear, apply it.
 - When it changes what the user sees, or a business rule, ask the developer, one finding per question. Offer the reviewer's fix as the recommended option, and `Not needed` to leave it.
-- When it's a refactor in the feature's diff, take it out: into its own refactor issue as "Refactors found later" says when the feature needs it, otherwise into Follow-ups.
+- When it's a refactor in the feature's diff that the plan doesn't list as made in this branch: when the feature needs it, handle it as "Refactors found later" says, otherwise take it out, into Follow-ups.
 
 After changes, run step 7's checks again, rewrite the review files, and run the next round, until the verdict is `CLEAN`. When round 3 still has findings, handle them the same way, run step 7's checks again, and stop reviewing. List those last fixes in the plan's Calls, so the developer reviews them.
 
@@ -200,7 +202,7 @@ After changes, run step 7's checks again, rewrite the review files, and run the 
 
 The build ends here, on a local branch. Never push it yourself: only `/open-pr` pushes it.
 
-1. Shape the commits, as "Commits" says. For a feature, build them from the checked tree, inside out:
+1. Shape the commits, as "Commits" says. For a feature, build them from the checked tree, inside out. The first ones are the plan's refactors made in this branch, one each, taking only their lines, so each one is checked below with the tests as they were before the feature:
 
    ```bash
    git add -A && git commit -m "wip: #<issue>" && git rev-parse HEAD
@@ -245,7 +247,7 @@ When building shows the spec is wrong, ambiguous or incomplete, for example a sc
 
 ## Refactors found later
 
-When the UI checkpoint, the build or the review shows that the feature needs a refactor step 3 didn't list, never make it on the feature branch:
+When the UI checkpoint, the build or the review shows that the feature needs a refactor step 3 didn't list, and it's small, as CLAUDE.md's "Refactors before a feature" defines it, ask whether it goes in this branch, as step 3 does for a small refactor. On yes, make it, write it in the plan's Refactors and continue. Otherwise, never make it on the feature branch:
 
 1. Commit the work in progress as a local commit, never pushed: `git add -A && git commit -m "wip: #<issue>"`. Write the step you were at in the plan's Progress.
 2. Handle the refactor as step 3 says, from its question on.

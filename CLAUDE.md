@@ -11,7 +11,7 @@ LazyPizza is a showcase that mirrors a very large multi-module production app. T
 - Before writing code, reuse what exists: the module's own code, `:core:*`, the Kotlin standard library, a library in the catalog.
 - Fix a bug where every caller goes through, not only in the caller the report names.
 - Scale shapes how code is built, never what a feature does. That comes from the spec.
-- Existing code that breaks a rule is listed under "Code not to copy" in `.claude/rules/`. Don't imitate it. When your change has to change or build on it, fix it first in a refactor PR of its own. List the rest you see in the PR description as a follow-up.
+- Existing code that breaks a rule is listed under "Code not to copy" in `.claude/rules/`. Don't imitate it. When your change has to change or build on it, fix it first in a refactor of its own, as "Refactors before a feature" says. List the rest you see in the PR description as a follow-up.
 
 ## Commands
 
@@ -38,6 +38,12 @@ A feature's PR holds only the feature. What the feature needs first is a refacto
 - The test setup its tests need: fakes and a `<Feature>TestData` in the `src/testFixtures/` of each data module its acceptance tests run through, and `custom.screenshot.testing` in each screen module it changes, with packages that start with the module's namespace. Never work around missing test setup with MockK, a skipped test or a missing preview.
 - Code not to copy fixed, where the feature has to change or build on it.
 - Existing code reshaped so the feature fits, for example a component another screen will reuse, moved into the design system.
+
+A small refactor can instead come first in the feature's own branch, in commits of its own, when the developer agrees and all of these hold:
+
+- It is `size: XS` or `size: S`.
+- It changes only modules the feature changes, and no `:core:*` module: shared code gets its own PR, since every squad builds on it.
+- No existing test's expected value, Maestro flow or reference image changes.
 
 A refactor the feature doesn't need goes in its Follow-ups.
 
@@ -78,6 +84,6 @@ A change to Kotlin or Gradle code is done when:
 ## Git
 
 - Push only your own branch, by name (`git push -u origin <branch>`). Never push to `main`, never force-push.
-- A pull request does one thing, so it stays small and easy to review. A refactor, any change to existing code that keeps what the app does, gets its own PR, merged before the feature that needs it.
+- A pull request does one thing, so it stays small and easy to review. A refactor, any change to existing code that keeps what the app does, gets its own PR, merged before the feature that needs it, unless it's small enough to come first in the feature's PR, as "Refactors before a feature" says.
 - Its commits are steps a reviewer checks one at a time: one concern each, inside out. Rebase merge puts each one on main, so each one builds and passes on its own.
 - A pull request's description follows `.github/pull_request_template.md`.
