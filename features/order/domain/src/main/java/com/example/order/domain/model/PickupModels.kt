@@ -14,3 +14,9 @@ data class PickupDay(
     val date: LocalDate,
     val timeSlots: List<LocalTime>,
 )
+
+sealed interface PickupRequest {
+    data object Asap : PickupRequest
+
+    data class Scheduled(val at: LocalDateTime) : PickupRequest
+}
