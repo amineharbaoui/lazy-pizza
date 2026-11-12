@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.custom.android.module)
     alias(libs.plugins.custom.compose)
     alias(libs.plugins.custom.hilt)
+    alias(libs.plugins.custom.testing)
     alias(libs.plugins.custom.screenshot.testing)
     alias(libs.plugins.kotlin.serialization)
 }
@@ -24,4 +25,12 @@ dependencies {
 
     implementation(libs.coil.compose)
     implementation(libs.coil.network.okhttp)
+
+    testImplementation(projects.core.testing)
+    testImplementation(projects.features.auth.data)
+    testImplementation(testFixtures(projects.features.auth.data))
+    testImplementation(projects.features.cart.data)
+    testImplementation(testFixtures(projects.features.cart.data))
+    testImplementation(projects.features.menu.data)
+    testImplementation(testFixtures(projects.features.menu.data))
 }
