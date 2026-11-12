@@ -6,11 +6,6 @@ import com.example.cart.domain.repository.CartRepository
 import kotlinx.coroutines.flow.first
 import javax.inject.Inject
 
-/**
- * Adds [items] to the cart, in order. An item the cart already holds grows the first line that is the same item,
- * which takes the item's prices. A pizza is the same item only with the same toppings and topping quantities.
- * Items that are the same as one added before them grow that line too.
- */
 class MergeItemsIntoCartUseCase @Inject constructor(
     private val repository: CartRepository,
     private val sessionRepository: SessionRepository,
