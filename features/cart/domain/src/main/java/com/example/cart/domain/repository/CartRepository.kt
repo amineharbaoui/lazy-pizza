@@ -12,7 +12,7 @@ interface CartRepository {
         item: CartItem,
     )
 
-    /** Replaces the line with [item]'s line id, keeping its place in the cart. Does nothing when the line isn't there. */
+    // Unlike addItem, which replaces the row and moves it to the end, this keeps the line's place in the cart.
     suspend fun replaceItem(
         owner: CartOwner,
         item: CartItem,

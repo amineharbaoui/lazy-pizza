@@ -32,7 +32,6 @@ class MenuTestData {
         remoteDataSource.failure = error
     }
 
-    /** The menu can't be loaded, as when Firestore answers with a server error. */
     fun givenMenuUnavailable() {
         remoteDataSource.failure = FirebaseFirestoreException(FORCED_FAILURE, FirebaseFirestoreException.Code.UNAVAILABLE)
     }

@@ -42,7 +42,6 @@ class CartTestData(private val clock: Clock) {
     /** The owner's lines as stored, in cart order. */
     fun cartLines(owner: CartOwner): List<CartItem> = localDataSource.lines.value[ownerToKeyMapper.map(owner)].orEmpty()
 
-    /** The items and toppings a reorder left out, waiting for the Cart screen. */
     suspend fun givenUnavailableItems(vararg items: UnavailableItem) {
         unavailableItemsRepository.saveUnavailableItems(items.toList())
     }

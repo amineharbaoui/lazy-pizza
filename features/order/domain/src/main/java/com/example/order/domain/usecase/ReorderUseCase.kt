@@ -15,10 +15,6 @@ import com.example.order.domain.model.ReorderResult
 import java.util.UUID
 import javax.inject.Inject
 
-/**
- * Adds the items of a past order to the cart at today's menu prices. Items no longer on the menu and toppings no
- * longer offered are left out, and saved, in the order's item order, for the Cart screen to show.
- */
 class ReorderUseCase @Inject constructor(
     private val getCurrentMenuUseCase: GetCurrentMenuUseCase,
     private val mergeItemsIntoCartUseCase: MergeItemsIntoCartUseCase,
