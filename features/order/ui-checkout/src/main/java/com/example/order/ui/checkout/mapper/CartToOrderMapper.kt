@@ -3,59 +3,39 @@ package com.example.order.ui.checkout.mapper
 import com.example.cart.domain.model.Cart
 import com.example.cart.domain.model.CartItem
 import com.example.cart.domain.model.CartTopping
-import com.example.core.model.OrderStatus
 import com.example.order.domain.model.Order
 import com.example.order.domain.model.OrderItem
 import com.example.order.domain.model.OrderTopping
-import com.example.order.domain.model.PickupType
+import com.example.order.domain.model.PickupRequest
+import com.example.order.domain.usecase.CreateOrderUseCase
 import com.example.order.ui.checkout.CheckoutUiState
 import com.example.order.ui.checkout.PickupOption
-import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalTime
-import java.time.ZoneId
-import java.time.ZonedDateTime
-import java.time.temporal.ChronoUnit
 import javax.inject.Inject
 
-class CartToOrderMapper @Inject constructor() {
-
-    private companion object {
-        private val ZONE_ID: ZoneId = ZoneId.systemDefault()
-        private const val ASAP_PREP_MINUTES: Long = 30L
-        private const val ASAP_ROUND_TO_MINUTES: Long = 30L
-    }
+class CartToOrderMapper @Inject constructor(
+    private val createOrderUseCase: CreateOrderUseCase,
+) {
 
     fun map(
         cart: Cart,
         userId: String,
         checkout: CheckoutUiState.ReadyToOrder,
-    ): Order {
-        val (pickupType, pickupAt) = mapPickupDetails(checkout)
+    ): Order = createOrderUseCase(
+        userId = userId,
+        pickup = mapPickupRequest(checkout),
+        comment = checkout.comment,
+        items = cart.items.map(::mapCartItem),
+        total = cart.subtotal,
+    )
 
-        return Order(
-            orderNumber = System.currentTimeMillis().toString().takeLast(6),
-            userId = userId,
-            createdAt = Instant.now(),
-            pickupType = pickupType,
-            pickupAt = pickupAt,
-            comment = checkout.comment,
-            total = cart.subtotal,
-            status = OrderStatus.IN_PROGRESS,
-            items = cart.items.map(::mapCartItem),
-        )
-    }
-
-    private fun mapPickupDetails(checkout: CheckoutUiState.ReadyToOrder): Pair<PickupType, Instant> = when (checkout.pickup.selectedOption) {
-        PickupOption.ASAP -> {
-            val pickupAt = computeAsapPickupInstant()
-            PickupType.ASAP to pickupAt
-        }
+    private fun mapPickupRequest(checkout: CheckoutUiState.ReadyToOrder): PickupRequest = when (checkout.pickup.selectedOption) {
+        PickupOption.ASAP -> PickupRequest.Asap
 
         PickupOption.SCHEDULE -> {
             val (dayId, slotId) = resolveScheduledSelection(checkout)
-            val pickupAt = toInstant(dayId = dayId, timeSlotId = slotId)
-            PickupType.SCHEDULED to pickupAt
+            PickupRequest.Scheduled(at = LocalDate.parse(dayId).atTime(LocalTime.parse(slotId)))
         }
     }
 
@@ -72,41 +52,6 @@ class CartToOrderMapper @Inject constructor() {
         val dayId = requireNotNull(sel.selectedDayId) { "Missing selectedDayId for scheduled pickup" }
         val slotId = requireNotNull(sel.selectedTimeSlotId) { "Missing selectedTimeSlotId for scheduled pickup" }
         return dayId to slotId
-    }
-
-    /**
-     * ASAP: now + prep, then rounded up to the next X minutes (default 15m).
-     * Example: 12:07 + 15m = 12:22 -> rounded to 12:30.
-     */
-    private fun computeAsapPickupInstant(): Instant {
-        val now = ZonedDateTime.now(ZONE_ID)
-        val withPrep = now.plusMinutes(ASAP_PREP_MINUTES)
-
-        val minute = withPrep.minute
-        val remainder = minute % ASAP_ROUND_TO_MINUTES.toInt()
-        val rounded = if (remainder == 0) {
-            withPrep.truncatedTo(ChronoUnit.MINUTES)
-        } else {
-            withPrep
-                .plusMinutes((ASAP_ROUND_TO_MINUTES - remainder))
-                .withSecond(0)
-                .withNano(0)
-        }
-
-        return rounded.toInstant()
-    }
-
-    /**
-     * dayId: "yyyy-MM-dd"
-     * timeSlotId: "HH:mm" (e.g. "17:15")
-     */
-    private fun toInstant(
-        dayId: String,
-        timeSlotId: String,
-    ): Instant {
-        val date = LocalDate.parse(dayId)
-        val time = LocalTime.parse(timeSlotId)
-        return ZonedDateTime.of(date, time, ZONE_ID).toInstant()
     }
 
     private fun mapCartItem(item: CartItem): OrderItem = when (item) {
