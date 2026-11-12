@@ -47,6 +47,7 @@ Use `AskUserQuestion` with exactly one question per call:
 - The developer can always type their own answer instead. Never set the `preview` field on an option: a question with previews loses its free-answer row. To compare layouts, draw a sketch (below) and name the options like it.
 - Ask only what the developer must decide: the goal, scope, rules, edge-case behavior, texts, constraints. Never ask a technical question. The implementation decides those.
 - Go roughly in section order: Why, Scope, Business rules, Scenarios, UI, Constraints, Dependencies.
+- Right after Why, ask the feature's priority, with the `priority:` labels as options, as `.claude/rules/github.md` says. Write the answer, such as `P1`, alone in `.claude/spec-drafts/<feature-slug>/priority.txt`: it becomes a label, never part of the spec.
 - After each answer, update the draft (step 4) before asking the next question.
 
 Stop asking when every section can be filled. Something the developer can't answer yet goes into Open questions.
@@ -116,7 +117,7 @@ The title comes from the draft's first line, so it is never retyped into the com
 ```bash
 draft=.claude/spec-drafts/<feature-slug>/spec.md
 title="$(head -n 1 "$draft" | sed 's/^# //')"
-tail -n +2 "$draft" | gh issue create --title "$title" --body-file -
+tail -n +2 "$draft" | gh issue create --title "$title" --label "priority: $(cat .claude/spec-drafts/<feature-slug>/priority.txt)" --body-file -
 ```
 
 When the draft references sketches, add one `--attach <path>` per sketch to that command, with the same path the draft uses, for example `--attach .claude/spec-drafts/order-again/order-history.svg`. `gh` uploads each file and points the draft's image reference at it.
@@ -140,10 +141,10 @@ Then:
 Find what the feature needs before it can be built, as CLAUDE.md's "Refactors before a feature" says. This is the only technical step of `/spec`, and its only question is the one below: how each refactor is done stays with `/implement`.
 
 1. Read the code the feature will change, beyond what step 2 read: the build files of the modules it touches, the data modules' `src/testFixtures/`, and the "Code not to copy" lists in `.claude/rules/`. List the refactors the feature needs. A small one, as CLAUDE.md's "Refactors before a feature" defines it, gets no issue: say that `/implement` will offer to make it first in the feature's branch. Look for open refactor issues that already cover one with `gh issue list --state open --search "Refactor in:title <keywords>"`, and reuse each one you find instead of writing it again.
-2. Size the feature, and each sub-issue, with the one `size:` label whose description fits the change it becomes, read with `gh label list --search "size:"`: how many modules and layers it touches, not how long the spec is. Add it with `gh issue edit <number> --add-label "size: <size>"`, and tell the developer each size with its reason in one line.
+2. Size the feature, and each sub-issue, as `.claude/rules/github.md` says. Add it with `gh issue edit <number> --add-label "size: <size>"`, and tell the developer each size with its reason in one line.
 3. When the feature needs no refactor issue, say so and go to step 9. Otherwise print the list, one issue per refactor, each small enough to review on its own, with its size, picked the same way, and why the feature needs it, for example "`size: S`: fakes and `OrderTestData` for `:features:order:data`, so the Reorder acceptance tests can run the real chain". Ask with `AskUserQuestion`: "Create these refactor issues?", with the options `Yes` and `No`. On `No`, go to step 9: `/implement` will find them. When the developer answers something else, such as dropping one or changing a size, follow it.
 4. Write each new one as a draft, `.claude/spec-drafts/<feature-slug>/refactors/<refactor-slug>.md`, following `.github/ISSUE_TEMPLATE/refactor.md` without its frontmatter. The first line is `# Refactor: <what changes>`, and each comment is replaced by its section's content.
-5. Create each one the same way as the spec in step 7, from its draft, with `--label "size: <size>"` added to `gh issue create`. Then mark each one, new or reused, as blocking the feature. For a spec with sub-issues, the feature is the parent issue.
+5. Create each one the same way as the spec in step 7, from its draft, with its size and the feature's priority as labels. Raise a reused one's priority when it is less urgent than the feature's, as `.claude/rules/github.md` says. Then mark each one, new or reused, as blocking the feature. For a spec with sub-issues, the feature is the parent issue.
 
    ```bash
    gh api repos/{owner}/{repo}/issues/<feature issue>/dependencies/blocked_by -X POST -F issue_id="$(gh api repos/{owner}/{repo}/issues/<refactor issue> --jq .id)"
