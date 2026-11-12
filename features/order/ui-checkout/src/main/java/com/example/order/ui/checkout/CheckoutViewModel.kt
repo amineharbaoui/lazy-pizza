@@ -7,6 +7,8 @@ import com.example.cart.domain.usecase.ClearCartUseCase
 import com.example.cart.domain.usecase.ObserveCartUseCase
 import com.example.core.ui.utils.formatting.formatOrderNumber
 import com.example.core.ui.utils.formatting.toPickupDisplayLabel
+import com.example.order.domain.usecase.CreateOrderUseCase
+import com.example.order.domain.usecase.GetPickupScheduleUseCase
 import com.example.order.domain.usecase.PlaceOrderUseCase
 import com.example.order.ui.checkout.mapper.CartToOrderMapper
 import com.example.order.ui.checkout.mapper.CheckoutUiStateFactory
@@ -28,6 +30,8 @@ import kotlin.time.Duration.Companion.seconds
 class CheckoutViewModel @Inject constructor(
     private val observeCartUseCase: ObserveCartUseCase,
     private val placeOrderUseCase: PlaceOrderUseCase,
+    private val createOrderUseCase: CreateOrderUseCase,
+    private val getPickupScheduleUseCase: GetPickupScheduleUseCase,
     private val getCurrentUserUidUseCase: GetCurrentUserUidUseCase,
     private val checkoutUiStateFactory: CheckoutUiStateFactory,
     private val cartToOrderMapper: CartToOrderMapper,
@@ -50,7 +54,8 @@ class CheckoutViewModel @Inject constructor(
         viewModelScope.launch {
             observeCartUseCase().collect { cart ->
                 _uiState.update { currentState ->
-                    currentState as? CheckoutUiState.OrderPlaced ?: checkoutUiStateFactory.createInitialReadyState(cart)
+                    currentState as? CheckoutUiState.OrderPlaced
+                        ?: checkoutUiStateFactory.createInitialReadyState(cart = cart, schedule = getPickupScheduleUseCase())
                 }
             }
         }
@@ -176,7 +181,13 @@ class CheckoutViewModel @Inject constructor(
 
             _uiState.update { (it as? CheckoutUiState.ReadyToOrder)?.copy(isPlacingOrder = true) ?: it }
 
-            val order = cartToOrderMapper.map(cart = cart, userId = userId, checkout = state)
+            val order = createOrderUseCase(
+                userId = userId,
+                pickup = cartToOrderMapper.mapPickupRequest(state),
+                comment = state.comment,
+                items = cartToOrderMapper.mapItems(cart),
+                total = cart.subtotal,
+            )
 
             val result = placeOrderUseCase(order)
 

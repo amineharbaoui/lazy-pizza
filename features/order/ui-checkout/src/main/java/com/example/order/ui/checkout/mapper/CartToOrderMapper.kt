@@ -3,34 +3,20 @@ package com.example.order.ui.checkout.mapper
 import com.example.cart.domain.model.Cart
 import com.example.cart.domain.model.CartItem
 import com.example.cart.domain.model.CartTopping
-import com.example.order.domain.model.Order
 import com.example.order.domain.model.OrderItem
 import com.example.order.domain.model.OrderTopping
 import com.example.order.domain.model.PickupRequest
-import com.example.order.domain.usecase.CreateOrderUseCase
 import com.example.order.ui.checkout.CheckoutUiState
 import com.example.order.ui.checkout.PickupOption
 import java.time.LocalDate
 import java.time.LocalTime
 import javax.inject.Inject
 
-class CartToOrderMapper @Inject constructor(
-    private val createOrderUseCase: CreateOrderUseCase,
-) {
+class CartToOrderMapper @Inject constructor() {
 
-    fun map(
-        cart: Cart,
-        userId: String,
-        checkout: CheckoutUiState.ReadyToOrder,
-    ): Order = createOrderUseCase(
-        userId = userId,
-        pickup = mapPickupRequest(checkout),
-        comment = checkout.comment,
-        items = cart.items.map(::mapCartItem),
-        total = cart.subtotal,
-    )
+    fun mapItems(cart: Cart): List<OrderItem> = cart.items.map(::mapCartItem)
 
-    private fun mapPickupRequest(checkout: CheckoutUiState.ReadyToOrder): PickupRequest = when (checkout.pickup.selectedOption) {
+    fun mapPickupRequest(checkout: CheckoutUiState.ReadyToOrder): PickupRequest = when (checkout.pickup.selectedOption) {
         PickupOption.ASAP -> PickupRequest.Asap
 
         PickupOption.SCHEDULE -> {

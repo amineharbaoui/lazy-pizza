@@ -2,7 +2,7 @@ package com.example.order.ui.checkout.mapper
 
 import com.example.cart.domain.model.Cart
 import com.example.order.domain.model.PickupDay
-import com.example.order.domain.usecase.GetPickupScheduleUseCase
+import com.example.order.domain.model.PickupSchedule
 import com.example.order.ui.checkout.CheckoutUiState
 import com.example.order.ui.checkout.PickupDayUiModel
 import com.example.order.ui.checkout.PickupOption
@@ -19,11 +19,12 @@ import javax.inject.Inject
 
 class CheckoutUiStateFactory @Inject constructor(
     private val cartToOrderSummaryUiMapper: CartToOrderSummaryUiMapper,
-    private val getPickupScheduleUseCase: GetPickupScheduleUseCase,
 ) {
 
-    fun createInitialReadyState(cart: Cart): CheckoutUiState.ReadyToOrder {
-        val schedule = getPickupScheduleUseCase()
+    fun createInitialReadyState(
+        cart: Cart,
+        schedule: PickupSchedule,
+    ): CheckoutUiState.ReadyToOrder {
         val labels = PickupLabels(today = schedule.today, locale = Locale.getDefault())
         val days = schedule.days.map { it.toUiModel(labels) }
         val earliestSlot = schedule.earliestSlot
