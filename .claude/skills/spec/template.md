@@ -1,5 +1,8 @@
 # <Title: a short name for the feature>
 
+> [!NOTE]
+> <The feature at a glance, in one sentence: what the user can do once it ships.>
+
 ## Why
 
 <The problem this solves for the user or the business, and the outcome we expect.>
@@ -13,6 +16,9 @@
 - <What it deliberately does not do, so nobody builds it by accident.>
 
 ## Business rules
+
+> [!WARNING]
+> <Only when some rules decide what the customer pays or what data they could lose: name those rules, for example "R3 and R5 decide the price the customer pays." Otherwise leave this alert out.>
 
 <details>
 <summary>{Number of rules} rules</summary>
@@ -64,6 +70,9 @@ Covers: R1
 ## Dependencies
 
 - <Other features, specs (#issue), backend data or configuration this feature needs.>
+
+> [!IMPORTANT]
+> <Only when something outside this repository must exist before the feature can ship, such as Firestore data or a Firebase setting: what it is and who provides it. Otherwise leave this alert out.>
 
 <Write `None.` when nothing applies.>
 

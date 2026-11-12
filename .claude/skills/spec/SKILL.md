@@ -71,6 +71,7 @@ Write the draft to `.claude/spec-drafts/<feature-slug>/spec.md`, following [temp
 - Business rules are numbered `R1`, `R2`, ... Scenarios are numbered `1`, `2`, ... and each one lists the rules it covers.
 - Business rules and Scenarios each fold into one `<details>` block, and each UI screen into its own, as in the template, so the issue stays short and a reader opens only what they need. The summary gives the count, for example `5 rules`. Keep a blank line after `</summary>` and before `</details>`, or GitHub doesn't render the Markdown inside.
 - Once the issue exists, a scenario is referred to outside the issue as `<issue number>-<scenario number>`, for example `42-3`.
+- Write the alerts where the template puts them, following `.claude/rules/github.md`. The one at the top is always there, the others only when their condition holds.
 - A section with nothing in it says `None.` explicitly. Only UI, Constraints and Dependencies can be `None.`, when nothing applies. Open questions must end up `None.`
 
 If the spec looks too big for one issue, propose a split into a parent issue and sub-issues, saying what goes in each, and ask the developer to validate it. Each sub-issue then gets its own draft in the same folder, following the same template. The parent keeps Why, Scope and the rules they share.
