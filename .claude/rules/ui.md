@@ -45,7 +45,7 @@ paths:
 
 ## Code not to copy
 
-- `MenuViewModel` and `CheckoutViewModel` start collecting in `_uiState.onStart { viewModelScope.launch { ... } }`. Each time the screen comes back after 5 seconds in the background, this adds another collector that never stops.
+- `CheckoutViewModel` starts collecting in `_uiState.onStart { viewModelScope.launch { ... } }`. Each time the screen comes back after 5 seconds in the background, this adds another collector that never stops.
 - `CheckoutViewModel` and `PhoneAuthViewModel` send events through a `SharedFlow`, which drops them during a rotation.
 - `PhoneVerificationManager` and `PhoneAuthScreen` call `FirebaseAuth` from the UI.
 - `CheckoutViewModel` puts English text or `e.message` in the state.
