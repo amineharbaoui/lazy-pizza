@@ -16,73 +16,44 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import kotlin.time.Duration.Companion.seconds
 
 @HiltViewModel
 class MenuViewModel @Inject constructor(
-    private val observeMenuUseCase: ObserveMenuUseCase,
-    private val observeCartUseCase: ObserveCartUseCase,
+    observeMenuUseCase: ObserveMenuUseCase,
+    observeCartUseCase: ObserveCartUseCase,
     private val addCartItemUseCase: AddCartItemUseCase,
     private val updateCartItemQuantityUseCase: UpdateCartItemQuantityUseCase,
     private val removeCartItemUseCase: RemoveCartItemUseCase,
     private val clearCartUseCase: ClearCartUseCase,
     private val signOutUseCase: SignOutUseCase,
-    private val observeIsSignedInUseCase: ObserveIsSignedInUseCase,
+    observeIsSignedInUseCase: ObserveIsSignedInUseCase,
     private val menuMapper: MenuDomainToUiMapper,
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(MenuUiState(isLoggedIn = false, content = MenuContentUiState.Loading))
-    val uiState: StateFlow<MenuUiState> = _uiState.onStart {
-        observeMenu()
+    private val searchQuery = MutableStateFlow("")
+
+    val uiState: StateFlow<MenuUiState> = combine(
+        observeMenuUseCase(),
+        observeCartUseCase(),
+        observeIsSignedInUseCase(),
+        searchQuery,
+    ) { menuSections, cart, isSignedIn, query ->
+        MenuUiState(
+            isLoggedIn = isSignedIn,
+            content = menuMapper.mapToMenuContentUiState(menuSections, cart, query),
+        )
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5.seconds.inWholeMilliseconds),
         initialValue = MenuUiState(isLoggedIn = false, content = MenuContentUiState.Loading),
     )
 
-    private var allSections: List<MenuSectionDisplayModel> = emptyList()
-
-    private fun observeMenu() {
-        viewModelScope.launch {
-            combine(
-                observeMenuUseCase(),
-                observeCartUseCase(),
-                observeIsSignedInUseCase(),
-            ) { menuSections, cart, isSignedIn ->
-                val current = _uiState.value.content
-                val searchQuery = if (current is MenuContentUiState.Ready) current.searchQuery else ""
-
-                val nextContent = menuMapper.mapToMenuContentUiState(menuSections, cart, searchQuery)
-                allSections = (nextContent as? MenuContentUiState.Ready)?.originalMenu ?: emptyList()
-
-                MenuUiState(
-                    isLoggedIn = isSignedIn,
-                    content = nextContent,
-                )
-            }.collect { uiState ->
-                _uiState.value = uiState
-            }
-        }
-    }
-
     fun updateSearchQuery(query: String) {
-        val normalized = query.trim()
-        updateSuccessState { current ->
-            if (current.searchQuery == normalized) return@updateSuccessState current
-            val newFiltered = applyFilters(
-                sections = allSections,
-                query = normalized,
-            )
-            current.copy(
-                searchQuery = normalized,
-                filteredMenu = newFiltered,
-            )
-        }
+        searchQuery.value = query.trim()
     }
 
     fun addOtherItemToCart(menuItem: MenuItemDisplayModel.Other) {
@@ -102,30 +73,6 @@ class MenuViewModel @Inject constructor(
                     lineId = menuItem.id,
                     quantity = newQuantity,
                 )
-            }
-        }
-    }
-
-    private fun applyFilters(
-        sections: List<MenuSectionDisplayModel>,
-        query: String,
-    ): List<MenuSectionDisplayModel> {
-        if (query.isBlank()) return sections
-        return sections.mapNotNull { section ->
-            val filteredItems = section.items.filter { item ->
-                item.name.contains(query, ignoreCase = true)
-            }
-            if (filteredItems.isEmpty()) null else section.copy(items = filteredItems)
-        }
-    }
-
-    private inline fun updateSuccessState(block: (MenuContentUiState.Ready) -> MenuContentUiState.Ready) {
-        _uiState.update { current ->
-            val currentContent = current.content
-            if (currentContent is MenuContentUiState.Ready) {
-                current.copy(content = block(currentContent))
-            } else {
-                current
             }
         }
     }
