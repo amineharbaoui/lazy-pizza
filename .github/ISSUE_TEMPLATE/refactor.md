@@ -4,7 +4,7 @@ about: A change to existing code that keeps what the app does, done before the f
 title: "Refactor: "
 ---
 
-<!-- A refactor keeps what the app does: no existing test's expected value, Maestro flow or reference image changes. Replace each comment with the section's content. Add the one `size:` label whose description fits the change. Alerts follow `.claude/rules/github.md`. Once the issue exists, mark each feature it prepares as blocked by it, under the feature's Relationships. -->
+<!-- A refactor keeps what the app does: no existing test's expected value, Maestro flow or reference image changes. Replace each comment with the section's content. Add its `size:` and `priority:` labels, as `.claude/rules/github.md` says. Alerts follow `.claude/rules/github.md`. Once the issue exists, mark each feature it prepares as blocked by it, under the feature's Relationships. -->
 
 > [!NOTE]
 > This refactor keeps what the app does: no test's expected value, Maestro flow or reference image changes.
