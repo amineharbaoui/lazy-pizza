@@ -17,12 +17,12 @@ import javax.inject.Singleton
 abstract class AuthRepositoryModule {
     @Binds
     @Singleton
-    abstract fun bindPhoneAuthRepository(impl: PhoneAuthRepositoryImpl): PhoneAuthRepository
+    internal abstract fun bindPhoneAuthRepository(impl: PhoneAuthRepositoryImpl): PhoneAuthRepository
 
     @Binds
     @Singleton
-    abstract fun bindSessionRepository(impl: SessionRepositoryImpl): SessionRepository
+    internal abstract fun bindSessionRepository(impl: SessionRepositoryImpl): SessionRepository
 
     @Binds
-    abstract fun bindPhoneAuthRemoteDataSource(impl: PhoneAuthRemoteDataSourceImpl): PhoneAuthRemoteDataSource
+    internal abstract fun bindPhoneAuthRemoteDataSource(impl: PhoneAuthRemoteDataSourceImpl): PhoneAuthRemoteDataSource
 }

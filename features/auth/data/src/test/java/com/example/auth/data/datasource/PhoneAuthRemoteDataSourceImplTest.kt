@@ -33,7 +33,7 @@ class PhoneAuthRemoteDataSourceImplTest {
     lateinit var firebaseUser: FirebaseUser
 
     @InjectMockKs
-    lateinit var phoneAuthRemoteDataSource: PhoneAuthRemoteDataSourceImpl
+    private lateinit var phoneAuthRemoteDataSource: PhoneAuthRemoteDataSourceImpl
 
     @Test
     suspend fun `userIdFlow when auth state changes and uid is not null then emits user id`() {

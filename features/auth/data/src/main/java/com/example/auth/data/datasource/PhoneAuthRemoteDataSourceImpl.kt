@@ -12,7 +12,7 @@ import javax.inject.Inject
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 
-class PhoneAuthRemoteDataSourceImpl @Inject constructor(
+internal class PhoneAuthRemoteDataSourceImpl @Inject constructor(
     private val firebaseAuth: FirebaseAuth,
 ) : PhoneAuthRemoteDataSource {
 

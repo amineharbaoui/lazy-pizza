@@ -5,7 +5,7 @@ import com.example.auth.domain.model.AuthUser
 import com.example.auth.domain.repository.PhoneAuthRepository
 import javax.inject.Inject
 
-class PhoneAuthRepositoryImpl @Inject constructor(
+internal class PhoneAuthRepositoryImpl @Inject constructor(
     private val phoneAuthRemoteDataSource: PhoneAuthRemoteDataSource,
 ) : PhoneAuthRepository {
 

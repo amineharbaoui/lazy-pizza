@@ -23,6 +23,5 @@ paths:
 
 ## Code not to copy
 
-- Every class in `:features:auth:data` is public.
 - `CartDatabaseModule` uses `fallbackToDestructiveMigration`, and the cart schemas aren't committed.
 - `OrdersRemoteDataSource.createOrder` wraps a suspend call in `runCatching`.
