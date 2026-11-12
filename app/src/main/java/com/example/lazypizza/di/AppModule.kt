@@ -22,7 +22,7 @@ object AppModule {
     @Singleton
     fun provideFirebaseAuth(): FirebaseAuth = FirebaseAuth.getInstance()
 
+    // Unscoped: each injection reads the system time zone of the moment, so a zone change reaches the next screen.
     @Provides
-    @Singleton
     fun provideClock(): Clock = Clock.systemDefaultZone()
 }
