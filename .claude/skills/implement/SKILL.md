@@ -109,12 +109,12 @@ The feature's PR holds only the feature. What it needs first is a refactor, with
 
 From what you read in step 2, list the refactors the feature still needs, in the code as it is now, that no open issue blocking it covers. Look for an open refactor issue that already covers one with `gh issue list --state open --search "Refactor in:title <keywords>"`: reuse it instead of writing a new one. A refactor the feature doesn't need goes in the plan's Follow-ups. When the feature needs none, go to step 4. Otherwise:
 
-1. List them, one issue each, each small enough to review on its own and with why the feature needs it, for example "Fakes and `OrderTestData` for `:features:order:data`, so the Reorder acceptance tests can run the real chain". Ask "Create these refactor issues?", with the options `Yes` and `No`. On `No`, stop. When the developer answers something else, such as skipping one, follow it, and write each skipped refactor in the plan's Calls and Follow-ups: the feature is then built on the current code. Test setup can't be skipped.
+1. List them, one issue each, each small enough to review on its own, with its size and why the feature needs it, for example "`size: S`: fakes and `OrderTestData` for `:features:order:data`, so the Reorder acceptance tests can run the real chain". The size is the one `size:` label whose description fits the change, read with `gh label list --search "size:"`: how many modules and layers it touches, not how long the issue is. Ask "Create these refactor issues?", with the options `Yes` and `No`. On `No`, stop. When the developer answers something else, such as skipping one, follow it, and write each skipped refactor in the plan's Calls and Follow-ups: the feature is then built on the current code. Test setup can't be skipped.
 2. On `Yes`, write each new one as a draft, `.claude/implement-drafts/<issue>/refactors/<slug>.md`, following `.github/ISSUE_TEMPLATE/refactor.md` without its frontmatter. The first line is `# Refactor: <what changes>`, and each comment is replaced by its section's content. Create it with its title from that first line. Then mark each one, new or reused, as blocking this issue:
 
    ```bash
    draft=.claude/implement-drafts/<issue>/refactors/<slug>.md
-   tail -n +2 "$draft" | gh issue create --title "$(head -n 1 "$draft" | sed 's/^# //')" --body-file -
+   tail -n +2 "$draft" | gh issue create --title "$(head -n 1 "$draft" | sed 's/^# //')" --label "size: <size>" --body-file -
    ```
 
    ```bash
