@@ -23,5 +23,4 @@ paths:
 
 ## Code not to copy
 
-- `CartDatabaseModule` uses `fallbackToDestructiveMigration`, and the cart schemas aren't committed.
 - `OrdersRemoteDataSource.createOrder` wraps a suspend call in `runCatching`.
