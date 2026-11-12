@@ -5,7 +5,7 @@ import com.example.auth.domain.repository.SessionRepository
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
-class SessionRepositoryImpl @Inject constructor(
+internal class SessionRepositoryImpl @Inject constructor(
     private val phoneAuthRemoteDataSource: PhoneAuthRemoteDataSource,
 ) : SessionRepository {
 
