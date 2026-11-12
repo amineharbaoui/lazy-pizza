@@ -1,6 +1,6 @@
 <!-- One template for every kind of PR: a feature, a bug fix, a refactor, or another change such as tooling, build, CI or dependencies. A reviewer reads the visible part in a few minutes. Everything else goes in the collapsed Details.
 
-Each section's comment says whether it's required. Leave out an optional section that doesn't apply, title and all. Give each section you keep its title.
+Each section's comment says whether it's required, and where an alert goes. Alerts follow `.claude/rules/github.md`. Leave out an optional section that doesn't apply, title and all. Give each section you keep its title.
 
 A PR does one thing: a refactor gets its own PR, merged before the feature that needs it. -->
 
@@ -10,7 +10,7 @@ A PR does one thing: a refactor gets its own PR, merged before the feature that 
 - Feature: "Closes #<spec issue>", and a "Closes #<sub-issue>" line for each of its sub-issues.
 - Bug fix: "Closes #<bug issue>".
 - Refactor: "Closes #<issue>", then "Unblocks #<issue>" for each issue it blocks.
-- Stacked PRs: "Part <n> of <m> of #<issue>". Only the top part closes the issue.
+- Stacked PRs: a [!IMPORTANT] alert, "Part <n> of <m> of #<issue>. Merge the parts in order, from part 1." Only the top part closes the issue.
 - No issue: "No issue:" and what the PR fixes or improves. -->
 
 ## What changed
@@ -22,6 +22,10 @@ A PR does one thing: a refactor gets its own PR, merged before the feature that 
 - Other: what it makes easier or safer.
 
 Then the architecture decisions, as bullets, each with its reason: a new module, where a rule lives, how data flows between layers, a schema change, a new dependency. Leave this part out when the change follows the rules as written, as most bug fixes do.
+
+Optional, right after the why: one risk alert, saying where the risk is and what to check. [!CAUTION] when the PR holds something that can't be undone once released, such as a database migration or a change to stored data. Otherwise [!WARNING] for the part that needs the reviewer's closest look, such as a price rule, sign-in or deleting data.
+
+When the PR has several commits, end the section with a [!TIP] alert: "Review it commit by commit: each one builds and passes on its own."
 
 Optional: a diagram, when it helps more than the bullets: the modules and their dependencies, the data flow across layers, or the screens when navigation changes. Draw only what the change touches. Collapse it in its own <details><summary>Diagram: what it shows</summary>, with a blank line after </summary> and before </details>, around a ```mermaid block.
 
@@ -40,7 +44,7 @@ One row per preview: | Screen | Before | After |, with the light phone variant w
 ## Screen recordings
 
 <!-- Optional: when the PR adds or changes a Maestro flow. A refactor never does.
-One video per flow, under a one-line caption saying what it tests. -->
+One video per flow, under a one-line caption saying what it tests. A video over 10 MB is left out, with a [!NOTE] alert under its caption saying so. -->
 
 ## Details
 
