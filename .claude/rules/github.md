@@ -1,11 +1,3 @@
----
-paths:
-  - ".github/ISSUE_TEMPLATE/**"
-  - ".github/pull_request_template.md"
-  - ".claude/spec-drafts/**"
-  - ".claude/implement-drafts/**"
----
-
 # Issues and pull requests
 
 ## Labels
@@ -13,7 +5,7 @@ paths:
 Every issue has one `size:` label and one `priority:` label. Each value is defined by its label's description on GitHub: read them with `gh label list --search "size:"` and `gh label list --search "priority:"`.
 
 - The size measures the change the issue becomes: how many modules and layers it touches, not how long the issue is. Pick it once you've read the code.
-- The priority of a feature or a bug is the developer's call. A refactor issue is at least as urgent as the most urgent issue it blocks: give it that priority when you create it, and raise it when it comes to block a more urgent one, with `gh issue edit <number> --remove-label "priority: <old>" --add-label "priority: <new>"`.
+- The priority of a feature or a bug is the developer's call. A refactor issue is at least as urgent as the most urgent issue it blocks: give it that priority when you create it, and raise it when it comes to block a more urgent one, with `gh issue edit <number> --remove-label "priority: <old>" --add-label "priority: <new>"`. When the issue it blocks has no `priority:` label, such as one written by hand on GitHub, ask the developer for it, and label that issue too.
 
 ## Alerts
 

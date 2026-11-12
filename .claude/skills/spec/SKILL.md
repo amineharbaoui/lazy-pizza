@@ -47,7 +47,7 @@ Use `AskUserQuestion` with exactly one question per call:
 - The developer can always type their own answer instead. Never set the `preview` field on an option: a question with previews loses its free-answer row. To compare layouts, draw a sketch (below) and name the options like it.
 - Ask only what the developer must decide: the goal, scope, rules, edge-case behavior, texts, constraints. Never ask a technical question. The implementation decides those.
 - Go roughly in section order: Why, Scope, Business rules, Scenarios, UI, Constraints, Dependencies.
-- Right after Why, ask the feature's priority, with the `priority:` labels as options, as `.claude/rules/github.md` says. Write the answer, such as `P1`, alone in `.claude/spec-drafts/<feature-slug>/priority.txt`: it becomes a label, never part of the spec.
+- Right after Why, ask the feature's priority, with the `priority:` labels as options, as `.claude/rules/github.md` says. Write the answer, such as `P1`, alone in `.claude/spec-drafts/<feature-slug>/priority.txt`: it becomes a label, never part of the spec. Each sub-issue takes the feature's priority.
 - After each answer, update the draft (step 4) before asking the next question.
 
 Stop asking when every section can be filled. Something the developer can't answer yet goes into Open questions.
