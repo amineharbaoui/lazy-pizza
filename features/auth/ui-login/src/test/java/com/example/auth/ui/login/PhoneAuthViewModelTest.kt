@@ -1,25 +1,30 @@
 package com.example.auth.ui.login
 
+import app.cash.turbine.ReceiveTurbine
 import app.cash.turbine.test
-import com.example.auth.domain.model.AuthUser
+import com.example.auth.data.AuthTestData
 import com.example.auth.domain.usecase.SignInWithSmsCodeUseCase
+import com.example.cart.data.CartTestData
+import com.example.cart.domain.model.CartItem
+import com.example.cart.domain.model.CartOwner
 import com.example.cart.domain.usecase.TransferGuestCartToUserUseCase
+import com.example.core.model.ProductCategory
 import com.example.core.testing.MainDispatcherExtension
-import io.mockk.Runs
-import io.mockk.bdd.coGiven
-import io.mockk.bdd.coThen
-import io.mockk.impl.annotations.InjectMockKs
-import io.mockk.impl.annotations.MockK
-import io.mockk.junit5.MockKExtension
-import io.mockk.just
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.advanceTimeBy
+import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.runCurrent
+import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.extension.ExtendWith
 import org.junit.jupiter.api.extension.RegisterExtension
+import java.time.Clock
+import java.time.Instant
+import java.time.ZoneOffset
+import kotlin.time.Duration.Companion.seconds
 
-@ExtendWith(MockKExtension::class)
 @OptIn(ExperimentalCoroutinesApi::class)
 class PhoneAuthViewModelTest {
 
@@ -27,41 +32,43 @@ class PhoneAuthViewModelTest {
     @RegisterExtension
     val mainDispatcher = MainDispatcherExtension()
 
-    @MockK
-    lateinit var signInWithSmsCode: SignInWithSmsCodeUseCase
+    private val clock = Clock.fixed(NOW, ZoneOffset.UTC)
+    private val authTestData = AuthTestData()
+    private val cartTestData = CartTestData(clock)
 
-    @MockK
-    lateinit var transferGuestCartToUserUseCase: TransferGuestCartToUserUseCase
-
-    @InjectMockKs
-    lateinit var viewModel: PhoneAuthViewModel
+    private val viewModel = PhoneAuthViewModel(
+        signInWithSmsCode = SignInWithSmsCodeUseCase(authTestData.phoneAuthRepository),
+        transferGuestCartToUserUseCase = TransferGuestCartToUserUseCase(cartTestData.cartRepository),
+    )
 
     @Nested
     inner class UpdatePhone {
 
         @Test
-        fun `updatePhone when in enter phone then updates phone number`() {
-            // Given
-            val input = RAW_PHONE
+        fun `updatePhone when entering the phone number then shows it trimmed`() = runTest {
+            viewModel.uiState.test {
+                // When
+                viewModel.updatePhone(RAW_PHONE)
 
-            // When
-            viewModel.updatePhone(input)
-
-            // Then
-            assertThat(currentEnterPhoneState().phoneNumber).isEqualTo(TRIMMED_PHONE)
+                // Then
+                assertThat(expectEnterPhone().phoneNumber).isEqualTo(PHONE_LOCAL)
+            }
         }
 
         @Test
-        fun `updatePhone when in enter code then does nothing`() {
+        fun `updatePhone when entering the code then changes nothing`() = runTest {
             // Given
-            givenEnterCodeState()
-            val originalPhone = currentEnterCodeState().phoneLocal
+            givenEnterCodeStep()
 
-            // When
-            viewModel.updatePhone(RAW_PHONE)
+            viewModel.uiState.test {
+                awaitItem()
 
-            // Then
-            assertThat(currentEnterCodeState().phoneLocal).isEqualTo(originalPhone)
+                // When
+                viewModel.updatePhone(OTHER_PHONE_LOCAL)
+
+                // Then
+                expectNoEvents()
+            }
         }
     }
 
@@ -69,28 +76,30 @@ class PhoneAuthViewModelTest {
     inner class UpdateFullPhone {
 
         @Test
-        fun `updateFullPhone when in enter phone then updates full phone number`() {
-            // Given
-            val input = FULL_PHONE
+        fun `updateFullPhone when entering the phone number then updates the full phone number`() = runTest {
+            viewModel.uiState.test {
+                // When
+                viewModel.updateFullPhone(FULL_PHONE)
 
-            // When
-            viewModel.updateFullPhone(input)
-
-            // Then
-            assertThat(currentEnterPhoneState().fullPhoneNumber).isEqualTo(FULL_PHONE)
+                // Then
+                assertThat(expectEnterPhone().fullPhoneNumber).isEqualTo(FULL_PHONE)
+            }
         }
 
         @Test
-        fun `updateFullPhone when in enter code then does nothing`() {
+        fun `updateFullPhone when entering the code then changes nothing`() = runTest {
             // Given
-            givenEnterCodeState()
-            val originalFull = currentEnterCodeState().fullPhoneNumber
+            givenEnterCodeStep()
 
-            // When
-            viewModel.updateFullPhone("+19999999")
+            viewModel.uiState.test {
+                awaitItem()
 
-            // Then
-            assertThat(currentEnterCodeState().fullPhoneNumber).isEqualTo(originalFull)
+                // When
+                viewModel.updateFullPhone(OTHER_FULL_PHONE)
+
+                // Then
+                expectNoEvents()
+            }
         }
     }
 
@@ -98,28 +107,30 @@ class PhoneAuthViewModelTest {
     inner class UpdateCountryIso {
 
         @Test
-        fun `updateCountryIso when in enter phone then updates selected country iso`() {
-            // Given
-            val iso = COUNTRY_ISO
+        fun `updateCountryIso when entering the phone number then updates the selected country`() = runTest {
+            viewModel.uiState.test {
+                // When
+                viewModel.updateCountryIso(COUNTRY_ISO)
 
-            // When
-            viewModel.updateCountryIso(iso)
-
-            // Then
-            assertThat(currentEnterPhoneState().selectedCountryIso).isEqualTo(COUNTRY_ISO)
+                // Then
+                assertThat(expectEnterPhone().selectedCountryIso).isEqualTo(COUNTRY_ISO)
+            }
         }
 
         @Test
-        fun `updateCountryIso when in enter code then does nothing`() {
+        fun `updateCountryIso when entering the code then changes nothing`() = runTest {
             // Given
-            givenEnterCodeState()
-            val originalIso = currentEnterCodeState().countryIso
+            givenEnterCodeStep()
 
-            // When
-            viewModel.updateCountryIso("FR")
+            viewModel.uiState.test {
+                awaitItem()
 
-            // Then
-            assertThat(currentEnterCodeState().countryIso).isEqualTo(originalIso)
+                // When
+                viewModel.updateCountryIso(OTHER_COUNTRY_ISO)
+
+                // Then
+                expectNoEvents()
+            }
         }
     }
 
@@ -127,28 +138,32 @@ class PhoneAuthViewModelTest {
     inner class UpdatePhoneValidity {
 
         @Test
-        fun `updatePhoneValidity when in enter phone then updates is phone valid`() {
-            // Given
-            val isValid = true
+        fun `updatePhoneValidity when the phone number is valid then enables continue`() = runTest {
+            viewModel.uiState.test {
+                // When
+                viewModel.updatePhoneValidity(true)
 
-            // When
-            viewModel.updatePhoneValidity(isValid)
-
-            // Then
-            assertThat(currentEnterPhoneState().isPhoneValid).isTrue()
+                // Then
+                val state = expectEnterPhone()
+                assertThat(state.isPhoneValid).isTrue()
+                assertThat(state.continueEnabled).isTrue()
+            }
         }
 
         @Test
-        fun `updatePhoneValidity when in enter code then does nothing`() {
+        fun `updatePhoneValidity when entering the code then changes nothing`() = runTest {
             // Given
-            givenEnterCodeState()
-            val originalCode = currentEnterCodeState()
+            givenEnterCodeStep()
 
-            // When
-            viewModel.updatePhoneValidity(true)
+            viewModel.uiState.test {
+                awaitItem()
 
-            // Then
-            assertThat(currentEnterCodeState()).isEqualTo(originalCode)
+                // When
+                viewModel.updatePhoneValidity(false)
+
+                // Then
+                expectNoEvents()
+            }
         }
     }
 
@@ -156,46 +171,49 @@ class PhoneAuthViewModelTest {
     inner class VerifyPhone {
 
         @Test
-        suspend fun `verifyPhone when continue enabled then emits start phone verification event`() {
+        fun `verifyPhone when the phone number is valid then emits start phone verification`() = runTest {
             // Given
-            givenReadyToVerifyPhone()
+            givenValidPhone()
 
             viewModel.events.test {
                 // When
                 viewModel.verifyPhone()
-                mainDispatcher.scheduler.runCurrent()
+                runCurrent()
 
                 // Then
                 assertThat(awaitItem()).isEqualTo(PhoneAuthEvent.StartPhoneVerification(FULL_PHONE))
-                cancelAndIgnoreRemainingEvents()
             }
         }
 
         @Test
-        fun `verifyPhone when continue enabled then shows loading`() {
+        fun `verifyPhone when the phone number is valid then shows loading`() = runTest {
             // Given
-            givenReadyToVerifyPhone()
+            givenValidPhone()
 
-            // When
-            viewModel.verifyPhone()
+            viewModel.uiState.test {
+                // When
+                viewModel.verifyPhone()
 
-            // Then
-            assertThat(currentEnterPhoneState().isLoading).isTrue()
+                // Then
+                val state = expectEnterPhone()
+                assertThat(state.isLoading).isTrue()
+                assertThat(state.continueEnabled).isFalse()
+                assertThat(state.skipEnabled).isFalse()
+            }
         }
 
         @Test
-        suspend fun `verifyPhone when continue disabled then emits nothing`() {
+        fun `verifyPhone when the phone number is not valid then emits nothing`() = runTest {
             // Given
             viewModel.updateFullPhone(FULL_PHONE)
 
             viewModel.events.test {
                 // When
                 viewModel.verifyPhone()
-                mainDispatcher.scheduler.runCurrent()
+                runCurrent()
 
                 // Then
                 expectNoEvents()
-                cancelAndIgnoreRemainingEvents()
             }
         }
     }
@@ -204,15 +222,14 @@ class PhoneAuthViewModelTest {
     inner class SkipAuth {
 
         @Test
-        suspend fun `skipAuth when called then emits skip auth event`() {
+        fun `skipAuth when called then emits skip auth`() = runTest {
             viewModel.events.test {
                 // When
                 viewModel.skipAuth()
-                mainDispatcher.scheduler.runCurrent()
+                runCurrent()
 
                 // Then
                 assertThat(awaitItem()).isEqualTo(PhoneAuthEvent.SkipAuth)
-                cancelAndIgnoreRemainingEvents()
             }
         }
     }
@@ -221,229 +238,60 @@ class PhoneAuthViewModelTest {
     inner class HandleCodeSent {
 
         @Test
-        fun `handleCodeSent when called then updates ui state to enter code`() {
+        fun `handleCodeSent when the code is sent then shows the code step with the resend countdown`() = runTest {
             // Given
-            givenReadyToVerifyPhone()
+            givenValidPhone()
+            viewModel.verifyPhone()
 
-            // When
-            viewModel.handleCodeSent(VERIFICATION_ID)
-
-            // Then
-            assertThat(viewModel.uiState.value).isInstanceOf(PhoneAuthUiState.EnterCode::class.java)
-        }
-
-        @Test
-        fun `handleCodeSent when called then disables resend initially`() {
-            // Given
-            givenReadyToVerifyPhone()
-
-            // When
-            viewModel.handleCodeSent(VERIFICATION_ID)
-
-            // Then
-            assertThat(currentEnterCodeState().canResend).isFalse()
-        }
-
-        @Test
-        fun `handleCodeSent when timeout elapses then enables resend`() {
-            // Given
-            givenEnterCodeState()
-
-            // When
-            mainDispatcher.scheduler.advanceUntilIdle()
-            mainDispatcher.scheduler.runCurrent()
-
-            // Then
-            assertThat(currentEnterCodeState().canResend).isTrue()
-        }
-    }
-
-    @Nested
-    inner class UpdateCode {
-
-        @Test
-        fun `updateCode when input has non digits then updates code digits`() {
-            // Given
-            givenEnterCodeState()
-
-            // When
-            viewModel.updateCode(CODE_WITH_NON_DIGITS)
-
-            // Then
-            assertThat(currentEnterCodeState().code).isEqualTo(CODE_6_DIGITS)
-        }
-
-        @Test
-        fun `updateCode when in enter phone then does nothing`() {
-            // Given
-            val originalPhone = currentEnterPhoneState().phoneNumber
-
-            // When
-            viewModel.updateCode("123456")
-
-            // Then
-            assertThat(currentEnterPhoneState().phoneNumber).isEqualTo(originalPhone)
-        }
-    }
-
-    @Nested
-    inner class ConfirmCode {
-
-        @Test
-        fun `confirmCode when confirm disabled then does nothing`() {
-            // Given
-            givenEnterCodeState()
-            viewModel.updateCode("12")
-            val originalLoading = currentEnterCodeState().isLoading
-
-            // When
-            viewModel.confirmCode()
-            mainDispatcher.scheduler.runCurrent()
-
-            // Then
-            assertThat(currentEnterCodeState().isLoading).isEqualTo(originalLoading)
-        }
-
-        @Test
-        suspend fun `confirmCode when sign in succeeds then emits auth completed event`() {
-            // Given
-            givenEnterCodeState()
-            givenEnteredSmsCode()
-            givenSuccessfulSignIn()
-
-            viewModel.events.test {
+            viewModel.uiState.test {
                 // When
-                viewModel.confirmCode()
-                mainDispatcher.scheduler.runCurrent()
+                viewModel.handleCodeSent(VERIFICATION_ID)
 
                 // Then
-                assertThat(awaitItem()).isEqualTo(PhoneAuthEvent.AuthCompleted)
-                cancelAndIgnoreRemainingEvents()
+                val state = expectMostRecentItem()
+                assertThat(state).isInstanceOf(PhoneAuthUiState.EnterCode::class.java)
+                state as PhoneAuthUiState.EnterCode
+                assertThat(state.phoneLocal).isEqualTo(PHONE_LOCAL)
+                assertThat(state.fullPhoneNumber).isEqualTo(FULL_PHONE)
+                assertThat(state.countryIso).isEqualTo(COUNTRY_ISO)
+                assertThat(state.code).isEmpty()
+                assertThat(state.isLoading).isFalse()
+                assertThat(state.canResend).isFalse()
+                assertThat(state.secondsRemaining).isEqualTo(RESEND_TIMEOUT_SECONDS)
+                assertThat(state.subtitleRes).isEqualTo(R.string.auth_screen_subtitle_enter_code)
             }
         }
 
         @Test
-        fun `confirmCode when sign in succeeds then calls transfer guest cart`() {
+        fun `handleCodeSent when a second passes then counts down`() = runTest {
             // Given
-            givenEnterCodeState()
-            givenEnteredSmsCode()
-            givenSuccessfulSignIn()
+            givenEnterCodeStep()
 
-            // When
-            viewModel.confirmCode()
-            mainDispatcher.scheduler.runCurrent()
-
-            // Then
-            coThen(exactly = 1) { transferGuestCartToUserUseCase(USER_ID) }
-        }
-
-        @Test
-        fun `confirmCode when sign in succeeds then resets ui state to enter phone`() {
-            // Given
-            givenEnterCodeState()
-            givenEnteredSmsCode()
-            givenSuccessfulSignIn()
-
-            // When
-            viewModel.confirmCode()
-            mainDispatcher.scheduler.runCurrent()
-
-            // Then
-            assertThat(viewModel.uiState.value).isInstanceOf(PhoneAuthUiState.EnterPhone::class.java)
-        }
-
-        @Test
-        fun `confirmCode when sign in fails then shows error message`() {
-            // Given
-            givenEnterCodeState()
-            givenEnteredSmsCode()
-            givenFailedSignIn()
-
-            // When
-            viewModel.confirmCode()
-            mainDispatcher.scheduler.runCurrent()
-
-            // Then
-            assertThat(currentEnterCodeState().errorMessage).isEqualTo(ERROR_MESSAGE)
-        }
-
-        @Test
-        fun `confirmCode when sign in fails then hides loading`() {
-            // Given
-            givenEnterCodeState()
-            givenEnteredSmsCode()
-            givenFailedSignIn()
-
-            // When
-            viewModel.confirmCode()
-            mainDispatcher.scheduler.runCurrent()
-
-            // Then
-            assertThat(currentEnterCodeState().isLoading).isFalse()
-        }
-    }
-
-    @Nested
-    inner class ResendCode {
-
-        @Test
-        suspend fun `resendCode when resend enabled then emits resend code event`() {
-            // Given
-            givenResendEnabledState()
-
-            viewModel.events.test {
+            viewModel.uiState.test {
                 // When
-                viewModel.resendCode()
-                mainDispatcher.scheduler.runCurrent()
+                advanceTimeBy(1.seconds)
+                runCurrent()
 
                 // Then
-                assertThat(awaitItem()).isEqualTo(PhoneAuthEvent.ResendCode(FULL_PHONE))
-                cancelAndIgnoreRemainingEvents()
+                assertThat(expectEnterCode().secondsRemaining).isEqualTo(RESEND_TIMEOUT_SECONDS - 1)
             }
         }
 
         @Test
-        fun `resendCode when resend enabled then disables resend`() {
+        fun `handleCodeSent when the countdown ends then enables resend`() = runTest {
             // Given
-            givenResendEnabledState()
+            givenEnterCodeStep()
 
-            // When
-            viewModel.resendCode()
-            mainDispatcher.scheduler.runCurrent()
+            viewModel.uiState.test {
+                // When
+                advanceUntilIdle()
 
-            // Then
-            assertThat(currentEnterCodeState().canResend).isFalse()
-        }
-
-        @Test
-        fun `resendCode when resend enabled then resets seconds remaining`() {
-            // Given
-            givenResendEnabledState()
-
-            // When
-            viewModel.resendCode()
-            mainDispatcher.scheduler.runCurrent()
-
-            // Then
-            assertThat(currentEnterCodeState().secondsRemaining)
-                .isEqualTo(PhoneVerificationManager.RESEND_TIMEOUT_SECONDS.toInt())
-        }
-    }
-
-    @Nested
-    inner class EditPhone {
-
-        @Test
-        fun `editPhone when in enter code then updates ui state to enter phone`() {
-            // Given
-            givenEnterCodeState()
-
-            // When
-            viewModel.editPhone()
-            mainDispatcher.scheduler.runCurrent()
-
-            // Then
-            assertThat(viewModel.uiState.value).isInstanceOf(PhoneAuthUiState.EnterPhone::class.java)
+                // Then
+                val state = expectEnterCode()
+                assertThat(state.secondsRemaining).isZero()
+                assertThat(state.canResend).isTrue()
+                assertThat(state.resendEnabled).isTrue()
+            }
         }
     }
 
@@ -451,86 +299,338 @@ class PhoneAuthViewModelTest {
     inner class HandleVerificationFailure {
 
         @Test
-        fun `handleVerificationFailure when in enter phone then shows error message`() {
+        fun `handleVerificationFailure when entering the phone number then shows the error`() = runTest {
             // Given
-            val error = IllegalStateException(ERROR_MESSAGE)
+            givenValidPhone()
+            viewModel.verifyPhone()
 
-            // When
-            viewModel.handleVerificationFailure(error)
+            viewModel.uiState.test {
+                // When
+                viewModel.handleVerificationFailure(IllegalStateException(ERROR_MESSAGE))
 
-            // Then
-            assertThat(currentEnterPhoneState().errorMessage).isEqualTo(ERROR_MESSAGE)
+                // Then
+                val state = expectEnterPhone()
+                assertThat(state.errorMessage).isEqualTo(ERROR_MESSAGE)
+                assertThat(state.isLoading).isFalse()
+            }
         }
 
         @Test
-        fun `handleVerificationFailure when in enter code then shows error message`() {
+        fun `handleVerificationFailure when entering the code then shows the error`() = runTest {
             // Given
-            givenEnterCodeState()
-            val error = IllegalStateException(ERROR_MESSAGE)
+            givenEnterCodeStep()
 
-            // When
-            viewModel.handleVerificationFailure(error)
+            viewModel.uiState.test {
+                // When
+                viewModel.handleVerificationFailure(IllegalStateException(ERROR_MESSAGE))
 
-            // Then
-            assertThat(currentEnterCodeState().errorMessage).isEqualTo(ERROR_MESSAGE)
+                // Then
+                assertThat(expectEnterCode().errorMessage).isEqualTo(ERROR_MESSAGE)
+            }
         }
     }
 
-    private fun givenReadyToVerifyPhone() {
+    @Nested
+    inner class UpdateCode {
+
+        @Test
+        fun `updateCode when the input has other characters then keeps six digits`() = runTest {
+            // Given
+            givenEnterCodeStep()
+
+            viewModel.uiState.test {
+                // When
+                viewModel.updateCode(CODE_WITH_NON_DIGITS)
+
+                // Then
+                val state = expectEnterCode()
+                assertThat(state.code).isEqualTo(SMS_CODE)
+                assertThat(state.confirmEnabled).isTrue()
+            }
+        }
+
+        @Test
+        fun `updateCode when an error is shown then clears it`() = runTest {
+            // Given
+            givenEnterCodeStep()
+            viewModel.handleVerificationFailure(IllegalStateException(ERROR_MESSAGE))
+
+            viewModel.uiState.test {
+                // When
+                viewModel.updateCode(SMS_CODE)
+
+                // Then
+                assertThat(expectEnterCode().errorMessage).isNull()
+            }
+        }
+
+        @Test
+        fun `updateCode when entering the phone number then changes nothing`() = runTest {
+            viewModel.uiState.test {
+                awaitItem()
+
+                // When
+                viewModel.updateCode(SMS_CODE)
+
+                // Then
+                expectNoEvents()
+            }
+        }
+    }
+
+    @Nested
+    inner class ConfirmCode {
+
+        @Test
+        fun `confirmCode when the code is too short then changes nothing`() = runTest {
+            // Given
+            givenEnterCodeStep()
+            viewModel.updateCode(SHORT_CODE)
+
+            viewModel.uiState.test {
+                awaitItem()
+
+                // When
+                viewModel.confirmCode()
+                runCurrent()
+
+                // Then
+                expectNoEvents()
+            }
+        }
+
+        @Test
+        fun `confirmCode when the code is right then emits auth completed`() = runTest {
+            // Given
+            givenSmsCodeEntered()
+
+            viewModel.events.test {
+                // When
+                viewModel.confirmCode()
+                runCurrent()
+
+                // Then
+                assertThat(awaitItem()).isEqualTo(PhoneAuthEvent.AuthCompleted)
+            }
+        }
+
+        @Test
+        fun `confirmCode when the code is right then moves the guest cart to the user`() = runTest {
+            // Given
+            cartTestData.givenCart(CartOwner.Guest, colaLine())
+            givenSmsCodeEntered()
+
+            viewModel.uiState.test {
+                // When
+                viewModel.confirmCode()
+                runCurrent()
+
+                // Then
+                assertThat(cartTestData.cartLines(CartOwner.User(USER_ID))).containsExactly(colaLine())
+                assertThat(cartTestData.cartLines(CartOwner.Guest)).isEmpty()
+                cancelAndIgnoreRemainingEvents()
+            }
+        }
+
+        @Test
+        fun `confirmCode when the code is right then shows an empty phone step`() = runTest {
+            // Given
+            givenSmsCodeEntered()
+
+            viewModel.uiState.test {
+                // When
+                viewModel.confirmCode()
+                runCurrent()
+
+                // Then
+                val state = expectMostRecentItem()
+                assertThat(state).isInstanceOf(PhoneAuthUiState.EnterPhone::class.java)
+                state as PhoneAuthUiState.EnterPhone
+                assertThat(state.phoneNumber).isEmpty()
+                assertThat(state.fullPhoneNumber).isEmpty()
+                assertThat(state.isPhoneValid).isFalse()
+                assertThat(state.isLoading).isFalse()
+            }
+        }
+
+        @Test
+        fun `confirmCode when the code is wrong then shows the error`() = runTest {
+            // Given
+            givenSmsCodeEntered()
+            authTestData.givenSignInFails(IllegalStateException(ERROR_MESSAGE))
+
+            viewModel.uiState.test {
+                // When
+                viewModel.confirmCode()
+                runCurrent()
+
+                // Then
+                val state = expectEnterCode()
+                assertThat(state.errorMessage).isEqualTo(ERROR_MESSAGE)
+                assertThat(state.isLoading).isFalse()
+            }
+        }
+
+        @Test
+        fun `confirmCode when the code is wrong then keeps the guest cart`() = runTest {
+            // Given
+            cartTestData.givenCart(CartOwner.Guest, colaLine())
+            givenSmsCodeEntered()
+            authTestData.givenSignInFails(IllegalStateException(ERROR_MESSAGE))
+
+            viewModel.uiState.test {
+                // When
+                viewModel.confirmCode()
+                runCurrent()
+
+                // Then
+                assertThat(cartTestData.cartLines(CartOwner.Guest)).containsExactly(colaLine())
+                cancelAndIgnoreRemainingEvents()
+            }
+        }
+    }
+
+    @Nested
+    inner class ResendCode {
+
+        @Test
+        fun `resendCode when resend is enabled then emits resend code`() = runTest {
+            // Given
+            givenResendEnabled()
+
+            viewModel.events.test {
+                // When
+                viewModel.resendCode()
+                runCurrent()
+
+                // Then
+                assertThat(awaitItem()).isEqualTo(PhoneAuthEvent.ResendCode(FULL_PHONE))
+            }
+        }
+
+        @Test
+        fun `resendCode when resend is enabled then restarts the countdown`() = runTest {
+            // Given
+            givenResendEnabled()
+
+            viewModel.uiState.test {
+                // When
+                viewModel.resendCode()
+                runCurrent()
+
+                // Then
+                val state = expectEnterCode()
+                assertThat(state.canResend).isFalse()
+                assertThat(state.secondsRemaining).isEqualTo(RESEND_TIMEOUT_SECONDS)
+            }
+        }
+
+        @Test
+        fun `resendCode when the countdown is running then emits nothing`() = runTest {
+            // Given
+            givenEnterCodeStep()
+
+            viewModel.events.test {
+                // When
+                viewModel.resendCode()
+                runCurrent()
+
+                // Then
+                expectNoEvents()
+            }
+        }
+    }
+
+    @Nested
+    inner class EditPhone {
+
+        @Test
+        fun `editPhone when entering the code then shows the phone step with the phone number`() = runTest {
+            // Given
+            givenEnterCodeStep()
+
+            viewModel.uiState.test {
+                // When
+                viewModel.editPhone()
+
+                // Then
+                val state = expectMostRecentItem()
+                assertThat(state).isInstanceOf(PhoneAuthUiState.EnterPhone::class.java)
+                state as PhoneAuthUiState.EnterPhone
+                assertThat(state.phoneNumber).isEqualTo(FULL_PHONE)
+                assertThat(state.fullPhoneNumber).isEqualTo(FULL_PHONE)
+                assertThat(state.selectedCountryIso).isEqualTo(COUNTRY_ISO)
+                assertThat(state.isPhoneValid).isTrue()
+                assertThat(state.isLoading).isFalse()
+            }
+        }
+    }
+
+    private fun givenValidPhone() {
         viewModel.updatePhone(PHONE_LOCAL)
         viewModel.updateFullPhone(FULL_PHONE)
-        viewModel.updatePhoneValidity(IS_PHONE_VALID)
+        viewModel.updatePhoneValidity(true)
         viewModel.updateCountryIso(COUNTRY_ISO)
     }
 
-    private fun givenEnterCodeState() {
-        givenReadyToVerifyPhone()
+    private fun TestScope.givenEnterCodeStep() {
+        givenValidPhone()
+        viewModel.verifyPhone()
+        runCurrent()
         viewModel.handleCodeSent(VERIFICATION_ID)
-        mainDispatcher.scheduler.runCurrent()
     }
 
-    private fun givenEnteredSmsCode() {
-        viewModel.updateCode(CODE_6_DIGITS)
+    private fun TestScope.givenSmsCodeEntered() {
+        authTestData.givenSignInAs(USER_ID)
+        givenEnterCodeStep()
+        viewModel.updateCode(SMS_CODE)
     }
 
-    private fun givenSuccessfulSignIn() {
-        val user = authUser()
-        coGiven { signInWithSmsCode(VERIFICATION_ID, CODE_6_DIGITS) } returns Result.success(user)
-        coGiven { transferGuestCartToUserUseCase(USER_ID) } just Runs
+    private fun TestScope.givenResendEnabled() {
+        givenEnterCodeStep()
+        advanceUntilIdle()
     }
 
-    private fun givenFailedSignIn() {
-        val exception = IllegalStateException(ERROR_MESSAGE)
-        coGiven { signInWithSmsCode(VERIFICATION_ID, CODE_6_DIGITS) } returns Result.failure(exception)
-    }
+    private suspend fun ReceiveTurbine<PhoneAuthUiState>.expectEnterPhone(): PhoneAuthUiState.EnterPhone =
+        expectMostRecentItem() as PhoneAuthUiState.EnterPhone
 
-    private fun givenResendEnabledState() {
-        givenEnterCodeState()
-        mainDispatcher.scheduler.advanceUntilIdle()
-        mainDispatcher.scheduler.runCurrent()
-    }
+    private suspend fun ReceiveTurbine<PhoneAuthUiState>.expectEnterCode(): PhoneAuthUiState.EnterCode =
+        expectMostRecentItem() as PhoneAuthUiState.EnterCode
 
-    private fun authUser(): AuthUser = AuthUser(uid = USER_ID, phoneNumber = FULL_PHONE)
-
-    private fun currentEnterPhoneState(): PhoneAuthUiState.EnterPhone = viewModel.uiState.value as PhoneAuthUiState.EnterPhone
-
-    private fun currentEnterCodeState(): PhoneAuthUiState.EnterCode = viewModel.uiState.value as PhoneAuthUiState.EnterCode
+    private fun colaLine() = CartItem.Other(
+        lineId = COLA_LINE_ID,
+        productId = COLA_ID,
+        name = COLA_NAME,
+        imageUrl = "",
+        quantity = COLA_QUANTITY,
+        category = ProductCategory.DRINK,
+        unitPrice = COLA_PRICE,
+    )
 
     private companion object {
-        private const val RAW_PHONE = "  5551234  "
-        private const val TRIMMED_PHONE = "5551234"
-        private const val PHONE_LOCAL = "5551234"
-        private const val FULL_PHONE = "+15551234"
-        private const val COUNTRY_ISO = "US"
+        val NOW: Instant = Instant.parse("2026-01-15T12:00:00Z")
 
-        private const val VERIFICATION_ID = "verification-id"
+        const val RAW_PHONE = "  5551234  "
+        const val PHONE_LOCAL = "5551234"
+        const val OTHER_PHONE_LOCAL = "5559999"
+        const val FULL_PHONE = "+15551234"
+        const val OTHER_FULL_PHONE = "+15559999"
+        const val COUNTRY_ISO = "US"
+        const val OTHER_COUNTRY_ISO = "FR"
 
-        private const val CODE_WITH_NON_DIGITS = "1a2b3c4d5e6f"
-        private const val CODE_6_DIGITS = "123456"
+        const val VERIFICATION_ID = "verification-id"
+        const val SMS_CODE = "123456"
+        const val CODE_WITH_NON_DIGITS = "1a2b3c4d5e6f7"
+        const val SHORT_CODE = "12"
+        const val RESEND_TIMEOUT_SECONDS = 60
 
-        private const val USER_ID = "user-id"
-        private const val ERROR_MESSAGE = "Incorrect code"
+        const val USER_ID = "user-id"
+        const val ERROR_MESSAGE = "Incorrect code"
 
-        private const val IS_PHONE_VALID = true
+        const val COLA_LINE_ID = "line-cola"
+        const val COLA_ID = "cola"
+        const val COLA_NAME = "Cola"
+        const val COLA_QUANTITY = 2
+        const val COLA_PRICE = 1.99
     }
 }

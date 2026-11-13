@@ -21,5 +21,10 @@ dependencies {
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.auth)
 
+    testImplementation(projects.core.model)
     testImplementation(projects.core.testing)
+    testImplementation(projects.features.auth.data)
+    testImplementation(testFixtures(projects.features.auth.data))
+    testImplementation(projects.features.cart.data)
+    testImplementation(testFixtures(projects.features.cart.data))
 }
