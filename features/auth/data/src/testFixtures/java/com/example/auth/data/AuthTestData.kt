@@ -21,4 +21,16 @@ class AuthTestData {
     fun givenSignedOut() {
         dataSource.user.value = null
     }
+
+    fun givenSignInAs(uid: String) {
+        dataSource.signInUid = uid
+    }
+
+    fun givenSignInFails(error: Exception = IllegalStateException(FORCED_FAILURE)) {
+        dataSource.failure = error
+    }
+
+    private companion object {
+        const val FORCED_FAILURE = "Forced failure"
+    }
 }

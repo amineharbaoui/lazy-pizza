@@ -11,6 +11,8 @@ internal class FakePhoneAuthRemoteDataSource : PhoneAuthRemoteDataSource {
 
     var failure: Exception? = null
 
+    var signInUid: String = DEFAULT_SIGNED_IN_UID
+
     override val userIdFlow: Flow<String?> = user.map { it?.uid }
 
     override val isSignedIn: Flow<Boolean> = user.map { it != null }
@@ -26,10 +28,10 @@ internal class FakePhoneAuthRemoteDataSource : PhoneAuthRemoteDataSource {
         smsCode: String,
     ): RemoteUser {
         failure?.let { throw it }
-        return RemoteUser(uid = SIGNED_IN_UID, phoneNumber = null).also { user.value = it }
+        return RemoteUser(uid = signInUid, phoneNumber = null).also { user.value = it }
     }
 
     private companion object {
-        const val SIGNED_IN_UID = "fake-uid"
+        const val DEFAULT_SIGNED_IN_UID = "fake-uid"
     }
 }
