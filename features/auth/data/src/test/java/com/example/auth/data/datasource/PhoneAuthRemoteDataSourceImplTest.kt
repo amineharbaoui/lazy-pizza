@@ -10,7 +10,6 @@ import com.google.firebase.auth.PhoneAuthProvider
 import io.mockk.Runs
 import io.mockk.bdd.given
 import io.mockk.bdd.then
-import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
 import io.mockk.just
@@ -32,8 +31,9 @@ class PhoneAuthRemoteDataSourceImplTest {
     @MockK(relaxed = true)
     lateinit var firebaseUser: FirebaseUser
 
-    @InjectMockKs
-    private lateinit var phoneAuthRemoteDataSource: PhoneAuthRemoteDataSourceImpl
+    private val phoneAuthRemoteDataSource by lazy {
+        PhoneAuthRemoteDataSourceImpl(firebaseAuth, ResumedActivityTracker())
+    }
 
     @Test
     suspend fun `userIdFlow when auth state changes and uid is not null then emits user id`() {
