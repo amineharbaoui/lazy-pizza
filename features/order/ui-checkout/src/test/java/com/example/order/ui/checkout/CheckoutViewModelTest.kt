@@ -182,6 +182,27 @@ class CheckoutViewModelTest {
                 assertThat(expectMostRecentItem()).isInstanceOf(CheckoutUiState.ReadyToOrder::class.java)
             }
         }
+
+        @Test
+        fun `uiState when the screen comes back after five seconds in the background then keeps the comment`() = runTest {
+            // Given
+            givenSignedInWithCart()
+            val viewModel = viewModel()
+            viewModel.uiState.test {
+                awaitReady()
+                viewModel.updateComment(COMMENT)
+                awaitItem()
+            }
+            advanceTimeBy(BACKGROUND_TIME)
+
+            // When
+            viewModel.uiState.test {
+                advanceUntilIdle()
+
+                // Then
+                assertThat((expectMostRecentItem() as CheckoutUiState.ReadyToOrder).comment).isEqualTo(COMMENT)
+            }
+        }
     }
 
     @Nested

@@ -18,8 +18,10 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.firstOrNull
-import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -31,16 +33,37 @@ class CheckoutViewModel @Inject constructor(
     private val observeCartUseCase: ObserveCartUseCase,
     private val placeOrderUseCase: PlaceOrderUseCase,
     private val createOrderUseCase: CreateOrderUseCase,
-    private val getPickupScheduleUseCase: GetPickupScheduleUseCase,
+    getPickupScheduleUseCase: GetPickupScheduleUseCase,
     private val getCurrentUserUidUseCase: GetCurrentUserUidUseCase,
-    private val checkoutUiStateFactory: CheckoutUiStateFactory,
+    checkoutUiStateFactory: CheckoutUiStateFactory,
     private val cartToOrderMapper: CartToOrderMapper,
     private val clearCartUseCase: ClearCartUseCase,
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow<CheckoutUiState>(CheckoutUiState.Loading)
-    val uiState: StateFlow<CheckoutUiState> = _uiState.onStart {
-        loadCheckout()
+    private val pickupChoice = MutableStateFlow(PickupChoice())
+    private val comment = MutableStateFlow("")
+    private val orderSubmission = MutableStateFlow<OrderSubmission>(OrderSubmission.NotSent)
+
+    private val readyStates = observeCartUseCase()
+        .onEach { clearFailedSubmission() }
+        .map { cart -> checkoutUiStateFactory.createInitialReadyState(cart = cart, schedule = getPickupScheduleUseCase()) }
+
+    val uiState: StateFlow<CheckoutUiState> = combine(
+        readyStates,
+        pickupChoice,
+        comment,
+        orderSubmission,
+    ) { readyState, pickup, comment, submission ->
+        when (submission) {
+            OrderSubmission.NotSent -> readyState.withChoices(choice = pickup, comment = comment, isPlacingOrder = false)
+            OrderSubmission.Placing -> readyState.withChoices(choice = pickup, comment = comment, isPlacingOrder = true)
+            is OrderSubmission.Placed -> CheckoutUiState.OrderPlaced(
+                orderNumber = submission.orderNumber,
+                pickupTime = submission.pickupTime,
+            )
+
+            is OrderSubmission.Failed -> CheckoutUiState.Error(message = submission.message)
+        }
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5.seconds.inWholeMilliseconds),
@@ -50,56 +73,27 @@ class CheckoutViewModel @Inject constructor(
     private val _events = MutableSharedFlow<CheckoutEvent>()
     val events = _events.asSharedFlow()
 
-    private fun loadCheckout() {
-        viewModelScope.launch {
-            observeCartUseCase().collect { cart ->
-                _uiState.update { currentState ->
-                    currentState as? CheckoutUiState.OrderPlaced
-                        ?: checkoutUiStateFactory.createInitialReadyState(cart = cart, schedule = getPickupScheduleUseCase())
-                }
-            }
-        }
-    }
-
     fun selectPickupOption(optionId: PickupOption) {
         viewModelScope.launch {
             if (optionId == PickupOption.SCHEDULE) {
                 _events.emit(CheckoutEvent.ShowScheduleBottomSheet)
             }
-            updateReadyState { state ->
+            updatePickupChoice { choice, sheet ->
                 when (optionId) {
-                    PickupOption.ASAP -> state.copy(
-                        pickup = state.pickup.copy(
-                            selectedOption = PickupOption.ASAP,
-                            asapCard = state.pickup.asapCard.copy(isSelected = true),
-                            scheduleCard = state.pickup.scheduleCard.copy(isSelected = false),
-                        ),
-                    )
+                    PickupOption.ASAP -> choice.copy(option = PickupOption.ASAP)
 
                     PickupOption.SCHEDULE -> {
-                        val sheet = state.pickup.scheduleSheet
-                        val confirmation = sheet.confirmation
-
-                        val (selectedDayId, selectedTimeSlotId) = if (confirmation != null) {
-                            confirmation.dayId to confirmation.timeSlotId
+                        val confirmation = choice.confirmation
+                        val selection = if (confirmation != null) {
+                            PickupSelectionUiModel(selectedDayId = confirmation.dayId, selectedTimeSlotId = confirmation.timeSlotId)
                         } else {
                             val firstDay = sheet.days.firstOrNull { it.timeSlots.isNotEmpty() }
-                            firstDay?.id to firstDay?.timeSlots?.firstOrNull()?.id
+                            PickupSelectionUiModel(
+                                selectedDayId = firstDay?.id,
+                                selectedTimeSlotId = firstDay?.timeSlots?.firstOrNull()?.id,
+                            )
                         }
-
-                        state.copy(
-                            pickup = state.pickup.copy(
-                                selectedOption = PickupOption.SCHEDULE,
-                                asapCard = state.pickup.asapCard.copy(isSelected = false),
-                                scheduleCard = state.pickup.scheduleCard.copy(isSelected = true),
-                                scheduleSheet = sheet.copy(
-                                    selection = sheet.selection.copy(
-                                        selectedDayId = selectedDayId,
-                                        selectedTimeSlotId = selectedTimeSlotId,
-                                    ),
-                                ),
-                            ),
-                        )
+                        choice.copy(option = PickupOption.SCHEDULE, selection = selection)
                     }
                 }
             }
@@ -107,63 +101,32 @@ class CheckoutViewModel @Inject constructor(
     }
 
     fun updateComment(text: String) {
-        updateReadyState { it.copy(comment = text) }
+        if (uiState.value is CheckoutUiState.ReadyToOrder) {
+            comment.value = text
+        }
     }
 
     fun selectScheduleDay(dayId: String) {
-        updateReadyState { state ->
-            val sheet = state.pickup.scheduleSheet
-            val selectedDay = sheet.days.find { it.id == dayId }
-            val firstSlotId = selectedDay?.timeSlots?.firstOrNull()?.id
-
-            state.copy(
-                pickup = state.pickup.copy(
-                    scheduleSheet = sheet.copy(
-                        selection = sheet.selection.copy(
-                            selectedDayId = dayId,
-                            selectedTimeSlotId = firstSlotId,
-                        ),
-                    ),
-                ),
-            )
+        updatePickupChoice { choice, sheet ->
+            val firstSlotId = sheet.days.find { it.id == dayId }?.timeSlots?.firstOrNull()?.id
+            choice.copy(selection = PickupSelectionUiModel(selectedDayId = dayId, selectedTimeSlotId = firstSlotId))
         }
     }
 
     fun selectScheduleTimeSlot(timeSlotId: String) {
-        updateReadyState { state ->
-            val sheet = state.pickup.scheduleSheet
-            state.copy(
-                pickup = state.pickup.copy(
-                    scheduleSheet = sheet.copy(
-                        selection = sheet.selection.copy(selectedTimeSlotId = timeSlotId),
-                    ),
-                ),
-            )
+        updatePickupChoice { choice, _ ->
+            choice.copy(selection = choice.selection.copy(selectedTimeSlotId = timeSlotId))
         }
     }
 
     fun confirmSchedule() {
-        updateReadyState { state ->
-            val sheet = state.pickup.scheduleSheet
-            val dayId = sheet.selection.selectedDayId ?: return@updateReadyState state
-            val slotId = sheet.selection.selectedTimeSlotId ?: return@updateReadyState state
+        updatePickupChoice { choice, sheet ->
+            val day = sheet.days.find { it.id == choice.selection.selectedDayId } ?: return@updatePickupChoice choice
+            val slot = day.timeSlots.find { it.id == choice.selection.selectedTimeSlotId } ?: return@updatePickupChoice choice
 
-            val day = sheet.days.find { it.id == dayId } ?: return@updateReadyState state
-            val slot = day.timeSlots.find { it.id == slotId } ?: return@updateReadyState state
-
-            state.copy(
-                pickup = state.pickup.copy(
-                    selectedOption = PickupOption.SCHEDULE,
-                    asapCard = state.pickup.asapCard.copy(isSelected = false),
-                    scheduleCard = state.pickup.scheduleCard.copy(
-                        isSelected = true,
-                        dateLabel = "${day.dayLabel} - ${day.dateLabel}",
-                        timeLabel = slot.timeLabel,
-                    ),
-                    scheduleSheet = sheet.copy(
-                        confirmation = PickupConfirmationUiModel(dayId = day.id, timeSlotId = slot.id),
-                    ),
-                ),
+            choice.copy(
+                option = PickupOption.SCHEDULE,
+                confirmation = PickupConfirmationUiModel(dayId = day.id, timeSlotId = slot.id),
             )
         }
     }
@@ -176,10 +139,10 @@ class CheckoutViewModel @Inject constructor(
                 return@launch
             }
 
-            val state = _uiState.value as? CheckoutUiState.ReadyToOrder ?: return@launch
+            val state = uiState.value as? CheckoutUiState.ReadyToOrder ?: return@launch
             val cart = observeCartUseCase().firstOrNull() ?: return@launch
 
-            _uiState.update { (it as? CheckoutUiState.ReadyToOrder)?.copy(isPlacingOrder = true) ?: it }
+            orderSubmission.value = OrderSubmission.Placing
 
             val order = createOrderUseCase(
                 userId = userId,
@@ -194,19 +157,87 @@ class CheckoutViewModel @Inject constructor(
             result.fold(
                 onSuccess = {
                     clearCartUseCase()
-                    _uiState.value = CheckoutUiState.OrderPlaced(
+                    orderSubmission.value = OrderSubmission.Placed(
                         orderNumber = order.orderNumber.formatOrderNumber(),
                         pickupTime = order.pickupAt.toPickupDisplayLabel().uppercase(),
                     )
                 },
                 onFailure = { e ->
-                    _uiState.value = CheckoutUiState.Error(message = e.message ?: "Could not place order")
+                    orderSubmission.value = OrderSubmission.Failed(message = e.message ?: "Could not place order")
                 },
             )
         }
     }
 
-    private fun updateReadyState(block: (CheckoutUiState.ReadyToOrder) -> CheckoutUiState.ReadyToOrder) {
-        _uiState.update { state -> if (state is CheckoutUiState.ReadyToOrder) block(state) else state }
+    private fun updatePickupChoice(block: (PickupChoice, SchedulePickupUiModel) -> PickupChoice) {
+        val sheet = (uiState.value as? CheckoutUiState.ReadyToOrder)?.pickup?.scheduleSheet ?: return
+        pickupChoice.update { choice -> block(choice.validIn(sheet), sheet) }
+    }
+
+    // The schedule is rebuilt from the clock with each cart, so a slot chosen earlier may have passed: then pickup goes back to ASAP.
+    private fun PickupChoice.validIn(sheet: SchedulePickupUiModel): PickupChoice {
+        val isSelectionValid = selection.selectedDayId == null || sheet.hasSlot(selection.selectedDayId, selection.selectedTimeSlotId)
+        val isConfirmationValid = confirmation == null || sheet.hasSlot(confirmation.dayId, confirmation.timeSlotId)
+        return if (isSelectionValid && isConfirmationValid) this else PickupChoice()
+    }
+
+    private fun SchedulePickupUiModel.hasSlot(
+        dayId: String,
+        timeSlotId: String?,
+    ): Boolean = days.any { day -> day.id == dayId && day.timeSlots.any { it.id == timeSlotId } }
+
+    // A new cart brings the form back after a failed order, as the screen did before it derived its state.
+    private fun clearFailedSubmission() {
+        orderSubmission.update { submission -> if (submission is OrderSubmission.Failed) OrderSubmission.NotSent else submission }
+    }
+
+    private fun CheckoutUiState.ReadyToOrder.withChoices(
+        choice: PickupChoice,
+        comment: String,
+        isPlacingOrder: Boolean,
+    ): CheckoutUiState.ReadyToOrder {
+        val sheet = this.pickup.scheduleSheet
+        val pickup = choice.validIn(sheet)
+        val confirmedDay = sheet.days.find { it.id == pickup.confirmation?.dayId }
+        val confirmedSlot = confirmedDay?.timeSlots?.find { it.id == pickup.confirmation?.timeSlotId }
+        val scheduleCard = this.pickup.scheduleCard
+
+        return copy(
+            pickup = this.pickup.copy(
+                selectedOption = pickup.option,
+                asapCard = this.pickup.asapCard.copy(isSelected = pickup.option == PickupOption.ASAP),
+                scheduleCard = scheduleCard.copy(
+                    isSelected = pickup.option == PickupOption.SCHEDULE,
+                    dateLabel = if (confirmedSlot != null) {
+                        "${confirmedDay.dayLabel} - ${confirmedDay.dateLabel}"
+                    } else {
+                        scheduleCard.dateLabel
+                    },
+                    timeLabel = confirmedSlot?.timeLabel ?: scheduleCard.timeLabel,
+                ),
+                scheduleSheet = sheet.copy(selection = pickup.selection, confirmation = pickup.confirmation),
+            ),
+            comment = comment,
+            isPlacingOrder = isPlacingOrder,
+        )
+    }
+
+    private data class PickupChoice(
+        val option: PickupOption = PickupOption.ASAP,
+        val selection: PickupSelectionUiModel = PickupSelectionUiModel(selectedDayId = null, selectedTimeSlotId = null),
+        val confirmation: PickupConfirmationUiModel? = null,
+    )
+
+    private sealed interface OrderSubmission {
+        data object NotSent : OrderSubmission
+
+        data object Placing : OrderSubmission
+
+        data class Placed(
+            val orderNumber: String,
+            val pickupTime: String,
+        ) : OrderSubmission
+
+        data class Failed(val message: String) : OrderSubmission
     }
 }
