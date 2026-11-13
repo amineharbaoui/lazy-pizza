@@ -5,9 +5,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.text.input.VisualTransformation
 
 internal fun filterCountries(
-    all: List<PhoneCountryUi>,
+    all: List<PhoneCountryDisplayModel>,
     queryRaw: String,
-): List<PhoneCountryUi> {
+): List<PhoneCountryDisplayModel> {
     val searchQuery = queryRaw.trim()
     if (searchQuery.isBlank()) return all
     return all.filter { country ->
@@ -24,7 +24,7 @@ internal fun extractDigits(
 
 internal fun buildFullNumber(
     local: String,
-    country: PhoneCountryUi,
+    country: PhoneCountryDisplayModel,
 ): String {
     val digitsOnly = local.filter { it.isDigit() }
     return country.dialCode + digitsOnly
@@ -37,7 +37,7 @@ internal data class MaskInfo(
 )
 
 @Composable
-internal fun rememberMaskInfo(country: PhoneCountryUi): MaskInfo = remember(country) {
+internal fun rememberMaskInfo(country: PhoneCountryDisplayModel): MaskInfo = remember(country) {
     val mask = country.phoneMask
     val maxDigits = mask.count { it == 'X' }.coerceAtLeast(0)
     val placeholder = buildPlaceholderFromMask(mask)

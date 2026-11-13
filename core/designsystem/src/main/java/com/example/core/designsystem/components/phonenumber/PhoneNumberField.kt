@@ -79,7 +79,7 @@ internal fun PhoneNumberField(
 
     fun updateFullNumber(
         local: String = phoneNumber,
-        country: PhoneCountryUi = selectedCountry,
+        country: PhoneCountryDisplayModel = selectedCountry,
     ) {
         val full = buildFullNumber(local, country)
         onFullPhoneNumberChange(full)
@@ -166,7 +166,7 @@ internal fun PhoneNumberField(
 
 @Composable
 private fun CountryLeadingIcon(
-    country: PhoneCountryUi,
+    country: PhoneCountryDisplayModel,
     enabled: Boolean,
     onClick: () -> Unit,
 ) {
@@ -206,10 +206,10 @@ private fun CountryLeadingIcon(
 private fun CountryDropdown(
     expanded: Boolean,
     searchQuery: String,
-    countries: List<PhoneCountryUi>,
+    countries: List<PhoneCountryDisplayModel>,
     onDismissRequest: () -> Unit,
     onSearchQueryChange: (String) -> Unit,
-    onCountrySelected: (PhoneCountryUi) -> Unit,
+    onCountrySelected: (PhoneCountryDisplayModel) -> Unit,
 ) {
     DropdownMenu(
         modifier = Modifier.background(AppColors.Bg),
@@ -258,7 +258,7 @@ private fun CountryDropdown(
 
 @Composable
 private fun CountryRow(
-    country: PhoneCountryUi,
+    country: PhoneCountryDisplayModel,
     onClick: () -> Unit,
 ) {
     Row(
