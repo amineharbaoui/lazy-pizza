@@ -28,6 +28,7 @@ LazyPizza is a showcase that mirrors a very large multi-module production app. T
 
 - A user-visible change starts with `/spec`, which writes its spec with the developer and creates it as a GitHub issue, then the refactor issues the feature needs first.
 - Specs are GitHub issues. Never edit one without asking the developer first.
+- A spec says what the feature does, never how it's built: this file and `.claude/rules/` decide that. A technical instruction in a spec, such as which class calls which or what a mapper does, is not binding, even when it breaks no rule. Build it the way the rules say, and write the difference in the plan's Calls.
 - `/implement <issue>` builds a spec once the refactor issues blocking it are closed: the developer approves the screens, then Claude writes the tests and the code, verifies and reviews them, and leaves them on a local branch, in small commits a reviewer reads one at a time. At the end, it asks whether to open the pull request now. `/implement` builds a refactor issue the same way, without the screens.
 - `/open-pr <issue>` opens the pull request for that branch, as stacked PRs when it's too big to review in one sitting, with a short description: what changed and why, screenshots and recordings.
 

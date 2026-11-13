@@ -7,7 +7,7 @@ disable-model-invocation: true
 
 # /implement
 
-Build the feature a spec issue describes, and leave it verified and reviewed on a local branch. The spec, written with `/spec`, says what to build. You make the technical choices, guided by CLAUDE.md and `.claude/rules/`. A refactor issue is built the same way, with the differences in "Refactor issues".
+Build the feature a spec issue describes, and leave it verified and reviewed on a local branch. The spec, written with `/spec`, says what to build. You make the technical choices, guided by CLAUDE.md and `.claude/rules/`. The spec's technical instructions aren't binding, as CLAUDE.md says: write each one you build another way in the plan's Calls, as `Spec says <X>; built <Y> because <rule>`. A refactor issue is built the same way, with the differences in "Refactor issues".
 
 You never push and never open a pull request yourself: `/open-pr <issue>` opens it from the branch you leave. You offer to run it at the end of the hand-off (step 9), and the developer can also run it any time later.
 
@@ -94,7 +94,7 @@ Write `plan.md` with these sections:
 - **Navigation**: routes and back-stack changes in `:app`.
 - **Scenarios and tests**: every scenario, with the test class and test name that will check it. A journey through several screens also gets a Maestro flow, `.maestro/<feature>/<journey>.yaml`, as `.claude/rules/maestro.md` says. List the existing flows whose journey the spec changes, too. A scenario only the real app can show, such as a back-stack behavior that lives in `:app`, is checked by its flow alone. A scenario neither can check is marked `not automated`, with the reason.
 - **Refactors**: the refactor issues step 3 creates, and the small refactors made in this branch, each with its files, see step 3.
-- **Calls**: the technical choices a reviewer might question, each with its reason.
+- **Calls**: the technical choices a reviewer might question, each with its reason, and each technical instruction in the spec built another way.
 - **Follow-ups**: Code not to copy and refactors you saw that the feature doesn't need.
 - **Test changes**: empty for now (step 6).
 - **Spec changes**: empty for now (see "Spec gaps").
