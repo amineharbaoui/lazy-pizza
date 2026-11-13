@@ -55,7 +55,8 @@ The project follows Clean Architecture strictly: dependencies point toward `:dom
 - `:domain` is pure Kotlin: business models and rules, use cases, repository interfaces. No Android, Compose, Firebase or Room.
 - `:data` implements its own feature's repository interfaces with Firebase or Room. It depends only on its own `:domain` and on `:core:*`.
 - `:ui-<screen>` holds one screen: composables, ViewModel, UI state. A new screen gets its own `:ui-<screen>` module. It may depend on any feature's `:domain`, never on a `:data` or on another `:ui-*`.
-- A feature uses another feature only through that feature's `:domain`. Dependencies between features never form a cycle.
+- A feature uses another feature only through that feature's `:domain`: its use cases and models, never its repository interfaces.
+- A dependency from one feature to another that doesn't exist yet is decided with the developer, case by case, from what the feature needs. Never add one on your own. Dependencies between features never form a cycle: when the one a feature needs would close a cycle, such as auth calling cart while cart already uses auth, bring the developer the options, for example an interface one feature declares and the other implements, or a state the other feature observes.
 - Only `:app` depends on `:data` modules, so Hilt sees their bindings. `:app` also owns navigation: the routes and the back stack.
 - `:core:*` modules never depend on a feature.
 - One exception, in tests only: a `:ui-<screen>` module may depend on the `:data` modules it uses and on their test fixtures, to run its acceptance tests.

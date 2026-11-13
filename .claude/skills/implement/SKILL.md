@@ -23,6 +23,7 @@ Ask with `AskUserQuestion`, one question per call. Give 2 to 4 options, put your
 - at the UI checkpoint (step 4)
 - when the spec is wrong, ambiguous or incomplete (see "Spec gaps")
 - when you hesitate between technical choices that are hard to undo, such as a new module, a new dependency or a schema change
+- before adding a dependency from one feature to another that doesn't exist yet, as CLAUDE.md's "Modules and dependencies" says: give the options, what each costs, and whether it would close a cycle
 - when the same check fails 3 times for the same reason
 - at the end of the hand-off, whether to open the pull request now (step 9)
 
@@ -87,7 +88,7 @@ Before deciding anything, read the code the spec touches: the screens, ViewModel
 
 Write `plan.md` with these sections:
 
-- **Modules**: each module you change or add, and why. A new screen gets its own `:ui-<screen>` module.
+- **Modules**: each module you change or add, and why, and each module dependency you add. A new screen gets its own `:ui-<screen>` module. A new dependency from one feature to another is asked first, see "When to ask the developer".
 - **Domain**: models, sealed results, use cases, repository interfaces.
 - **Data**: repositories, data sources, Firestore and Room changes.
 - **UI**: per screen, its UI state, display models, and one preview per state the spec lists.
