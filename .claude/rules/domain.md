@@ -31,5 +31,6 @@ paths:
 
 - `PlaceOrderUseCase` and `SignInWithSmsCodeUseCase` return `Result<T>` carrying raw Firebase exceptions.
 - `Money` doesn't exist yet: prices in the cart, menu and order models are `Double`. Adding `Money` to `:core:model` and moving the prices to it is a refactor of its own.
-- `ObserveCartUseCase`, `AddCartItemUseCase`, `UpdateCartItemQuantityUseCase`, `RemoveCartItemUseCase` and `ClearCartUseCase` inject auth's `SessionRepository` instead of its use cases. `SessionCartOwner.kt` holds the cart owner rule as an extension of that repository, in `usecase/`.
+- `ObserveCartUseCase`, `AddCartItemUseCase`, `UpdateCartItemQuantityUseCase`, `RemoveCartItemUseCase`, `ClearCartUseCase` and `MergeItemsIntoCartUseCase` inject auth's `SessionRepository` instead of its use cases. `SessionCartOwner.kt` holds the cart owner rule as an extension of that repository, in `usecase/`.
+- `ReorderUseCase` in `:features:order:domain` injects cart's `UnavailableItemsRepository` instead of a cart use case.
 - `OrderStatus` and `ProductCategory` live in `:core:model`, but belong to `:features:order:domain` and `:features:menu:domain`.
