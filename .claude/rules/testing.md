@@ -24,7 +24,7 @@ paths:
 
 - One class per ViewModel, `<Name>ViewModelTest`, in the screen module's `src/test/`. A `@Nested inner class` per ViewModel function.
 - Build the real chain by hand: the data modules' fakes and repositories, the real use cases, then the ViewModel. No Hilt in tests: the build already checks the Hilt graph.
-- Each data module's `src/testFixtures/` has a public `<Feature>TestData`, written in domain types: it builds the module's repositories on its fakes, presets data and forces failures. A test never sees a DTO or an entity, and a constructor change is fixed in one place.
+- Each data module's `src/testFixtures/` has a public `<Feature>TestData`, written in domain types: it builds the module's repositories on its fakes, presets data and forces failures. When the feature has an `:api`, it also builds the feature's public use cases on those fakes, through `<Feature>UseCases` in `:domain`'s `src/testFixtures/`, which can reach the `internal` implementations: another feature's acceptance tests then run the real chain without depending on its `:domain`. A test never sees a DTO or an entity, and a constructor change is fixed in one place.
 - Given presets data in the fakes, starts collecting `uiState` with Turbine (`uiState.test { ... }`) and waits for the loaded state. A `WhileSubscribed` state only updates while something collects it, and a ViewModel may ignore input until it has loaded. When calls a ViewModel function inside that block, and Then asserts the next state.
 
 ## Screenshot tests
