@@ -4,13 +4,13 @@ import com.example.cart.domain.model.Cart
 import com.example.order.domain.model.PickupDay
 import com.example.order.domain.model.PickupSchedule
 import com.example.order.ui.checkout.CheckoutUiState
-import com.example.order.ui.checkout.PickupDayUiModel
+import com.example.order.ui.checkout.PickupDayDisplayModel
+import com.example.order.ui.checkout.PickupDisplayModel
 import com.example.order.ui.checkout.PickupOption
-import com.example.order.ui.checkout.PickupOptionCardUiModel
-import com.example.order.ui.checkout.PickupSelectionUiModel
-import com.example.order.ui.checkout.PickupTimeSlotUiModel
-import com.example.order.ui.checkout.PickupUiState
-import com.example.order.ui.checkout.SchedulePickupUiModel
+import com.example.order.ui.checkout.PickupOptionCardDisplayModel
+import com.example.order.ui.checkout.PickupSelectionDisplayModel
+import com.example.order.ui.checkout.PickupTimeSlotDisplayModel
+import com.example.order.ui.checkout.SchedulePickupDisplayModel
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
@@ -18,7 +18,7 @@ import java.util.Locale
 import javax.inject.Inject
 
 class CheckoutUiStateFactory @Inject constructor(
-    private val cartToOrderSummaryUiMapper: CartToOrderSummaryUiMapper,
+    private val cartToOrderSummaryDisplayModelMapper: CartToOrderSummaryDisplayModelMapper,
 ) {
 
     fun createInitialReadyState(
@@ -26,10 +26,10 @@ class CheckoutUiStateFactory @Inject constructor(
         schedule: PickupSchedule,
     ): CheckoutUiState.ReadyToOrder {
         val labels = PickupLabels(today = schedule.today, locale = Locale.getDefault())
-        val days = schedule.days.map { it.toUiModel(labels) }
+        val days = schedule.days.map { it.toDisplayModel(labels) }
         val earliestSlot = schedule.earliestSlot
 
-        val asapCard = PickupOptionCardUiModel(
+        val asapCard = PickupOptionCardDisplayModel(
             id = PickupOption.ASAP,
             title = "Earliest available",
             dateLabel = earliestSlot?.let { "${labels.dayLabel(it.toLocalDate())} - ${labels.dateLabel(it.toLocalDate())}" },
@@ -38,7 +38,7 @@ class CheckoutUiStateFactory @Inject constructor(
             isEnabled = earliestSlot != null,
         )
 
-        val scheduleCard = PickupOptionCardUiModel(
+        val scheduleCard = PickupOptionCardDisplayModel(
             id = PickupOption.SCHEDULE,
             title = "Schedule",
             dateLabel = "Choose a time",
@@ -48,33 +48,33 @@ class CheckoutUiStateFactory @Inject constructor(
         )
 
         return CheckoutUiState.ReadyToOrder(
-            pickup = PickupUiState(
+            pickup = PickupDisplayModel(
                 selectedOption = PickupOption.ASAP,
                 asapCard = asapCard,
                 scheduleCard = scheduleCard,
-                scheduleSheet = SchedulePickupUiModel(
+                scheduleSheet = SchedulePickupDisplayModel(
                     days = days,
-                    selection = PickupSelectionUiModel(
+                    selection = PickupSelectionDisplayModel(
                         selectedDayId = null,
                         selectedTimeSlotId = null,
                     ),
                     confirmation = null,
                 ),
             ),
-            orderSummary = cartToOrderSummaryUiMapper.map(cart),
+            orderSummary = cartToOrderSummaryDisplayModelMapper.map(cart),
             comment = "",
             canPlaceOrder = true,
             isPlacingOrder = false,
         )
     }
 
-    private fun PickupDay.toUiModel(labels: PickupLabels): PickupDayUiModel = PickupDayUiModel(
+    private fun PickupDay.toDisplayModel(labels: PickupLabels): PickupDayDisplayModel = PickupDayDisplayModel(
         id = date.toString(),
         dayLabel = labels.dayLabel(date),
         dateLabel = labels.dateLabel(date),
         isEnabled = true,
         timeSlots = timeSlots.map { slot ->
-            PickupTimeSlotUiModel(
+            PickupTimeSlotDisplayModel(
                 id = slot.toString(),
                 timeLabel = labels.timeLabel(slot),
                 isEnabled = true,

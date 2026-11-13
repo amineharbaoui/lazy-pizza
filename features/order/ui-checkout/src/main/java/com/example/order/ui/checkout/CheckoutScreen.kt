@@ -118,7 +118,7 @@ fun CheckoutScreen(
             containerColor = AppColors.Bg,
             content = {
                 SchedulePickUpContent(
-                    schedulePickupUiModel = (uiState as CheckoutUiState.ReadyToOrder).pickup.scheduleSheet,
+                    schedulePickup = (uiState as CheckoutUiState.ReadyToOrder).pickup.scheduleSheet,
                     onSelectDay = { dayId ->
                         viewModel.selectScheduleDay(dayId)
                     },
@@ -180,7 +180,7 @@ private fun CheckoutScreenContent(
                             subtitleLines = line.subtitleLines,
                             totalPriceLabel = line.totalPriceLabel,
                             onOrderItemClick = {
-                                if (line is OrderLineUi.PizzaProduct) {
+                                if (line is OrderLineDisplayModel.PizzaProduct) {
                                     onOrderItemClick(line.productId)
                                 } else {
                                     onOrderItemClick(null)
@@ -253,41 +253,41 @@ private fun CheckoutScreenContent(
 private fun CheckoutScreenContentPreview() {
     LazyPizzaThemePreview {
         val sampleState = CheckoutUiState.ReadyToOrder(
-            pickup = PickupUiState(
+            pickup = PickupDisplayModel(
                 selectedOption = PickupOption.ASAP,
-                asapCard = PickupOptionCardUiModel(
+                asapCard = PickupOptionCardDisplayModel(
                     title = "Earliest available",
                     id = PickupOption.ASAP,
                     dateLabel = "Today - Dec 20",
                     timeLabel = "5:07 PM",
                     isSelected = true,
                 ),
-                scheduleCard = PickupOptionCardUiModel(
+                scheduleCard = PickupOptionCardDisplayModel(
                     id = PickupOption.SCHEDULE,
                     title = "Schedule",
                     dateLabel = "Choose a time",
                     timeLabel = "",
                     isSelected = false,
                 ),
-                scheduleSheet = SchedulePickupUiModel(
+                scheduleSheet = SchedulePickupDisplayModel(
                     days = listOf(),
-                    selection = PickupSelectionUiModel(
+                    selection = PickupSelectionDisplayModel(
                         selectedDayId = "",
                         selectedTimeSlotId = "",
                     ),
                     confirmation = null,
                 ),
             ),
-            orderSummary = OrderSummaryUi(
+            orderSummary = OrderSummaryDisplayModel(
                 lines = listOf(
-                    OrderLineUi.PizzaProduct(
+                    OrderLineDisplayModel.PizzaProduct(
                         productId = "1",
                         title = "Pizza Margherita",
                         unitPriceLabel = "$10.00",
                         subtitleLines = listOf("Extra cheese ($0.5)", "Spicy sauce ($0.5)"),
                         totalPriceLabel = "$12.00",
                     ),
-                    OrderLineUi.OtherProduct(
+                    OrderLineDisplayModel.OtherProduct(
                         title = "Garlic Bread",
                         unitPriceLabel = "$2.00",
                         subtitleLines = emptyList(),

@@ -20,7 +20,7 @@ import com.example.order.domain.usecase.CreateOrderUseCase
 import com.example.order.domain.usecase.GetPickupScheduleUseCase
 import com.example.order.domain.usecase.PlaceOrderUseCase
 import com.example.order.ui.checkout.mapper.CartToOrderMapper
-import com.example.order.ui.checkout.mapper.CartToOrderSummaryUiMapper
+import com.example.order.ui.checkout.mapper.CartToOrderSummaryDisplayModelMapper
 import com.example.order.ui.checkout.mapper.CheckoutUiStateFactory
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
@@ -64,7 +64,7 @@ class CheckoutViewModelTest {
         createOrderUseCase = CreateOrderUseCase(clock),
         getPickupScheduleUseCase = GetPickupScheduleUseCase(clock),
         getCurrentUserUidUseCase = GetCurrentUserUidUseCase(authTestData.sessionRepository),
-        checkoutUiStateFactory = CheckoutUiStateFactory(CartToOrderSummaryUiMapper(currencyFormatter)),
+        checkoutUiStateFactory = CheckoutUiStateFactory(CartToOrderSummaryDisplayModelMapper(currencyFormatter)),
         cartToOrderMapper = CartToOrderMapper(),
         clearCartUseCase = ClearCartUseCase(cartTestData.cartRepository, authTestData.sessionRepository),
     )
@@ -88,14 +88,14 @@ class CheckoutViewModelTest {
                 assertThat(state).isInstanceOf(CheckoutUiState.ReadyToOrder::class.java)
                 val summary = (state as CheckoutUiState.ReadyToOrder).orderSummary
                 assertThat(summary.lines).containsExactly(
-                    OrderLineUi.PizzaProduct(
+                    OrderLineDisplayModel.PizzaProduct(
                         productId = MARGHERITA_ID,
                         title = MARGHERITA_TITLE,
                         unitPriceLabel = currencyFormatter.format(MARGHERITA_PRICE),
                         totalPriceLabel = currencyFormatter.format(MARGHERITA_WITH_EXTRA_CHEESE_TOTAL),
                         subtitleLines = listOf(extraCheeseSubtitle()),
                     ),
-                    OrderLineUi.OtherProduct(
+                    OrderLineDisplayModel.OtherProduct(
                         title = COLAS_TITLE,
                         unitPriceLabel = currencyFormatter.format(TWO_COLAS_TOTAL),
                         totalPriceLabel = null,
@@ -226,7 +226,7 @@ class CheckoutViewModelTest {
                 assertThat(pickup.asapCard.isSelected).isFalse()
                 assertThat(pickup.scheduleCard.isSelected).isTrue()
                 assertThat(pickup.scheduleSheet.selection)
-                    .isEqualTo(PickupSelectionUiModel(selectedDayId = TODAY_ID, selectedTimeSlotId = EARLIEST_SLOT_ID))
+                    .isEqualTo(PickupSelectionDisplayModel(selectedDayId = TODAY_ID, selectedTimeSlotId = EARLIEST_SLOT_ID))
             }
         }
 
@@ -275,7 +275,9 @@ class CheckoutViewModelTest {
 
                 // Then
                 val selection = (awaitItem() as CheckoutUiState.ReadyToOrder).pickup.scheduleSheet.selection
-                assertThat(selection).isEqualTo(PickupSelectionUiModel(selectedDayId = TOMORROW_ID, selectedTimeSlotId = OPENING_SLOT_ID))
+                assertThat(
+                    selection,
+                ).isEqualTo(PickupSelectionDisplayModel(selectedDayId = TOMORROW_ID, selectedTimeSlotId = OPENING_SLOT_ID))
             }
         }
     }
@@ -303,7 +305,7 @@ class CheckoutViewModelTest {
                 assertThat(pickup.scheduleCard.dateLabel).isEqualTo(TOMORROW_DATE_LABEL)
                 assertThat(pickup.scheduleCard.timeLabel).isEqualTo(NOON_TIME_LABEL)
                 assertThat(pickup.scheduleSheet.confirmation)
-                    .isEqualTo(PickupConfirmationUiModel(dayId = TOMORROW_ID, timeSlotId = NOON_SLOT_ID))
+                    .isEqualTo(PickupConfirmationDisplayModel(dayId = TOMORROW_ID, timeSlotId = NOON_SLOT_ID))
             }
         }
     }

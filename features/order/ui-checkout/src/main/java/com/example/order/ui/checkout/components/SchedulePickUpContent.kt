@@ -33,15 +33,15 @@ import com.example.core.designsystem.theme.AppColors
 import com.example.core.designsystem.theme.AppTypography
 import com.example.core.designsystem.theme.LazyPizzaThemePreview
 import com.example.core.designsystem.utils.PreviewPhoneTablet
-import com.example.order.ui.checkout.PickupDayUiModel
-import com.example.order.ui.checkout.PickupSelectionUiModel
-import com.example.order.ui.checkout.PickupTimeSlotUiModel
-import com.example.order.ui.checkout.SchedulePickupUiModel
+import com.example.order.ui.checkout.PickupDayDisplayModel
+import com.example.order.ui.checkout.PickupSelectionDisplayModel
+import com.example.order.ui.checkout.PickupTimeSlotDisplayModel
+import com.example.order.ui.checkout.SchedulePickupDisplayModel
 
 @Composable
 fun SchedulePickUpContent(
     modifier: Modifier = Modifier,
-    schedulePickupUiModel: SchedulePickupUiModel,
+    schedulePickup: SchedulePickupDisplayModel,
     onScheduleClick: () -> Unit,
     onSelectDay: (dayId: String) -> Unit,
     onTimeSlotSelect: (slotId: String) -> Unit,
@@ -49,19 +49,19 @@ fun SchedulePickUpContent(
     val daysLazyListState = rememberLazyListState()
     val slotsLazyListState = rememberLazyListState()
 
-    val availableTimeSlots = schedulePickupUiModel.days
-        .find { it.id == schedulePickupUiModel.selection.selectedDayId }
+    val availableTimeSlots = schedulePickup.days
+        .find { it.id == schedulePickup.selection.selectedDayId }
         ?.timeSlots ?: emptyList()
 
-    LaunchedEffect(schedulePickupUiModel.selection.selectedDayId) {
-        val index = schedulePickupUiModel.days.indexOfFirst { it.id == schedulePickupUiModel.selection.selectedDayId }
+    LaunchedEffect(schedulePickup.selection.selectedDayId) {
+        val index = schedulePickup.days.indexOfFirst { it.id == schedulePickup.selection.selectedDayId }
         if (index >= 0) {
             daysLazyListState.animateScrollToItem(index)
         }
     }
 
-    LaunchedEffect(schedulePickupUiModel.selection.selectedTimeSlotId) {
-        val index = availableTimeSlots.indexOfFirst { it.id == schedulePickupUiModel.selection.selectedTimeSlotId }
+    LaunchedEffect(schedulePickup.selection.selectedTimeSlotId) {
+        val index = availableTimeSlots.indexOfFirst { it.id == schedulePickup.selection.selectedTimeSlotId }
         if (index >= 0) {
             slotsLazyListState.animateScrollToItem(index)
         }
@@ -84,10 +84,10 @@ fun SchedulePickUpContent(
                 horizontalArrangement = Arrangement.spacedBy(12.dp),
                 contentPadding = PaddingValues(16.dp),
             ) {
-                items(schedulePickupUiModel.days) { day ->
+                items(schedulePickup.days) { day ->
                     DayItem(
                         day = day,
-                        selected = day.id == schedulePickupUiModel.selection.selectedDayId,
+                        selected = day.id == schedulePickup.selection.selectedDayId,
                         enabled = day.timeSlots.isNotEmpty(),
                         onClick = { onSelectDay(day.id) },
                     )
@@ -102,7 +102,7 @@ fun SchedulePickUpContent(
                 items(availableTimeSlots) { slot ->
                     TimeRangeRow(
                         label = slot.timeLabel,
-                        selected = slot.id == schedulePickupUiModel.selection.selectedTimeSlotId,
+                        selected = slot.id == schedulePickup.selection.selectedTimeSlotId,
                         onClick = { onTimeSlotSelect(slot.id) },
                     )
                     HorizontalDivider()
@@ -113,7 +113,7 @@ fun SchedulePickUpContent(
         DsButton.Filled(
             text = "Confirm",
             onClick = onScheduleClick,
-            enabled = schedulePickupUiModel.selection.selectedTimeSlotId != null,
+            enabled = schedulePickup.selection.selectedTimeSlotId != null,
             modifier = Modifier
                 .padding(16.dp)
                 .fillMaxWidth(),
@@ -123,7 +123,7 @@ fun SchedulePickUpContent(
 
 @Composable
 private fun DayItem(
-    day: PickupDayUiModel,
+    day: PickupDayDisplayModel,
     enabled: Boolean = true,
     selected: Boolean,
     onClick: () -> Unit,
@@ -186,41 +186,41 @@ private fun TimeRangeRow(
 @Composable
 private fun SchedulePickUpPreview() {
     val availableTimeSlots = listOf(
-        PickupTimeSlotUiModel("0", "9:00 AM"),
-        PickupTimeSlotUiModel("1", "10:00 AM"),
-        PickupTimeSlotUiModel("2", "11:00 AM"),
-        PickupTimeSlotUiModel("3", "12:00 PM"),
+        PickupTimeSlotDisplayModel("0", "9:00 AM"),
+        PickupTimeSlotDisplayModel("1", "10:00 AM"),
+        PickupTimeSlotDisplayModel("2", "11:00 AM"),
+        PickupTimeSlotDisplayModel("3", "12:00 PM"),
     )
     LazyPizzaThemePreview {
         SchedulePickUpContent(
-            schedulePickupUiModel = SchedulePickupUiModel(
+            schedulePickup = SchedulePickupDisplayModel(
                 days = listOf(
-                    PickupDayUiModel(
+                    PickupDayDisplayModel(
                         id = "1",
                         dayLabel = "Today",
                         dateLabel = "28 Dec",
                         timeSlots = availableTimeSlots,
                     ),
-                    PickupDayUiModel(
+                    PickupDayDisplayModel(
                         id = "2",
                         dayLabel = "Tomorrow",
                         dateLabel = "29 Dec",
                         timeSlots = availableTimeSlots,
                     ),
-                    PickupDayUiModel(
+                    PickupDayDisplayModel(
                         id = "3",
                         dayLabel = "Saturday",
                         dateLabel = "30 Dec",
                         timeSlots = availableTimeSlots,
                     ),
-                    PickupDayUiModel(
+                    PickupDayDisplayModel(
                         id = "4",
                         dayLabel = "Sunday",
                         dateLabel = "31 Dec",
                         timeSlots = availableTimeSlots,
                     ),
                 ),
-                selection = PickupSelectionUiModel(
+                selection = PickupSelectionDisplayModel(
                     selectedDayId = "1",
                     selectedTimeSlotId = "2",
                 ),

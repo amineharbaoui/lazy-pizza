@@ -22,13 +22,13 @@ import com.example.core.designsystem.theme.LazyPizzaThemePreview
 import com.example.core.designsystem.utils.PreviewPhoneTablet
 import com.example.core.designsystem.utils.isWideLayout
 import com.example.order.ui.checkout.PickupOption
-import com.example.order.ui.checkout.PickupOptionCardUiModel
+import com.example.order.ui.checkout.PickupOptionCardDisplayModel
 
 @Composable
 fun SchedulePickUpButtons(
     selectedOption: PickupOption,
-    asapCard: PickupOptionCardUiModel,
-    scheduledCard: PickupOptionCardUiModel,
+    asapCard: PickupOptionCardDisplayModel,
+    scheduledCard: PickupOptionCardDisplayModel,
     onOptionSelect: (PickupOption) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -132,14 +132,14 @@ private fun SchedulePickUpButtonsPreview() {
     LazyPizzaThemePreview {
         SchedulePickUpButtons(
             selectedOption = PickupOption.ASAP,
-            asapCard = PickupOptionCardUiModel(
+            asapCard = PickupOptionCardDisplayModel(
                 id = PickupOption.ASAP,
                 title = "Earliest available",
                 dateLabel = "Today - 28 Dec",
                 timeLabel = "9:00 AM",
                 isSelected = true,
             ),
-            scheduledCard = PickupOptionCardUiModel(
+            scheduledCard = PickupOptionCardDisplayModel(
                 id = PickupOption.SCHEDULE,
                 title = "Schedule",
                 dateLabel = "Choose time",

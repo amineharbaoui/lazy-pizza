@@ -9,8 +9,8 @@ sealed interface CheckoutUiState {
     ) : CheckoutUiState
 
     data class ReadyToOrder(
-        val pickup: PickupUiState,
-        val orderSummary: OrderSummaryUi,
+        val pickup: PickupDisplayModel,
+        val orderSummary: OrderSummaryDisplayModel,
         val comment: String,
         val canPlaceOrder: Boolean,
         val isPlacingOrder: Boolean = false,
@@ -23,14 +23,14 @@ sealed interface CheckoutUiState {
 }
 
 /** Top section (ASAP / Schedule cards) + bottom sheet model */
-data class PickupUiState(
+data class PickupDisplayModel(
     val selectedOption: PickupOption,
-    val asapCard: PickupOptionCardUiModel,
-    val scheduleCard: PickupOptionCardUiModel,
-    val scheduleSheet: SchedulePickupUiModel,
+    val asapCard: PickupOptionCardDisplayModel,
+    val scheduleCard: PickupOptionCardDisplayModel,
+    val scheduleSheet: SchedulePickupDisplayModel,
 )
 
-data class PickupOptionCardUiModel(
+data class PickupOptionCardDisplayModel(
     val id: PickupOption,
     val title: String,
     val dateLabel: String?,
@@ -40,43 +40,43 @@ data class PickupOptionCardUiModel(
 )
 
 /** Bottom sheet */
-data class SchedulePickupUiModel(
-    val days: List<PickupDayUiModel>,
-    val selection: PickupSelectionUiModel,
-    val confirmation: PickupConfirmationUiModel? = null,
+data class SchedulePickupDisplayModel(
+    val days: List<PickupDayDisplayModel>,
+    val selection: PickupSelectionDisplayModel,
+    val confirmation: PickupConfirmationDisplayModel? = null,
 )
 
-data class PickupSelectionUiModel(
+data class PickupSelectionDisplayModel(
     val selectedDayId: String?,
     val selectedTimeSlotId: String?,
 )
 
-data class PickupConfirmationUiModel(
+data class PickupConfirmationDisplayModel(
     val dayId: String,
     val timeSlotId: String,
 )
 
-data class PickupDayUiModel(
+data class PickupDayDisplayModel(
     val id: String,
     val dayLabel: String,
     val dateLabel: String,
     val isEnabled: Boolean = true,
-    val timeSlots: List<PickupTimeSlotUiModel>,
+    val timeSlots: List<PickupTimeSlotDisplayModel>,
 )
 
-data class PickupTimeSlotUiModel(
+data class PickupTimeSlotDisplayModel(
     val id: String,
     val timeLabel: String,
     val isEnabled: Boolean = true,
 )
 
 /** Order summary */
-data class OrderSummaryUi(
-    val lines: List<OrderLineUi>,
+data class OrderSummaryDisplayModel(
+    val lines: List<OrderLineDisplayModel>,
     val totalLabel: String,
 )
 
-sealed interface OrderLineUi {
+sealed interface OrderLineDisplayModel {
     val title: String
     val unitPriceLabel: String
     val totalPriceLabel: String?
@@ -89,7 +89,7 @@ sealed interface OrderLineUi {
         override val unitPriceLabel: String,
         override val totalPriceLabel: String?,
         override val subtitleLines: List<String>,
-    ) : OrderLineUi
+    ) : OrderLineDisplayModel
 
     /** Secondary product (drink, ice cream, sauce…) → not navigable */
     data class OtherProduct(
@@ -97,7 +97,7 @@ sealed interface OrderLineUi {
         override val unitPriceLabel: String,
         override val totalPriceLabel: String?,
         override val subtitleLines: List<String>,
-    ) : OrderLineUi
+    ) : OrderLineDisplayModel
 }
 
 enum class PickupOption {

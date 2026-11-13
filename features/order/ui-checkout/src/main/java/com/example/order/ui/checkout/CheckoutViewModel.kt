@@ -85,10 +85,10 @@ class CheckoutViewModel @Inject constructor(
                     PickupOption.SCHEDULE -> {
                         val confirmation = choice.confirmation
                         val selection = if (confirmation != null) {
-                            PickupSelectionUiModel(selectedDayId = confirmation.dayId, selectedTimeSlotId = confirmation.timeSlotId)
+                            PickupSelectionDisplayModel(selectedDayId = confirmation.dayId, selectedTimeSlotId = confirmation.timeSlotId)
                         } else {
                             val firstDay = sheet.days.firstOrNull { it.timeSlots.isNotEmpty() }
-                            PickupSelectionUiModel(
+                            PickupSelectionDisplayModel(
                                 selectedDayId = firstDay?.id,
                                 selectedTimeSlotId = firstDay?.timeSlots?.firstOrNull()?.id,
                             )
@@ -109,7 +109,7 @@ class CheckoutViewModel @Inject constructor(
     fun selectScheduleDay(dayId: String) {
         updatePickupChoice { choice, sheet ->
             val firstSlotId = sheet.days.find { it.id == dayId }?.timeSlots?.firstOrNull()?.id
-            choice.copy(selection = PickupSelectionUiModel(selectedDayId = dayId, selectedTimeSlotId = firstSlotId))
+            choice.copy(selection = PickupSelectionDisplayModel(selectedDayId = dayId, selectedTimeSlotId = firstSlotId))
         }
     }
 
@@ -126,7 +126,7 @@ class CheckoutViewModel @Inject constructor(
 
             choice.copy(
                 option = PickupOption.SCHEDULE,
-                confirmation = PickupConfirmationUiModel(dayId = day.id, timeSlotId = slot.id),
+                confirmation = PickupConfirmationDisplayModel(dayId = day.id, timeSlotId = slot.id),
             )
         }
     }
@@ -169,19 +169,19 @@ class CheckoutViewModel @Inject constructor(
         }
     }
 
-    private fun updatePickupChoice(block: (PickupChoice, SchedulePickupUiModel) -> PickupChoice) {
+    private fun updatePickupChoice(block: (PickupChoice, SchedulePickupDisplayModel) -> PickupChoice) {
         val sheet = (uiState.value as? CheckoutUiState.ReadyToOrder)?.pickup?.scheduleSheet ?: return
         pickupChoice.update { choice -> block(choice.validIn(sheet), sheet) }
     }
 
     // The schedule is rebuilt from the clock with each cart, so a slot chosen earlier may have passed: then pickup goes back to ASAP.
-    private fun PickupChoice.validIn(sheet: SchedulePickupUiModel): PickupChoice {
+    private fun PickupChoice.validIn(sheet: SchedulePickupDisplayModel): PickupChoice {
         val isSelectionValid = selection.selectedDayId == null || sheet.hasSlot(selection.selectedDayId, selection.selectedTimeSlotId)
         val isConfirmationValid = confirmation == null || sheet.hasSlot(confirmation.dayId, confirmation.timeSlotId)
         return if (isSelectionValid && isConfirmationValid) this else PickupChoice()
     }
 
-    private fun SchedulePickupUiModel.hasSlot(
+    private fun SchedulePickupDisplayModel.hasSlot(
         dayId: String,
         timeSlotId: String?,
     ): Boolean = days.any { day -> day.id == dayId && day.timeSlots.any { it.id == timeSlotId } }
@@ -224,8 +224,8 @@ class CheckoutViewModel @Inject constructor(
 
     private data class PickupChoice(
         val option: PickupOption = PickupOption.ASAP,
-        val selection: PickupSelectionUiModel = PickupSelectionUiModel(selectedDayId = null, selectedTimeSlotId = null),
-        val confirmation: PickupConfirmationUiModel? = null,
+        val selection: PickupSelectionDisplayModel = PickupSelectionDisplayModel(selectedDayId = null, selectedTimeSlotId = null),
+        val confirmation: PickupConfirmationDisplayModel? = null,
     )
 
     private sealed interface OrderSubmission {
