@@ -3,6 +3,7 @@ package com.example.auth.ui.login
 import app.cash.turbine.ReceiveTurbine
 import app.cash.turbine.test
 import com.example.auth.data.AuthTestData
+import com.example.auth.domain.usecase.SendVerificationCodeUseCase
 import com.example.auth.domain.usecase.SignInWithSmsCodeUseCase
 import com.example.cart.data.CartTestData
 import com.example.cart.domain.model.CartItem
@@ -37,6 +38,7 @@ class PhoneAuthViewModelTest {
     private val cartTestData = CartTestData(clock)
 
     private val viewModel = PhoneAuthViewModel(
+        sendVerificationCode = SendVerificationCodeUseCase(authTestData.phoneAuthRepository),
         signInWithSmsCode = SignInWithSmsCodeUseCase(authTestData.phoneAuthRepository),
         transferGuestCartToUserUseCase = TransferGuestCartToUserUseCase(cartTestData.cartRepository),
     )
@@ -171,18 +173,16 @@ class PhoneAuthViewModelTest {
     inner class VerifyPhone {
 
         @Test
-        fun `verifyPhone when the phone number is valid then emits start phone verification`() = runTest {
+        fun `verifyPhone when the phone number is valid then sends the code to the full phone number`() = runTest {
             // Given
             givenValidPhone()
 
-            viewModel.events.test {
-                // When
-                viewModel.verifyPhone()
-                runCurrent()
+            // When
+            viewModel.verifyPhone()
+            runCurrent()
 
-                // Then
-                assertThat(awaitItem()).isEqualTo(PhoneAuthEvent.StartPhoneVerification(FULL_PHONE))
-            }
+            // Then
+            assertThat(authTestData.verificationCodeRequests()).containsExactly(FULL_PHONE)
         }
 
         @Test
@@ -203,49 +203,27 @@ class PhoneAuthViewModelTest {
         }
 
         @Test
-        fun `verifyPhone when the phone number is not valid then emits nothing`() = runTest {
+        fun `verifyPhone when the phone number is not valid then sends no code`() = runTest {
             // Given
             viewModel.updateFullPhone(FULL_PHONE)
 
-            viewModel.events.test {
-                // When
-                viewModel.verifyPhone()
-                runCurrent()
+            // When
+            viewModel.verifyPhone()
+            runCurrent()
 
-                // Then
-                expectNoEvents()
-            }
+            // Then
+            assertThat(authTestData.verificationCodeRequests()).isEmpty()
         }
-    }
-
-    @Nested
-    inner class SkipAuth {
 
         @Test
-        fun `skipAuth when called then emits skip auth`() = runTest {
-            viewModel.events.test {
-                // When
-                viewModel.skipAuth()
-                runCurrent()
-
-                // Then
-                assertThat(awaitItem()).isEqualTo(PhoneAuthEvent.SkipAuth)
-            }
-        }
-    }
-
-    @Nested
-    inner class HandleCodeSent {
-
-        @Test
-        fun `handleCodeSent when the code is sent then shows the code step with the resend countdown`() = runTest {
+        fun `verifyPhone when the code is sent then shows the code step with the resend countdown`() = runTest {
             // Given
             givenValidPhone()
-            viewModel.verifyPhone()
 
             viewModel.uiState.test {
                 // When
-                viewModel.handleCodeSent(VERIFICATION_ID)
+                viewModel.verifyPhone()
+                runCurrent()
 
                 // Then
                 val state = expectMostRecentItem()
@@ -263,7 +241,7 @@ class PhoneAuthViewModelTest {
         }
 
         @Test
-        fun `handleCodeSent when a second passes then counts down`() = runTest {
+        fun `verifyPhone when a second passes after the code is sent then counts down`() = runTest {
             // Given
             givenEnterCodeStep()
 
@@ -278,7 +256,7 @@ class PhoneAuthViewModelTest {
         }
 
         @Test
-        fun `handleCodeSent when the countdown ends then enables resend`() = runTest {
+        fun `verifyPhone when the countdown ends then enables resend`() = runTest {
             // Given
             givenEnterCodeStep()
 
@@ -293,20 +271,17 @@ class PhoneAuthViewModelTest {
                 assertThat(state.resendEnabled).isTrue()
             }
         }
-    }
-
-    @Nested
-    inner class HandleVerificationFailure {
 
         @Test
-        fun `handleVerificationFailure when entering the phone number then shows the error`() = runTest {
+        fun `verifyPhone when sending the code fails then shows the error`() = runTest {
             // Given
             givenValidPhone()
-            viewModel.verifyPhone()
+            authTestData.givenSendingVerificationCodeFails(ERROR_MESSAGE)
 
             viewModel.uiState.test {
                 // When
-                viewModel.handleVerificationFailure(IllegalStateException(ERROR_MESSAGE))
+                viewModel.verifyPhone()
+                runCurrent()
 
                 // Then
                 val state = expectEnterPhone()
@@ -316,16 +291,52 @@ class PhoneAuthViewModelTest {
         }
 
         @Test
-        fun `handleVerificationFailure when entering the code then shows the error`() = runTest {
+        fun `verifyPhone when sending the code throws then shows the generic error`() = runTest {
             // Given
-            givenEnterCodeStep()
+            givenValidPhone()
+            authTestData.givenSendingVerificationCodeThrows()
 
             viewModel.uiState.test {
                 // When
-                viewModel.handleVerificationFailure(IllegalStateException(ERROR_MESSAGE))
+                viewModel.verifyPhone()
+                runCurrent()
 
                 // Then
-                assertThat(expectEnterCode().errorMessage).isEqualTo(ERROR_MESSAGE)
+                val state = expectEnterPhone()
+                assertThat(state.errorMessage).isEqualTo(GENERIC_ERROR_MESSAGE)
+                assertThat(state.isLoading).isFalse()
+            }
+        }
+
+        @Test
+        fun `verifyPhone when the code times out then shows the timeout error on the code step`() = runTest {
+            // Given
+            givenValidPhone()
+            authTestData.givenVerificationCodeTimesOut()
+
+            viewModel.uiState.test {
+                // When
+                viewModel.verifyPhone()
+                runCurrent()
+
+                // Then
+                assertThat(expectEnterCode().errorMessage).isEqualTo(CODE_TIMED_OUT_MESSAGE)
+            }
+        }
+    }
+
+    @Nested
+    inner class SkipAuth {
+
+        @Test
+        fun `skipAuth when called then emits skip auth`() = runTest {
+            viewModel.events.test {
+                // When
+                viewModel.skipAuth()
+                runCurrent()
+
+                // Then
+                assertThat(awaitItem()).isEqualTo(PhoneAuthEvent.SkipAuth)
             }
         }
     }
@@ -352,8 +363,8 @@ class PhoneAuthViewModelTest {
         @Test
         fun `updateCode when an error is shown then clears it`() = runTest {
             // Given
+            authTestData.givenVerificationCodeTimesOut()
             givenEnterCodeStep()
-            viewModel.handleVerificationFailure(IllegalStateException(ERROR_MESSAGE))
 
             viewModel.uiState.test {
                 // When
@@ -494,18 +505,16 @@ class PhoneAuthViewModelTest {
     inner class ResendCode {
 
         @Test
-        fun `resendCode when resend is enabled then emits resend code`() = runTest {
+        fun `resendCode when resend is enabled then sends the code again`() = runTest {
             // Given
             givenResendEnabled()
 
-            viewModel.events.test {
-                // When
-                viewModel.resendCode()
-                runCurrent()
+            // When
+            viewModel.resendCode()
+            runCurrent()
 
-                // Then
-                assertThat(awaitItem()).isEqualTo(PhoneAuthEvent.ResendCode(FULL_PHONE))
-            }
+            // Then
+            assertThat(authTestData.verificationCodeRequests()).containsExactly(FULL_PHONE, FULL_PHONE)
         }
 
         @Test
@@ -526,17 +535,33 @@ class PhoneAuthViewModelTest {
         }
 
         @Test
-        fun `resendCode when the countdown is running then emits nothing`() = runTest {
+        fun `resendCode when the countdown is running then sends no new code`() = runTest {
             // Given
             givenEnterCodeStep()
 
-            viewModel.events.test {
+            // When
+            viewModel.resendCode()
+            runCurrent()
+
+            // Then
+            assertThat(authTestData.verificationCodeRequests()).containsExactly(FULL_PHONE)
+        }
+
+        @Test
+        fun `resendCode when sending the code fails then shows the error`() = runTest {
+            // Given
+            givenResendEnabled()
+            authTestData.givenSendingVerificationCodeFails(ERROR_MESSAGE)
+
+            viewModel.uiState.test {
                 // When
                 viewModel.resendCode()
                 runCurrent()
 
                 // Then
-                expectNoEvents()
+                val state = expectEnterCode()
+                assertThat(state.errorMessage).isEqualTo(ERROR_MESSAGE)
+                assertThat(state.isLoading).isFalse()
             }
         }
     }
@@ -577,7 +602,6 @@ class PhoneAuthViewModelTest {
         givenValidPhone()
         viewModel.verifyPhone()
         runCurrent()
-        viewModel.handleCodeSent(VERIFICATION_ID)
     }
 
     private fun TestScope.givenSmsCodeEntered() {
@@ -618,7 +642,6 @@ class PhoneAuthViewModelTest {
         const val COUNTRY_ISO = "US"
         const val OTHER_COUNTRY_ISO = "FR"
 
-        const val VERIFICATION_ID = "verification-id"
         const val SMS_CODE = "123456"
         const val CODE_WITH_NON_DIGITS = "1a2b3c4d5e6f7"
         const val SHORT_CODE = "12"
@@ -626,6 +649,8 @@ class PhoneAuthViewModelTest {
 
         const val USER_ID = "user-id"
         const val ERROR_MESSAGE = "Incorrect code"
+        const val GENERIC_ERROR_MESSAGE = "Something went wrong. Please try again."
+        const val CODE_TIMED_OUT_MESSAGE = "Code auto retrieval timed out"
 
         const val COLA_LINE_ID = "line-cola"
         const val COLA_ID = "cola"

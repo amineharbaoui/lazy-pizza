@@ -19,9 +19,6 @@ dependencies {
 
     implementation(libs.hilt.navigation.compose)
 
-    implementation(platform(libs.firebase.bom))
-    implementation(libs.firebase.auth)
-
     testImplementation(projects.core.model)
     testImplementation(projects.core.testing)
     testImplementation(projects.features.auth.data)

@@ -1,6 +1,5 @@
 package com.example.auth.ui.login
 
-import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -29,7 +28,6 @@ import com.example.core.designsystem.theme.AppColors
 import com.example.core.designsystem.theme.AppTypography
 import com.example.core.designsystem.theme.LazyPizzaThemePreview
 import com.example.core.designsystem.utils.PreviewPhoneTablet
-import com.google.firebase.auth.FirebaseAuth
 import com.example.core.designsystem.R as DS_R
 
 @Composable
@@ -41,7 +39,6 @@ fun PhoneAuthScreen(
     viewModel: PhoneAuthViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    val activity = LocalActivity.current ?: return
     PhoneAuthScreenContent(
         innerPadding = innerPadding,
         uiState = uiState,
@@ -62,26 +59,6 @@ fun PhoneAuthScreen(
     LaunchedEffect(Unit) {
         viewModel.events.collect { event ->
             when (event) {
-                is PhoneAuthEvent.StartPhoneVerification -> {
-                    PhoneVerificationManager(FirebaseAuth.getInstance())
-                        .startVerification(
-                            activity = activity,
-                            phoneNumber = event.phoneNumber,
-                            onCodeSent = viewModel::handleCodeSent,
-                            onVerificationFailed = viewModel::handleVerificationFailure,
-                        )
-                }
-
-                is PhoneAuthEvent.ResendCode -> {
-                    PhoneVerificationManager(FirebaseAuth.getInstance())
-                        .startVerification(
-                            activity = activity,
-                            phoneNumber = event.phoneNumber,
-                            onCodeSent = viewModel::handleCodeSent,
-                            onVerificationFailed = viewModel::handleVerificationFailure,
-                        )
-                }
-
                 PhoneAuthEvent.SkipAuth -> onNavigateToMenuScreen()
                 PhoneAuthEvent.AuthCompleted -> onAuthSuccess()
             }
