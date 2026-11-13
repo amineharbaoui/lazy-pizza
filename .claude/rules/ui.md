@@ -13,17 +13,22 @@ paths:
 - `<Name>Screen` gets its ViewModel with `hiltViewModel()`, collects `uiState` with `collectAsStateWithLifecycle()`, and passes it to a stateless `<Name>ScreenContent(state, callbacks)`. Previews use the content composable.
 - Navigation leaves a screen as callbacks, such as `onNavigateToCheckout: () -> Unit`. Routes and the back stack live in `:app`.
 - Composables render state and forward user actions: no business logic, no validation, no long-running work.
+- A screen opened with arguments gets them as a `<Name>Args` type, with ids and values only, never a domain model. Its ViewModel receives them in its constructor, through Hilt's assisted injection: `@HiltViewModel(assistedFactory = <Name>ViewModel.Factory::class)` on the class, `@Assisted args: <Name>Args` in its `@AssistedInject constructor`, and `hiltViewModel<<Name>ViewModel, <Name>ViewModel.Factory> { it.create(args) }` in `<Name>Screen`. No `initialize(args)` function, and no state for args not received yet.
+- `:app` shows the back stack with Navigation 3's `NavDisplay`, with `rememberViewModelStoreNavEntryDecorator()` in its `entryDecorators`, so each entry has its own ViewModel store: two entries of the same screen get two ViewModels, each with its own args, cleared when the entry leaves the back stack.
 
 ## ViewModel
 
-- A `@HiltViewModel` injects only use cases and UI mappers. Never a repository, a `Context` or a Firebase class.
+- A `@HiltViewModel` injects only use cases and UI mappers. Never a repository, a data source, a `:core` service such as `NetworkMonitor`, a `Context` or a Firebase class: what it needs from them comes through a use case.
+- A user action calls one use case, as `.claude/rules/domain.md` says. The ViewModel never chains use cases into a business sequence, such as placing an order then clearing the cart. It may combine several `Observe` use cases to build its state.
 - It exposes one `uiState: StateFlow<<Name>UiState>`, derived from the use-case flows and the screen's input with `combine` and `stateIn(viewModelScope, SharingStarted.WhileSubscribed(5.seconds), <initial state>)`. Input the user types or selects lives in a private `MutableStateFlow` combined into it.
 - Public functions say what happens (`updateSearchQuery`, `submitOrder`), not which gesture triggered it (`onClick`). Composable parameters keep the `onX` names.
 - A failing flow is caught with `catch` and becomes an error state.
+- A one-shot use case call has no `try`/`catch`: its sealed result says how it went, and the ViewModel turns it into state with an exhaustive `when`. Any exception left is a bug, which crashes and is reported, as `.claude/rules/domain.md` says.
 
 ## UI state
 
 - Immutable. A sealed interface `<Name>UiState` when the screen has distinct phases (`Loading`, `Ready`, `Error`), with `data object` for a phase without data.
+- Domain types stop at the ViewModel and its UI mappers. The UI state, display models and composables never hold a domain model, a domain result or a use case.
 - One-off outcomes, such as navigating or showing a message, are state too, as Google recommends. A nullable field, for example `navigation: CheckoutNavigation?`, is handled by the screen in a `LaunchedEffect`, which then clears it with `viewModel.navigationHandled()`. No `SharedFlow` or `Channel` of events.
 - Display models are named `<Noun>DisplayModel` and carry values ready to show: names, dates, and prices formatted with `CurrencyFormatter`. A text that wraps them, such as `Order #%1$s`, is a `strings.xml` template the composable fills with `stringResource`.
 - An error in the state is a type, such as an enum or a sealed interface. The screen picks its text from `strings.xml`.
@@ -52,3 +57,7 @@ paths:
 - Checkout names its display models `...UiModel` and `...Ui`.
 - `toFormattedCurrency()` in `PriceFormatter.kt` duplicates `CurrencyFormatter`.
 - `DsTopBar` labels its account and back buttons "Phone Number Icon" and shrinks the account button to 32dp. `CartScreen` and `DsTopBar` hard-code their content descriptions in English.
+- `CheckoutViewModel.submitOrder` chains the steps of placing an order itself: get the user, read the cart, build the order, place it, clear the cart. `PhoneAuthViewModel` calls `TransferGuestCartToUserUseCase` after sign-in. Moving that call into auth's sign-in use case would close a cycle, since cart's domain already uses auth's: fixing it needs one feature to declare an interface the other implements, decided with the developer.
+- `MainViewModel` injects `NetworkMonitor` directly.
+- `FormattingModule` in `:app` binds `CurrencyFormatter`, whose implementation lives in `:core:ui`.
+- `AppNavigation` shows the back stack with `AnimatedContent` instead of `NavDisplay`, so every ViewModel lives in the activity's store and outlives its screen. `PizzaDetailViewModel` works around it with `initialize(args, sessionId)`, called from a `LaunchedEffect` with a saved `sessionId`. Moving to `NavDisplay` is a refactor of its own, needed before a screen gets its args through assisted injection.

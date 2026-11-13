@@ -57,8 +57,9 @@ The project follows Clean Architecture strictly: dependencies point toward `:dom
 - `:ui-<screen>` holds one screen: composables, ViewModel, UI state. A new screen gets its own `:ui-<screen>` module. It may depend on any feature's `:domain`, never on a `:data` or on another `:ui-*`.
 - A feature uses another feature only through that feature's `:domain`: its use cases and models, never its repository interfaces.
 - A dependency from one feature to another that doesn't exist yet is decided with the developer, case by case, from what the feature needs. Never add one on your own. Dependencies between features never form a cycle: when the one a feature needs would close a cycle, such as auth calling cart while cart already uses auth, bring the developer the options, for example an interface one feature declares and the other implements, or a state the other feature observes.
-- Only `:app` depends on `:data` modules, so Hilt sees their bindings. `:app` also owns navigation: the routes and the back stack.
-- `:core:*` modules never depend on a feature.
+- Only `:app` depends on `:data` modules, so Hilt sees their bindings. `:app` is the shell and the wiring: `MainActivity`, the app scaffold (bottom bar, offline banner), navigation (the routes, the back stack, and which screen and args a route opens), and app-wide bindings. Its ViewModel follows `.claude/rules/ui.md`. No business logic and no screen: a screen gets its own `:ui-<screen>`.
+- `:core:*` holds only code no feature owns, such as `Money`, `NetworkMonitor`, formatters, the design system and test tools. A concept a feature owns, such as an order status, stays in that feature's `:domain`, even when other features use it. `:core:*` modules never depend on a feature.
+- A Hilt binding lives in the `di/` of the module that holds its implementation: a `:data` binds its repositories and data sources, a `:core` module its own services, and `:app` only what is app-wide, such as the `Clock` and the Firebase instances. `:domain` and `:ui-*` modules have no Hilt module.
 - One exception, in tests only: a `:ui-<screen>` module may depend on the `:data` modules it uses and on their test fixtures, to run its acceptance tests.
 
 ## In every layer
@@ -66,6 +67,7 @@ The project follows Clean Architecture strictly: dependencies point toward `:dom
 - Read the time from an injected `java.time.Clock`, never `System.currentTimeMillis()`, `Instant.now()` or `LocalDate.now()`, so time-based logic can be tested.
 - Every text a user reads lives in a `strings.xml`, never in Kotlin.
 - A user never sees an exception message. The UI maps a failure to one of its own texts.
+- A mapper, in a `:data` or a `:ui-*` module, only converts: a synchronous function of its input, never `suspend` and never a `Flow`. It injects only formatters, such as `CurrencyFormatter`, and other mappers: never a use case, a repository, a data source, a `Clock` or a `Context`. What it needs beyond its input, such as the current user or the time, its caller gets and passes in.
 - Code explains itself through names and structure. A comment says only what the code can't: why a non-obvious choice was made, a workaround with a link to its bug, or a known limit and when to lift it. Never a comment that repeats what the code does, no KDoc, no commented-out code, and no TODO without an issue number. When code needs a comment to explain what it does, rename or extract instead. Tests keep their `// Given`, `// When`, `// Then` markers.
 
 ## Tests
