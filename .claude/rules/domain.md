@@ -1,6 +1,7 @@
 ---
 paths:
   - "features/*/domain/**"
+  - "features/*/api/**"
   - "core/model/**"
 ---
 
@@ -12,7 +13,9 @@ paths:
 - Every operation the UI needs is a use case, even when it only forwards to a repository.
 - A user action is one use case. It runs every step in order and decides what happens when a step fails after an earlier one succeeded, for example placing the order, then clearing the cart.
 - A use case is one class, `<Verb><Noun>UseCase`, with an `@Inject constructor` and a single `operator fun invoke`. It returns a `Flow` when the caller observes something (`Observe...`), and is `suspend` for a one-shot action.
-- A use case injects its own feature's repositories, domain services and use cases, and other features' use cases. Never another feature's repository: a feature's use cases are what other features see of it. A use case calls another use case to reuse what it does, such as observing the cart, never to share a rule.
+- A use case other features call is split in two: its interface, `<Verb><Noun>UseCase` with the same single `operator fun invoke`, in the feature's `:api`, and its implementation, `internal class <Verb><Noun>UseCaseImpl`, here in `usecase/`. A Hilt module in `di/`, installed in `SingletonComponent`, binds each one without a scope: `@Binds internal abstract fun bindObserveCart(impl: ObserveCartUseCaseImpl): ObserveCartUseCase`. It binds nothing else: repositories are bound by `:data`.
+- A model or sealed result that appears in an `:api` signature lives in the `:api`'s `model/`, not here.
+- A use case injects its own feature's repositories, domain services and use cases, and other features' use cases, through their `:api`. Never another feature's repository: a feature's use cases are what other features see of it. A use case calls another use case to reuse what it does, such as observing the cart, never to share a rule.
 - Repository interfaces live in `repository/`, are named `<Noun>Repository`, and use only domain types.
 - Domain models are immutable data classes or sealed interfaces, with no Firebase, Room or serialization annotations.
 - An amount of money is a `Money` from `:core:model`: whole cents inside, always two decimals outside (`12.30`). Never a `Double` or a `Float`. A percentage, such as a discount or a tax, is rounded to the cent, half up, once, where it's computed.
