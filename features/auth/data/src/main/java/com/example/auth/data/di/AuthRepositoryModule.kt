@@ -1,7 +1,9 @@
 package com.example.auth.data.di
 
+import android.app.Application
 import com.example.auth.data.datasource.PhoneAuthRemoteDataSource
 import com.example.auth.data.datasource.PhoneAuthRemoteDataSourceImpl
+import com.example.auth.data.datasource.ResumedActivityTracker
 import com.example.auth.data.repository.PhoneAuthRepositoryImpl
 import com.example.auth.data.repository.SessionRepositoryImpl
 import com.example.auth.domain.repository.PhoneAuthRepository
@@ -10,6 +12,7 @@ import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import dagger.multibindings.IntoSet
 import javax.inject.Singleton
 
 @Module
@@ -25,4 +28,8 @@ abstract class AuthRepositoryModule {
 
     @Binds
     internal abstract fun bindPhoneAuthRemoteDataSource(impl: PhoneAuthRemoteDataSourceImpl): PhoneAuthRemoteDataSource
+
+    @Binds
+    @IntoSet
+    internal abstract fun bindResumedActivityTracker(impl: ResumedActivityTracker): Application.ActivityLifecycleCallbacks
 }

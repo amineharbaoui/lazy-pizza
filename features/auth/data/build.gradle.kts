@@ -19,4 +19,6 @@ dependencies {
 
     testFixturesApi(projects.features.auth.domain)
     testFixturesImplementation(libs.kotlinx.coroutines.core)
+    testFixturesImplementation(platform(libs.firebase.bom))
+    testFixturesImplementation(libs.firebase.auth)
 }
