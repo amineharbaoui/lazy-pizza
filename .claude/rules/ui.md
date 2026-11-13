@@ -51,7 +51,6 @@ paths:
 
 ## Code not to copy
 
-- `CheckoutViewModel` starts collecting in `_uiState.onStart { viewModelScope.launch { ... } }`. Each time the screen comes back after 5 seconds in the background, this adds another collector that never stops.
 - `CheckoutViewModel` and `PhoneAuthViewModel` send events through a `SharedFlow`, which drops them during a rotation, and their screens collect them by hand in a `LaunchedEffect(Unit)`.
 - `ObserveEvents` doesn't exist in `:core:ui` yet. It comes in a refactor of its own, before the first screen that sends an event.
 - `PhoneVerificationManager` and `PhoneAuthScreen` call `FirebaseAuth` from the UI.
