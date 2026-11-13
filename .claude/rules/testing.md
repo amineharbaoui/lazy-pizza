@@ -49,5 +49,4 @@ paths:
 ## Code not to copy
 
 - The use-case tests in `:features:cart:domain` and `:features:auth:domain`, and `PhoneAuthRepositoryImplTest`, mock their collaborators with MockK and check calls, for example `ClearCartUseCaseTest` with `coThen { repository.clear(...) }`. They stay until a screen's acceptance tests cover the same behavior.
-- `PhoneAuthViewModelTest` mocks the use cases instead of running the real chain.
 - Those tests and `PhoneAuthRemoteDataSourceImplTest` are plain `suspend fun` tests without `runTest`.
