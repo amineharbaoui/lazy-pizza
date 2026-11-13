@@ -53,8 +53,8 @@ paths:
 
 - `CheckoutViewModel` and `PhoneAuthViewModel` send events through a `SharedFlow`, which drops them during a rotation, and their screens collect them by hand in a `LaunchedEffect(Unit)`.
 - `ObserveEvents` doesn't exist in `:core:ui` yet. It comes in a refactor of its own, before the first screen that sends an event.
-- `PhoneVerificationManager` and `PhoneAuthScreen` call `FirebaseAuth` from the UI.
 - `CheckoutViewModel` puts English text or `e.message` in the state.
+- `PhoneAuthViewModel` puts English text and Firebase's message, carried by `VerificationCodeStatus.Failed.message`, in the state. These texts change with their own spec.
 - `toFormattedCurrency()` in `PriceFormatter.kt` duplicates `CurrencyFormatter`.
 - `DsTopBar` labels its account and back buttons "Phone Number Icon" and shrinks the account button to 32dp. `CartScreen` and `DsTopBar` hard-code their content descriptions in English.
 - `CheckoutViewModel.submitOrder` chains the steps of placing an order itself: get the user, read the cart, build the order, place it, clear the cart. `PhoneAuthViewModel` calls `TransferGuestCartToUserUseCase` after sign-in. Moving that call into auth's sign-in use case would close a cycle, since cart's domain already uses auth's: fixing it needs one feature to declare an interface the other implements, decided with the developer.

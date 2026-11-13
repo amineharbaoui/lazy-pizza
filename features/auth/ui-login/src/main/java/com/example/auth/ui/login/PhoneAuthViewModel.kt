@@ -2,6 +2,8 @@ package com.example.auth.ui.login
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.auth.domain.model.VerificationCodeStatus
+import com.example.auth.domain.usecase.SendVerificationCodeUseCase
 import com.example.auth.domain.usecase.SignInWithSmsCodeUseCase
 import com.example.cart.domain.usecase.TransferGuestCartToUserUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -11,12 +13,14 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import kotlin.time.Duration.Companion.seconds
 
 @HiltViewModel
 class PhoneAuthViewModel @Inject constructor(
+    private val sendVerificationCode: SendVerificationCodeUseCase,
     private val signInWithSmsCode: SignInWithSmsCodeUseCase,
     private val transferGuestCartToUserUseCase: TransferGuestCartToUserUseCase,
 ) : ViewModel() {
@@ -87,10 +91,7 @@ class PhoneAuthViewModel @Inject constructor(
         if (!current.continueEnabled) return
 
         _uiState.value = current.copy(isLoading = true, errorMessage = null)
-
-        viewModelScope.launch {
-            _events.emit(PhoneAuthEvent.StartPhoneVerification(current.fullPhoneNumber))
-        }
+        sendCode(current.fullPhoneNumber)
     }
 
     fun editPhone() {
@@ -115,7 +116,21 @@ class PhoneAuthViewModel @Inject constructor(
         viewModelScope.launch { _events.emit(PhoneAuthEvent.SkipAuth) }
     }
 
-    fun handleCodeSent(verificationId: String) {
+    private fun sendCode(phoneNumber: String) {
+        viewModelScope.launch {
+            sendVerificationCode(phoneNumber)
+                .catch { showVerificationError(GENERIC_ERROR_MESSAGE) }
+                .collect { status ->
+                    when (status) {
+                        is VerificationCodeStatus.Sent -> showCodeStep(status.verificationId)
+                        VerificationCodeStatus.TimedOut -> showVerificationError(CODE_TIMED_OUT_MESSAGE)
+                        is VerificationCodeStatus.Failed -> showVerificationError(status.message ?: GENERIC_ERROR_MESSAGE)
+                    }
+                }
+        }
+    }
+
+    private fun showCodeStep(verificationId: String) {
         currentVerificationId = verificationId
         val phoneState = (uiState.value as? PhoneAuthUiState.EnterPhone) ?: return
         val phone = phoneState.fullPhoneNumber
@@ -129,15 +144,14 @@ class PhoneAuthViewModel @Inject constructor(
             isLoading = false,
             errorMessage = null,
             canResend = false,
-            secondsRemaining = PhoneVerificationManager.RESEND_TIMEOUT_SECONDS.toInt(),
+            secondsRemaining = RESEND_TIMEOUT_SECONDS,
             titleRes = R.string.auth_screen_title,
             subtitleRes = R.string.auth_screen_subtitle_enter_code,
         )
         startResendTimer()
     }
 
-    fun handleVerificationFailure(error: Throwable) {
-        val text = error.message ?: "Something went wrong. Please try again."
+    private fun showVerificationError(text: String) {
         when (val current = _uiState.value) {
             is PhoneAuthUiState.EnterPhone -> _uiState.value = current.copy(isLoading = false, errorMessage = text)
             is PhoneAuthUiState.EnterCode -> _uiState.value = current.copy(isLoading = false, errorMessage = text)
@@ -180,16 +194,13 @@ class PhoneAuthViewModel @Inject constructor(
         val current = _uiState.value as? PhoneAuthUiState.EnterCode ?: return
         if (!current.resendEnabled) return
 
-        viewModelScope.launch {
-            _events.emit(PhoneAuthEvent.ResendCode(current.phoneNumber))
-        }
-
         _uiState.value = current.copy(
             canResend = false,
-            secondsRemaining = PhoneVerificationManager.RESEND_TIMEOUT_SECONDS.toInt(),
+            secondsRemaining = RESEND_TIMEOUT_SECONDS,
             errorMessage = null,
         )
         startResendTimer()
+        sendCode(current.phoneNumber)
     }
 
     private fun startResendTimer() {
@@ -224,5 +235,11 @@ class PhoneAuthViewModel @Inject constructor(
             titleRes = R.string.auth_screen_title,
             subtitleRes = R.string.auth_screen_subtitle_enter_phone_number,
         )
+    }
+
+    private companion object {
+        val RESEND_TIMEOUT_SECONDS = SendVerificationCodeUseCase.RESEND_TIMEOUT.inWholeSeconds.toInt()
+        const val GENERIC_ERROR_MESSAGE = "Something went wrong. Please try again."
+        const val CODE_TIMED_OUT_MESSAGE = "Code auto retrieval timed out"
     }
 }
