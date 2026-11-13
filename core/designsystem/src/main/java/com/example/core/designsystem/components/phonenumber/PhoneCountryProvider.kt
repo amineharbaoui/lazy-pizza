@@ -74,7 +74,7 @@ object PhoneCountryProvider {
         "CI" to "XX XX XX XX",
     )
 
-    fun load(context: Context): List<PhoneCountryUi> {
+    fun load(context: Context): List<PhoneCountryDisplayModel> {
         val res = context.resources
 
         val countryIsoCodes = res.getStringArray(R.array.country_codes_a_z)
@@ -96,7 +96,7 @@ object PhoneCountryProvider {
                 val phoneMask = PHONE_MASKS_BY_ISO[iso] ?: DEFAULT_MASK
 
                 add(
-                    PhoneCountryUi(
+                    PhoneCountryDisplayModel(
                         isoCode = iso,
                         name = name,
                         dialCode = dial,
@@ -110,8 +110,8 @@ object PhoneCountryProvider {
 
     fun defaultCountry(
         context: Context,
-        countries: List<PhoneCountryUi>,
-    ): PhoneCountryUi {
+        countries: List<PhoneCountryDisplayModel>,
+    ): PhoneCountryDisplayModel {
         val config = context.resources.configuration
         val iso = config.locales[0]?.country?.uppercase()
         return countries.firstOrNull { it.isoCode == iso }
@@ -120,7 +120,7 @@ object PhoneCountryProvider {
     }
 
     @Composable
-    fun rememberPhoneCountriesWithDefault(): Pair<List<PhoneCountryUi>, PhoneCountryUi> {
+    fun rememberPhoneCountriesWithDefault(): Pair<List<PhoneCountryDisplayModel>, PhoneCountryDisplayModel> {
         val context = LocalContext.current
         val countries = remember(context) { load(context) }
         val default = remember(context, countries) { defaultCountry(context, countries) }

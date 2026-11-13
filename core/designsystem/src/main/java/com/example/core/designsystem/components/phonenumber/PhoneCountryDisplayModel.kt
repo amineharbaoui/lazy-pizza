@@ -2,7 +2,7 @@ package com.example.core.designsystem.components.phonenumber
 
 import androidx.annotation.DrawableRes
 
-data class PhoneCountryUi(
+data class PhoneCountryDisplayModel(
     val isoCode: String,
     val name: String,
     val dialCode: String,
