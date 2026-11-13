@@ -29,7 +29,8 @@ paths:
 
 - Immutable. A sealed interface `<Name>UiState` when the screen has distinct phases (`Loading`, `Ready`, `Error`), with `data object` for a phase without data.
 - Domain types stop at the ViewModel and its UI mappers. The UI state, display models and composables never hold a domain model, a domain result or a use case.
-- One-off outcomes, such as navigating or showing a message, are state too, as Google recommends. A nullable field, for example `navigation: CheckoutNavigation?`, is handled by the screen in a `LaunchedEffect`, which then clears it with `viewModel.navigationHandled()`. No `SharedFlow` or `Channel` of events.
+- A one-off outcome, such as navigating or showing a message, is an event, not state: a sealed interface `<Name>Event`. The ViewModel sends it from `viewModelScope` into a private `Channel<<Name>Event>(Channel.BUFFERED)`, and exposes it as `events: Flow<<Name>Event>` with `receiveAsFlow()`. What the screen shows stays in `uiState`.
+- `<Name>Screen` collects `events` only with `ObserveEvents(viewModel.events) { event -> ... }` from `:core:ui`, once per screen. It collects while the screen is started, on `Dispatchers.Main.immediate`: a collector cancelled between receiving an event and handling it would lose it. Never collect `events` by hand, and never use a `SharedFlow` for events: it drops what it emits while nothing collects.
 - Display models are named `<Noun>DisplayModel` and carry values ready to show: names, dates, and prices formatted with `CurrencyFormatter`. A text that wraps them, such as `Order #%1$s`, is a `strings.xml` template the composable fills with `stringResource`.
 - An error in the state is a type, such as an enum or a sealed interface. The screen picks its text from `strings.xml`.
 
@@ -51,7 +52,8 @@ paths:
 ## Code not to copy
 
 - `CheckoutViewModel` starts collecting in `_uiState.onStart { viewModelScope.launch { ... } }`. Each time the screen comes back after 5 seconds in the background, this adds another collector that never stops.
-- `CheckoutViewModel` and `PhoneAuthViewModel` send events through a `SharedFlow`, which drops them during a rotation.
+- `CheckoutViewModel` and `PhoneAuthViewModel` send events through a `SharedFlow`, which drops them during a rotation, and their screens collect them by hand in a `LaunchedEffect(Unit)`.
+- `ObserveEvents` doesn't exist in `:core:ui` yet. It comes in a refactor of its own, before the first screen that sends an event.
 - `PhoneVerificationManager` and `PhoneAuthScreen` call `FirebaseAuth` from the UI.
 - `CheckoutViewModel` puts English text or `e.message` in the state.
 - Checkout names its display models `...UiModel` and `...Ui`.
