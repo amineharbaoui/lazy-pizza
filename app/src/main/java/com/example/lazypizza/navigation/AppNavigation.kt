@@ -1,7 +1,8 @@
 package com.example.lazypizza.navigation
 
-import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.ContentTransform
 import androidx.compose.animation.SharedTransitionLayout
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -14,6 +15,10 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Modifier
 import androidx.navigation3.runtime.NavKey
+import androidx.navigation3.runtime.entryProvider
+import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
+import androidx.navigation3.ui.LocalNavAnimatedContentScope
+import androidx.navigation3.ui.NavDisplay
 import com.example.auth.ui.login.PhoneAuthScreen
 import com.example.cart.ui.cart.CartScreen
 import com.example.menu.ui.home.MenuScreen
@@ -29,7 +34,8 @@ fun AppNavigation(
     innerPadding: PaddingValues,
     modifier: Modifier = Modifier,
 ) {
-    val currentRoute = backStack.last()
+    // Hoisted outside NavDisplay: a tab switch pops the Menu entry and its saved state,
+    // and the menu keeps its scroll position across tab switches.
     val listState = rememberSaveable(saver = LazyListState.Saver) {
         LazyListState()
     }
@@ -37,15 +43,17 @@ fun AppNavigation(
         LazyGridState()
     }
     SharedTransitionLayout(modifier = modifier) {
-        AnimatedContent(
-            targetState = currentRoute,
-            label = "navTransition",
-            transitionSpec = {
-                fadeIn(tween(220)) togetherWith fadeOut(tween(220))
-            },
-        ) { route ->
-            when (route) {
-                MenuRoute -> {
+        NavDisplay(
+            backStack = backStack,
+            onBack = onBack,
+            entryDecorators = listOf(
+                rememberSaveableStateHolderNavEntryDecorator(),
+            ),
+            transitionSpec = { fade() },
+            popTransitionSpec = { fade() },
+            predictivePopTransitionSpec = { fade() },
+            entryProvider = entryProvider {
+                entry<MenuRoute> {
                     MenuScreen(
                         innerPadding = innerPadding,
                         onProductClick = { productId ->
@@ -54,26 +62,28 @@ fun AppNavigation(
                         listState = listState,
                         gridState = gridState,
                         sharedTransitionScope = this@SharedTransitionLayout,
-                        animatedVisibilityScope = this,
+                        animatedVisibilityScope = LocalNavAnimatedContentScope.current,
                         onNavigateToAuth = { backStack.add(AuthRoute) },
                     )
                 }
 
-                is PizzaDetailRoute -> {
-                    PizzaDetailScreen(
-                        args = when (route) {
-                            is PizzaDetailRoute.Create -> PizzaDetailArgs.Create(route.productId)
-                            is PizzaDetailRoute.Edit -> PizzaDetailArgs.Edit(route.productId, route.lineId)
-                        },
+                entry<PizzaDetailRoute.Create> { route ->
+                    PizzaDetailEntry(
+                        args = PizzaDetailArgs.Create(route.productId),
                         innerPadding = innerPadding,
-                        onBackClick = onBack,
-                        onNavigateToMenu = { onBack() },
-                        sharedTransitionScope = this@SharedTransitionLayout,
-                        animatedVisibilityScope = this,
+                        onBack = onBack,
                     )
                 }
 
-                CartRoute -> {
+                entry<PizzaDetailRoute.Edit> { route ->
+                    PizzaDetailEntry(
+                        args = PizzaDetailArgs.Edit(route.productId, route.lineId),
+                        innerPadding = innerPadding,
+                        onBack = onBack,
+                    )
+                }
+
+                entry<CartRoute> {
                     CartScreen(
                         innerPadding = innerPadding,
                         onNavigateToCheckout = {
@@ -88,7 +98,7 @@ fun AppNavigation(
                     )
                 }
 
-                OrdersRoute -> {
+                entry<OrdersRoute> {
                     OrdersScreen(
                         innerPadding = innerPadding,
                         onSignInClick = {
@@ -102,7 +112,7 @@ fun AppNavigation(
                     )
                 }
 
-                AuthRoute -> {
+                entry<AuthRoute> {
                     PhoneAuthScreen(
                         innerPadding = innerPadding,
                         onAuthSuccess = {
@@ -112,7 +122,7 @@ fun AppNavigation(
                     )
                 }
 
-                CheckoutRoute -> {
+                entry<CheckoutRoute> {
                     CheckoutScreen(
                         innerPadding = innerPadding,
                         onBackClick = { backStack.removeAt(backStack.lastIndex) },
@@ -123,7 +133,25 @@ fun AppNavigation(
                         },
                     )
                 }
-            }
-        }
+            },
+        )
     }
 }
+
+@Composable
+private fun SharedTransitionScope.PizzaDetailEntry(
+    args: PizzaDetailArgs,
+    innerPadding: PaddingValues,
+    onBack: () -> Unit,
+) {
+    PizzaDetailScreen(
+        args = args,
+        innerPadding = innerPadding,
+        onBackClick = onBack,
+        onNavigateToMenu = { onBack() },
+        sharedTransitionScope = this,
+        animatedVisibilityScope = LocalNavAnimatedContentScope.current,
+    )
+}
+
+private fun fade(): ContentTransform = fadeIn(tween(220)) togetherWith fadeOut(tween(220))
