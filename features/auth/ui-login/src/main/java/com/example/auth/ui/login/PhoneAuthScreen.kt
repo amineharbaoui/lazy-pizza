@@ -22,13 +22,15 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.example.core.designsystem.R
 import com.example.core.designsystem.components.DsButton
 import com.example.core.designsystem.components.DsTextField
 import com.example.core.designsystem.components.DsTopBar
 import com.example.core.designsystem.theme.AppColors
 import com.example.core.designsystem.theme.AppTypography
+import com.example.core.designsystem.theme.LazyPizzaThemePreview
+import com.example.core.designsystem.utils.PreviewPhoneTablet
 import com.google.firebase.auth.FirebaseAuth
+import com.example.core.designsystem.R as DS_R
 
 @Composable
 fun PhoneAuthScreen(
@@ -171,7 +173,7 @@ private fun PhoneAuthContent(
         Spacer(Modifier.height(12.dp))
 
         DsButton.Filled(
-            text = stringResource(id = R.string.continue_text),
+            text = stringResource(id = DS_R.string.continue_text),
             enabled = state.continueEnabled,
             onClick = actions.onContinue,
             modifier = Modifier.fillMaxWidth(),
@@ -180,7 +182,7 @@ private fun PhoneAuthContent(
         Spacer(Modifier.height(6.dp))
 
         DsButton.Text(
-            text = stringResource(id = R.string.skip),
+            text = stringResource(id = DS_R.string.skip),
             onClick = actions.onSkip,
             enabled = state.skipEnabled,
             modifier = Modifier.fillMaxWidth(),
@@ -215,7 +217,7 @@ private fun CodeAuthContent(
             enabled = false,
         )
         DsButton.Text(
-            text = stringResource(id = R.string.change_number),
+            text = stringResource(id = DS_R.string.change_number),
             onClick = actions.onEditPhone,
             modifier = Modifier.fillMaxWidth(),
         )
@@ -245,7 +247,7 @@ private fun CodeAuthContent(
         Spacer(Modifier.height(12.dp))
 
         DsButton.Filled(
-            text = stringResource(id = R.string.confirm),
+            text = stringResource(id = DS_R.string.confirm),
             enabled = state.confirmEnabled,
             onClick = actions.onConfirm,
             modifier = Modifier.fillMaxWidth(),
@@ -254,7 +256,7 @@ private fun CodeAuthContent(
         Spacer(Modifier.height(6.dp))
 
         DsButton.Text(
-            text = stringResource(id = R.string.skip),
+            text = stringResource(id = DS_R.string.skip),
             onClick = actions.onSkip,
             enabled = state.skipEnabled,
             modifier = Modifier.fillMaxWidth(),
@@ -264,7 +266,7 @@ private fun CodeAuthContent(
 
         if (state.resendEnabled) {
             DsButton.Text(
-                text = stringResource(id = R.string.resend_code),
+                text = stringResource(id = DS_R.string.resend_code),
                 onClick = actions.onResend,
                 enabled = state.resendEnabled,
                 modifier = Modifier.fillMaxWidth(),
@@ -285,3 +287,107 @@ private fun CodeAuthContent(
         }
     }
 }
+
+@PreviewPhoneTablet
+@Composable
+private fun EnterPhonePreview() {
+    PhoneAuthPreview(uiState = previewEnterPhoneState)
+}
+
+@PreviewPhoneTablet
+@Composable
+private fun EnterPhoneValidPreview() {
+    PhoneAuthPreview(uiState = previewEnterPhoneState.copy(phoneNumber = PREVIEW_PHONE_LOCAL, isPhoneValid = true))
+}
+
+@PreviewPhoneTablet
+@Composable
+private fun EnterPhoneLoadingPreview() {
+    PhoneAuthPreview(uiState = previewEnterPhoneState.copy(phoneNumber = PREVIEW_PHONE_LOCAL, isPhoneValid = true, isLoading = true))
+}
+
+@PreviewPhoneTablet
+@Composable
+private fun EnterPhoneErrorPreview() {
+    PhoneAuthPreview(
+        uiState = previewEnterPhoneState.copy(
+            phoneNumber = PREVIEW_PHONE_LOCAL,
+            isPhoneValid = true,
+            errorMessage = "Something went wrong. Please try again.",
+        ),
+    )
+}
+
+@PreviewPhoneTablet
+@Composable
+private fun EnterCodePreview() {
+    PhoneAuthPreview(uiState = previewEnterCodeState)
+}
+
+@PreviewPhoneTablet
+@Composable
+private fun EnterCodeResendPreview() {
+    PhoneAuthPreview(uiState = previewEnterCodeState.copy(canResend = true, secondsRemaining = 0))
+}
+
+@PreviewPhoneTablet
+@Composable
+private fun EnterCodeLoadingPreview() {
+    PhoneAuthPreview(uiState = previewEnterCodeState.copy(code = PREVIEW_CODE, isLoading = true))
+}
+
+@PreviewPhoneTablet
+@Composable
+private fun EnterCodeErrorPreview() {
+    PhoneAuthPreview(uiState = previewEnterCodeState.copy(code = PREVIEW_CODE, errorMessage = "Incorrect code. Please try again."))
+}
+
+@Composable
+private fun PhoneAuthPreview(uiState: PhoneAuthUiState) {
+    LazyPizzaThemePreview {
+        PhoneAuthScreenContent(
+            innerPadding = PaddingValues(),
+            uiState = uiState,
+            actions = PhoneAuthActions(
+                onPhoneChange = {},
+                onFullPhoneNumberChange = {},
+                onValidityChange = {},
+                onCountryIsoChanged = {},
+                onContinue = {},
+                onCodeChange = {},
+                onConfirm = {},
+                onResend = {},
+                onSkip = {},
+                onEditPhone = {},
+            ),
+        )
+    }
+}
+
+private const val PREVIEW_PHONE_LOCAL = "2025550123"
+private const val PREVIEW_FULL_PHONE = "+12025550123"
+private const val PREVIEW_COUNTRY_ISO = "US"
+private const val PREVIEW_CODE = "123456"
+
+private val previewEnterPhoneState = PhoneAuthUiState.EnterPhone(
+    phoneNumber = "",
+    fullPhoneNumber = "",
+    isPhoneValid = false,
+    selectedCountryIso = PREVIEW_COUNTRY_ISO,
+    isLoading = false,
+    titleRes = R.string.auth_screen_title,
+    subtitleRes = R.string.auth_screen_subtitle_enter_phone_number,
+)
+
+private val previewEnterCodeState = PhoneAuthUiState.EnterCode(
+    phoneNumber = PREVIEW_FULL_PHONE,
+    fullPhoneNumber = PREVIEW_FULL_PHONE,
+    phoneLocal = PREVIEW_PHONE_LOCAL,
+    countryIso = PREVIEW_COUNTRY_ISO,
+    code = "",
+    isLoading = false,
+    canResend = false,
+    secondsRemaining = 45,
+    titleRes = R.string.auth_screen_title,
+    subtitleRes = R.string.auth_screen_subtitle_enter_code,
+)

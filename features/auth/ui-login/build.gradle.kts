@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.custom.hilt)
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.custom.testing)
+    alias(libs.plugins.custom.screenshot.testing)
 }
 
 android {
