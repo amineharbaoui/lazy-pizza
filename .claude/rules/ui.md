@@ -53,8 +53,8 @@ paths:
 
 - `CheckoutViewModel` and `PhoneAuthViewModel` send events through a `SharedFlow`, which drops them during a rotation, and their screens collect them by hand in a `LaunchedEffect(Unit)`.
 - `ObserveEvents` doesn't exist in `:core:ui` yet. It comes in a refactor of its own, before the first screen that sends an event.
-- `PhoneVerificationManager` and `PhoneAuthScreen` call `FirebaseAuth` from the UI.
 - `CheckoutViewModel` puts English text or `e.message` in the state.
+- `PhoneAuthViewModel` puts English text and Firebase's message, carried by `VerificationCodeStatus.Failed.message`, in the state. These texts change with their own spec.
 - Checkout names its display models `...UiModel` and `...Ui`.
 - `toFormattedCurrency()` in `PriceFormatter.kt` duplicates `CurrencyFormatter`.
 - `DsTopBar` labels its account and back buttons "Phone Number Icon" and shrinks the account button to 32dp. `CartScreen` and `DsTopBar` hard-code their content descriptions in English.
