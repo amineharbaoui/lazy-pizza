@@ -28,9 +28,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults.windowInsets
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -50,7 +48,6 @@ import com.example.core.designsystem.theme.LazyPizzaThemePreview
 import com.example.core.designsystem.utils.PreviewPhoneTablet
 import com.example.core.designsystem.utils.isWideLayout
 import com.example.core.designsystem.utils.rememberImagePainterPreviewAware
-import java.util.UUID
 
 @Composable
 fun PizzaDetailScreen(
@@ -61,14 +58,9 @@ fun PizzaDetailScreen(
     sharedTransitionScope: SharedTransitionScope,
     animatedVisibilityScope: AnimatedVisibilityScope,
     modifier: Modifier = Modifier,
-    viewModel: PizzaDetailViewModel = hiltViewModel(),
+    viewModel: PizzaDetailViewModel = hiltViewModel<PizzaDetailViewModel, PizzaDetailViewModel.Factory> { it.create(args) },
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    val sessionId = rememberSaveable { UUID.randomUUID().toString() }
-
-    LaunchedEffect(args, sessionId) {
-        viewModel.initialize(args, sessionId)
-    }
 
     Column(
         modifier = modifier
@@ -157,7 +149,7 @@ private fun PhoneDetailLayout(
             },
             painter = rememberImagePainterPreviewAware(
                 previewDrawableResId = R.drawable.pizza,
-                painterProvider = { rememberAsyncImagePainter(uiState.pizza.imageUrl) }
+                painterProvider = { rememberAsyncImagePainter(uiState.pizza.imageUrl) },
             ),
             contentDescription = null,
             contentScale = ContentScale.Fit,
@@ -364,7 +356,7 @@ private fun ExtraToppingsContent(
                 priceText = item.unitPriceFormatted,
                 image = rememberImagePainterPreviewAware(
                     previewDrawableResId = R.drawable.topping,
-                    painterProvider = { rememberAsyncImagePainter(item.imageUrl) }
+                    painterProvider = { rememberAsyncImagePainter(item.imageUrl) },
                 ),
                 quantity = qty,
                 onQuantityChange = { newQty ->

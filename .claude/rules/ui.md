@@ -60,4 +60,3 @@ paths:
 - `CheckoutViewModel.submitOrder` chains the steps of placing an order itself: get the user, read the cart, build the order, place it, clear the cart. `PhoneAuthViewModel` calls `TransferGuestCartToUserUseCase` after sign-in. Moving that call into auth's sign-in use case would close a cycle, since cart's domain already uses auth's: fixing it needs one feature to declare an interface the other implements, decided with the developer.
 - `MainViewModel` injects `NetworkMonitor` directly.
 - `FormattingModule` in `:app` binds `CurrencyFormatter`, whose implementation lives in `:core:ui`.
-- `PizzaDetailViewModel` gets its args through `initialize(args, sessionId)`, called from a `LaunchedEffect` with a saved `sessionId`, instead of assisted injection: a workaround from when every ViewModel lived in the activity's store.

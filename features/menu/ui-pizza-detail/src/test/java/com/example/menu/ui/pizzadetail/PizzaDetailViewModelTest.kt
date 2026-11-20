@@ -39,10 +39,11 @@ class PizzaDetailViewModelTest {
     private val cartTestData = CartTestData(Clock.fixed(NOW, ZoneOffset.UTC))
     private val menuTestData = MenuTestData()
 
-    private fun viewModel(): PizzaDetailViewModel {
+    private fun viewModel(args: PizzaDetailArgs = PizzaDetailArgs.Create(MARGHERITA_ID)): PizzaDetailViewModel {
         val cartRepository = cartTestData.cartRepository
         val sessionRepository = authTestData.sessionRepository
         return PizzaDetailViewModel(
+            args = args,
             observePizzaDetailUseCase = ObservePizzaDetailUseCase(menuTestData.menuRepository),
             observeCartItemUseCase = ObserveCartItemUseCase(ObserveCartUseCase(cartRepository, sessionRepository)),
             addCartItemUseCase = AddCartItemUseCase(cartRepository, sessionRepository),
@@ -51,16 +52,15 @@ class PizzaDetailViewModelTest {
     }
 
     @Nested
-    inner class Initialize {
+    inner class UiState {
 
         @Test
-        fun `initialize when the pizza is on the menu then shows it with its toppings and price`() = runTest {
+        fun `uiState when the pizza is on the menu then shows it with its toppings and price`() = runTest {
             // Given
             menuTestData.givenMenu(items = listOf(margherita()), toppings = listOf(cheese(), bacon()))
-            val viewModel = viewModel()
 
             // When
-            viewModel.initialize(args = PizzaDetailArgs.Create(MARGHERITA_ID), sessionId = SESSION_ID)
+            val viewModel = viewModel()
 
             viewModel.uiState.test {
                 assertThat(awaitItem()).isEqualTo(PizzaDetailUiState.Loading)
@@ -87,13 +87,12 @@ class PizzaDetailViewModelTest {
         }
 
         @Test
-        fun `initialize when the menu fails to load then shows the error state`() = runTest {
+        fun `uiState when the menu fails to load then shows the error state`() = runTest {
             // Given
             menuTestData.givenMenuFailure()
-            val viewModel = viewModel()
 
             // When
-            viewModel.initialize(args = PizzaDetailArgs.Create(MARGHERITA_ID), sessionId = SESSION_ID)
+            val viewModel = viewModel()
 
             viewModel.uiState.test {
                 assertThat(awaitItem()).isEqualTo(PizzaDetailUiState.Loading)
@@ -104,13 +103,12 @@ class PizzaDetailViewModelTest {
         }
 
         @Test
-        fun `initialize when the pizza is not on the menu then shows the error state`() = runTest {
+        fun `uiState when the pizza is not on the menu then shows the error state`() = runTest {
             // Given
             menuTestData.givenMenu(toppings = listOf(cheese()))
-            val viewModel = viewModel()
 
             // When
-            viewModel.initialize(args = PizzaDetailArgs.Create(MARGHERITA_ID), sessionId = SESSION_ID)
+            val viewModel = viewModel()
 
             viewModel.uiState.test {
                 assertThat(awaitItem()).isEqualTo(PizzaDetailUiState.Loading)
@@ -129,7 +127,6 @@ class PizzaDetailViewModelTest {
             // Given
             menuTestData.givenMenu(items = listOf(margherita()), toppings = listOf(cheese(), bacon()))
             val viewModel = viewModel()
-            viewModel.initialize(args = PizzaDetailArgs.Create(MARGHERITA_ID), sessionId = SESSION_ID)
 
             viewModel.uiState.test {
                 skipItems(1)
@@ -151,7 +148,6 @@ class PizzaDetailViewModelTest {
             // Given
             menuTestData.givenMenu(items = listOf(margherita()), toppings = listOf(cheese(), bacon()))
             val viewModel = viewModel()
-            viewModel.initialize(args = PizzaDetailArgs.Create(MARGHERITA_ID), sessionId = SESSION_ID)
 
             viewModel.uiState.test {
                 skipItems(1)
@@ -178,7 +174,6 @@ class PizzaDetailViewModelTest {
             // Given
             menuTestData.givenMenu(items = listOf(margherita()), toppings = listOf(cheese(), bacon()))
             val viewModel = viewModel()
-            viewModel.initialize(args = PizzaDetailArgs.Create(MARGHERITA_ID), sessionId = SESSION_ID)
 
             viewModel.uiState.test {
                 skipItems(1)
@@ -207,7 +202,6 @@ class PizzaDetailViewModelTest {
             authTestData.givenSignedOut()
             menuTestData.givenMenu(items = listOf(margherita()), toppings = listOf(cheese(), bacon()))
             val viewModel = viewModel()
-            viewModel.initialize(args = PizzaDetailArgs.Create(MARGHERITA_ID), sessionId = SESSION_ID)
 
             viewModel.uiState.test {
                 skipItems(1)
@@ -255,7 +249,6 @@ class PizzaDetailViewModelTest {
     )
 
     private companion object {
-        const val SESSION_ID = "session"
         const val MARGHERITA_ID = "margherita"
         const val MARGHERITA_NAME = "Margherita"
         const val MARGHERITA_DESCRIPTION = "Tomato sauce, mozzarella, fresh basil"

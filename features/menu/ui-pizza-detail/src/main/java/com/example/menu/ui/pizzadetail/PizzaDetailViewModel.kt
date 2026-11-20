@@ -7,8 +7,10 @@ import com.example.cart.domain.usecase.AddCartItemUseCase
 import com.example.cart.domain.usecase.ObserveCartItemUseCase
 import com.example.menu.domain.usecase.ObservePizzaDetailUseCase
 import com.example.menu.ui.pizzadetail.mapper.PizzaDetailDomainToUiMapper
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -16,10 +18,10 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
-@HiltViewModel
-class PizzaDetailViewModel @Inject constructor(
+@HiltViewModel(assistedFactory = PizzaDetailViewModel.Factory::class)
+class PizzaDetailViewModel @AssistedInject constructor(
+    @Assisted args: PizzaDetailArgs,
     private val observePizzaDetailUseCase: ObservePizzaDetailUseCase,
     private val observeCartItemUseCase: ObserveCartItemUseCase,
     private val addCartItemUseCase: AddCartItemUseCase,
@@ -29,26 +31,11 @@ class PizzaDetailViewModel @Inject constructor(
     private val _uiState = MutableStateFlow<PizzaDetailUiState>(PizzaDetailUiState.Loading)
     val uiState: StateFlow<PizzaDetailUiState> = _uiState.asStateFlow()
 
-    private var observeJob: Job? = null
-    private var currentProductId: String? = null
-    private var currentLineId: String? = null
-    private var currentSessionId: String? = null
-
-    fun initialize(
-        args: PizzaDetailArgs,
-        sessionId: String,
-    ) {
+    init {
         val productId = args.productId
         val lineId = (args as? PizzaDetailArgs.Edit)?.lineId
 
-        if (currentProductId == productId && currentLineId == lineId && currentSessionId == sessionId) return
-        currentProductId = productId
-        currentLineId = lineId
-        currentSessionId = sessionId
-
-        observeJob?.cancel()
-        _uiState.value = PizzaDetailUiState.Loading
-        observeJob = viewModelScope.launch {
+        viewModelScope.launch {
             val detailFlow = observePizzaDetailUseCase(id = productId)
             val cartItemFlow = if (lineId != null) {
                 observeCartItemUseCase(lineId = lineId)
@@ -145,5 +132,10 @@ class PizzaDetailViewModel @Inject constructor(
         viewModelScope.launch {
             addCartItemUseCase(pizzaDetailMapper.mapToPizzaCartItem(pizzaDetails))
         }
+    }
+
+    @AssistedFactory
+    interface Factory {
+        fun create(args: PizzaDetailArgs): PizzaDetailViewModel
     }
 }
