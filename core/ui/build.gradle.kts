@@ -1,5 +1,7 @@
 plugins {
     alias(libs.plugins.custom.android.module)
+    alias(libs.plugins.custom.compose)
+    alias(libs.plugins.custom.testing)
 }
 
 android {
@@ -8,4 +10,6 @@ android {
 
 dependencies {
     implementation(libs.javax.inject)
+
+    testImplementation(projects.core.testing)
 }
