@@ -24,8 +24,6 @@ internal class FakePhoneAuthRemoteDataSource : PhoneAuthRemoteDataSource {
 
     override val userIdFlow: Flow<String?> = user.map { it?.uid }
 
-    override val isSignedIn: Flow<Boolean> = user.map { it != null }
-
     override fun getCurrentUser(): RemoteUser? = user.value
 
     override fun signOut() {

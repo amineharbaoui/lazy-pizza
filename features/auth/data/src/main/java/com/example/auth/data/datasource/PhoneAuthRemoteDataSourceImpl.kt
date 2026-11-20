@@ -22,22 +22,12 @@ internal class PhoneAuthRemoteDataSourceImpl @Inject constructor(
     private val resumedActivityTracker: ResumedActivityTracker,
 ) : PhoneAuthRemoteDataSource {
 
-    // TODO Unify userIdFlow and isSignedIn
     override val userIdFlow: Flow<String?> = callbackFlow {
         val listener = FirebaseAuth.AuthStateListener { auth ->
             trySend(auth.currentUser?.uid)
         }
         firebaseAuth.addAuthStateListener(listener)
         trySend(firebaseAuth.currentUser?.uid)
-        awaitClose { firebaseAuth.removeAuthStateListener(listener) }
-    }
-
-    override val isSignedIn: Flow<Boolean> = callbackFlow {
-        val listener = FirebaseAuth.AuthStateListener { auth ->
-            trySend(auth.currentUser != null)
-        }
-        firebaseAuth.addAuthStateListener(listener)
-        trySend(firebaseAuth.currentUser != null)
         awaitClose { firebaseAuth.removeAuthStateListener(listener) }
     }
 
