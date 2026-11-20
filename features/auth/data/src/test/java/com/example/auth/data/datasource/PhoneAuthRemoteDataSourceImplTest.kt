@@ -74,30 +74,6 @@ class PhoneAuthRemoteDataSourceImplTest {
     }
 
     @Test
-    suspend fun `isSignedIn when user is logged in then emits true`() {
-        // Given
-        given { firebaseAuth.currentUser } returns firebaseUser
-
-        // When
-        val isSignedIn = phoneAuthRemoteDataSource.isSignedIn.first()
-
-        // Then
-        assertThat(isSignedIn).isTrue
-    }
-
-    @Test
-    suspend fun `isSignedIn when no user logged in then emits false`() {
-        // Given
-        given { firebaseAuth.currentUser } returns null
-
-        // When
-        val isSignedIn = phoneAuthRemoteDataSource.isSignedIn.first()
-
-        // Then
-        assertThat(isSignedIn).isFalse
-    }
-
-    @Test
     suspend fun `signInWithCode when credential valid then returns remote user`() {
         // Given
         val verificationId = "verification-id"

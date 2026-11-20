@@ -7,7 +7,6 @@ import kotlin.time.Duration
 
 internal interface PhoneAuthRemoteDataSource {
     val userIdFlow: Flow<String?>
-    val isSignedIn: Flow<Boolean>
     fun getCurrentUser(): RemoteUser?
     fun signOut()
     fun sendVerificationCode(
