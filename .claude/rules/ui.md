@@ -52,7 +52,6 @@ paths:
 ## Code not to copy
 
 - `CheckoutViewModel` and `PhoneAuthViewModel` send events through a `SharedFlow`, which drops them during a rotation, and their screens collect them by hand in a `LaunchedEffect(Unit)`.
-- `ObserveEvents` doesn't exist in `:core:ui` yet. It comes in a refactor of its own, before the first screen that sends an event.
 - `CheckoutViewModel` puts English text or `e.message` in the state.
 - `PhoneAuthViewModel` puts English text and Firebase's message, carried by `VerificationCodeStatus.Failed.message`, in the state. These texts change with their own spec.
 - `toFormattedCurrency()` in `PriceFormatter.kt` duplicates `CurrencyFormatter`.
