@@ -26,6 +26,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.within
@@ -231,6 +232,22 @@ class CheckoutViewModelTest {
         }
 
         @Test
+        fun `selectPickupOption when schedule then emits show schedule bottom sheet`() = runTest {
+            // Given
+            givenSignedInWithCart()
+            val viewModel = viewModel()
+
+            viewModel.events.test {
+                // When
+                viewModel.selectPickupOption(PickupOption.SCHEDULE)
+                runCurrent()
+
+                // Then
+                assertThat(awaitItem()).isEqualTo(CheckoutEvent.ShowScheduleBottomSheet)
+            }
+        }
+
+        @Test
         fun `selectPickupOption when asap after a confirmed schedule then keeps the confirmed slot on the schedule card`() = runTest {
             // Given
             givenSignedInWithCart()
@@ -333,6 +350,22 @@ class CheckoutViewModelTest {
 
     @Nested
     inner class SubmitOrder {
+
+        @Test
+        fun `submitOrder when signed out then emits navigate to auth`() = runTest {
+            // Given
+            givenSignedOutWithCart()
+            val viewModel = viewModel()
+
+            viewModel.events.test {
+                // When
+                viewModel.submitOrder()
+                runCurrent()
+
+                // Then
+                assertThat(awaitItem()).isEqualTo(CheckoutEvent.NavigateToAuth)
+            }
+        }
 
         @Test
         fun `submitOrder when asap then stores the order of the cart`() = runTest {
@@ -476,6 +509,11 @@ class CheckoutViewModelTest {
     private fun givenSignedInWithCart() {
         authTestData.givenSignedIn(USER_ID)
         cartTestData.givenCart(CartOwner.User(USER_ID), margheritaLine(), colaLine())
+    }
+
+    private fun givenSignedOutWithCart() {
+        authTestData.givenSignedOut()
+        cartTestData.givenCart(CartOwner.Guest, margheritaLine(), colaLine())
     }
 
     private suspend fun ReceiveTurbine<CheckoutUiState>.awaitReady() {
