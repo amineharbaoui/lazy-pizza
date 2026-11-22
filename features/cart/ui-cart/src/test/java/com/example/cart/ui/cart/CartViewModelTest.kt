@@ -121,6 +121,57 @@ class CartViewModelTest {
                 assertThat(awaitItem()).isEqualTo(CartUiState.Empty)
             }
         }
+
+        @Test
+        fun `uiState when the user signs in then shows the user cart`() = runTest {
+            // Given
+            authTestData.givenSignedOut()
+            menuTestData.givenMenu()
+            cartTestData.givenCart(CartOwner.Guest, cola(quantity = COLA_QUANTITY))
+            cartTestData.givenCart(CartOwner.User(USER_ID), cola(quantity = USER_COLA_QUANTITY))
+            val viewModel = viewModel()
+
+            viewModel.uiState.test {
+                skipItems(1)
+                awaitItem()
+
+                // When
+                authTestData.givenSignedIn(USER_ID)
+
+                // Then
+                val state = awaitItem()
+                assertThat(state).isInstanceOf(CartUiState.Success::class.java)
+                assertThat((state as CartUiState.Success).cart.items).singleElement().satisfies({ line ->
+                    assertThat(line.quantity).isEqualTo(USER_COLA_QUANTITY)
+                })
+            }
+        }
+    }
+
+    @Nested
+    inner class RemoveLine {
+
+        @Test
+        fun `removeLine when the line is in the cart then removes it from the cart`() = runTest {
+            // Given
+            authTestData.givenSignedOut()
+            menuTestData.givenMenu()
+            cartTestData.givenCart(CartOwner.Guest, cola(quantity = COLA_QUANTITY))
+            val viewModel = viewModel()
+
+            viewModel.uiState.test {
+                skipItems(1)
+                awaitItem()
+
+                // When
+                viewModel.removeLine(COLA_LINE_ID)
+                advanceUntilIdle()
+
+                // Then
+                assertThat(cartTestData.cartLines(CartOwner.Guest)).isEmpty()
+                cancelAndIgnoreRemainingEvents()
+            }
+        }
     }
 
     @Nested
@@ -212,6 +263,8 @@ class CartViewModelTest {
     )
 
     private companion object {
+        const val USER_ID = "user-1"
+        const val USER_COLA_QUANTITY = 3
         const val COLA_LINE_ID = "line-cola"
         const val COLA_ID = "cola"
         const val COLA_NAME = "Cola"
