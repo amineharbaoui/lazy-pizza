@@ -19,7 +19,6 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -37,6 +36,7 @@ import com.example.core.designsystem.theme.AppColors
 import com.example.core.designsystem.theme.AppTypography
 import com.example.core.designsystem.theme.LazyPizzaThemePreview
 import com.example.core.designsystem.utils.PreviewPhoneTablet
+import com.example.core.ui.ObserveEvents
 import com.example.order.ui.checkout.components.ConfirmationOrderComponent
 import com.example.order.ui.checkout.components.OrderSummaryContent
 import com.example.order.ui.checkout.components.SchedulePickUpButtons
@@ -58,13 +58,11 @@ fun CheckoutScreen(
     var shouldShowBottomSheet by remember { mutableStateOf(false) }
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
-    LaunchedEffect(Unit) {
-        viewModel.events.collect { event ->
-            when (event) {
-                CheckoutEvent.NavigateToAuth -> onNavigateToAuth()
-                CheckoutEvent.ShowScheduleBottomSheet -> shouldShowBottomSheet = true
-                is CheckoutEvent.OrderPlaced -> onOrderPlace()
-            }
+    ObserveEvents(viewModel.events) { event ->
+        when (event) {
+            CheckoutEvent.NavigateToAuth -> onNavigateToAuth()
+            CheckoutEvent.ShowScheduleBottomSheet -> shouldShowBottomSheet = true
+            is CheckoutEvent.OrderPlaced -> onOrderPlace()
         }
     }
 

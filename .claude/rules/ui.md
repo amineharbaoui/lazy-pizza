@@ -51,7 +51,6 @@ paths:
 
 ## Code not to copy
 
-- `CheckoutViewModel` and `PhoneAuthViewModel` send events through a `SharedFlow`, which drops them during a rotation, and their screens collect them by hand in a `LaunchedEffect(Unit)`.
 - `CheckoutViewModel` puts English text or `e.message` in the state.
 - `PhoneAuthViewModel` puts English text and Firebase's message, carried by `VerificationCodeStatus.Failed.message`, in the state. These texts change with their own spec.
 - `toFormattedCurrency()` in `PriceFormatter.kt` duplicates `CurrencyFormatter`.
