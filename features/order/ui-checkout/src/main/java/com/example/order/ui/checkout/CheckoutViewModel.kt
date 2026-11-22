@@ -13,15 +13,16 @@ import com.example.order.domain.usecase.PlaceOrderUseCase
 import com.example.order.ui.checkout.mapper.CartToOrderMapper
 import com.example.order.ui.checkout.mapper.CheckoutUiStateFactory
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -70,13 +71,13 @@ class CheckoutViewModel @Inject constructor(
         initialValue = CheckoutUiState.Loading,
     )
 
-    private val _events = MutableSharedFlow<CheckoutEvent>()
-    val events = _events.asSharedFlow()
+    private val _events = Channel<CheckoutEvent>(Channel.BUFFERED)
+    val events: Flow<CheckoutEvent> = _events.receiveAsFlow()
 
     fun selectPickupOption(optionId: PickupOption) {
         viewModelScope.launch {
             if (optionId == PickupOption.SCHEDULE) {
-                _events.emit(CheckoutEvent.ShowScheduleBottomSheet)
+                _events.send(CheckoutEvent.ShowScheduleBottomSheet)
             }
             updatePickupChoice { choice, sheet ->
                 when (optionId) {
@@ -135,7 +136,7 @@ class CheckoutViewModel @Inject constructor(
         viewModelScope.launch {
             val userId = getCurrentUserUidUseCase()
             if (userId == null) {
-                _events.emit(CheckoutEvent.NavigateToAuth)
+                _events.send(CheckoutEvent.NavigateToAuth)
                 return@launch
             }
 
