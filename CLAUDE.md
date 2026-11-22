@@ -18,7 +18,7 @@ LazyPizza is a showcase that mirrors a very large multi-module production app. T
 - Lint: CI runs ktlint only on the Kotlin files a PR changes. `./gradlew ktlintCheck` also reports old violations in about ten modules: fix the ones in files you change, leave the rest, and never reformat a file you don't otherwise change.
 - All unit tests: `./gradlew unitTestAll`
 - One module: `./gradlew :features:cart:domain:test` (pure Kotlin module) or `./gradlew :features:cart:data:testDebugUnitTest` (Android module)
-- One test class: add `--tests "com.example.cart.domain.usecase.AddCartItemUseCaseTest"`
+- One test class: add `--tests "com.example.cart.domain.usecase.ObserveCartItemCountUseCaseTest"`
 - Screenshot tests: `./gradlew verifyRoborazziDebug` fails when a preview no longer matches its reference image; `./gradlew recordRoborazziDebug` re-records them
 - Build: `./gradlew assembleDebug`
 - E2E flows (Maestro, on a local emulator): `scripts/e2e.sh` runs every flow, `scripts/e2e.sh cart,smoke` the flows tagged `cart` or `smoke`. Needs `.maestro/.env.local`, copied from `.maestro/.env.example`.
