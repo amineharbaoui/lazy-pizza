@@ -44,6 +44,5 @@ paths:
 ## Code not to copy
 
 - `:menu:domain` and most `:core:*` modules don't apply `custom.testing` yet. Add it with the module's first hand-written test: the generated screenshot tests don't need it.
-- `:features:cart:data` depends on Firebase Firestore without using it.
 - `custom.hilt.kotlin` doesn't exist yet: `custom.hilt` applies `hilt-android` and the Android Hilt plugin, so it only fits Android modules. The JVM one applies KSP with `hilt-core` and `ksp(hilt-compiler)`, and comes with the first `:api`.
 - No feature has an `:api` yet. These modules depend on another feature's `:domain`: `:app`, `:auth:ui-login`, `:menu:ui-home`, `:menu:ui-pizza-detail`, `:order:domain` and `:order:ui-checkout` on cart's; `:cart:domain`, `:menu:ui-home`, `:order:ui-checkout` and `:order:ui-past-orders` on auth's; `:cart:ui-cart` and `:order:domain` on menu's. Auth and cart already use each other, through `:auth:ui-login` and `:cart:domain`: see `PhoneAuthViewModel` in `.claude/rules/ui.md`.
