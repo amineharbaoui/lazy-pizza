@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -28,6 +27,7 @@ import com.example.core.designsystem.theme.AppColors
 import com.example.core.designsystem.theme.AppTypography
 import com.example.core.designsystem.theme.LazyPizzaThemePreview
 import com.example.core.designsystem.utils.PreviewPhoneTablet
+import com.example.core.ui.ObserveEvents
 import com.example.core.designsystem.R as DS_R
 
 @Composable
@@ -56,12 +56,10 @@ fun PhoneAuthScreen(
             onEditPhone = viewModel::editPhone,
         ),
     )
-    LaunchedEffect(Unit) {
-        viewModel.events.collect { event ->
-            when (event) {
-                PhoneAuthEvent.SkipAuth -> onNavigateToMenuScreen()
-                PhoneAuthEvent.AuthCompleted -> onAuthSuccess()
-            }
+    ObserveEvents(viewModel.events) { event ->
+        when (event) {
+            PhoneAuthEvent.SkipAuth -> onNavigateToMenuScreen()
+            PhoneAuthEvent.AuthCompleted -> onAuthSuccess()
         }
     }
 }

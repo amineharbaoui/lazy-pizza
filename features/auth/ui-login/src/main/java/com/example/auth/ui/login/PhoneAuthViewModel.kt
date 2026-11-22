@@ -8,12 +8,13 @@ import com.example.auth.domain.usecase.SignInWithSmsCodeUseCase
 import com.example.cart.domain.usecase.TransferGuestCartToUserUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import kotlin.time.Duration.Companion.seconds
@@ -39,8 +40,8 @@ class PhoneAuthViewModel @Inject constructor(
     )
     val uiState = _uiState.asStateFlow()
 
-    private val _events = MutableSharedFlow<PhoneAuthEvent>()
-    val events = _events.asSharedFlow()
+    private val _events = Channel<PhoneAuthEvent>(Channel.BUFFERED)
+    val events: Flow<PhoneAuthEvent> = _events.receiveAsFlow()
 
     private var currentVerificationId: String? = null
     private var resendTimerJob: Job? = null
@@ -113,7 +114,7 @@ class PhoneAuthViewModel @Inject constructor(
     }
 
     fun skipAuth() {
-        viewModelScope.launch { _events.emit(PhoneAuthEvent.SkipAuth) }
+        viewModelScope.launch { _events.send(PhoneAuthEvent.SkipAuth) }
     }
 
     private fun sendCode(phoneNumber: String) {
@@ -179,7 +180,7 @@ class PhoneAuthViewModel @Inject constructor(
                 .onSuccess { user ->
                     transferGuestCartToUserUseCase(user.uid)
                     resetState()
-                    _events.emit(PhoneAuthEvent.AuthCompleted)
+                    _events.send(PhoneAuthEvent.AuthCompleted)
                 }
                 .onFailure { e ->
                     _uiState.value = current.copy(
