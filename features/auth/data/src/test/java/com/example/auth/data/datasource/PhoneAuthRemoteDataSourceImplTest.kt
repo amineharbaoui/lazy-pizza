@@ -17,6 +17,7 @@ import io.mockk.mockk
 import io.mockk.mockkStatic
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -36,7 +37,7 @@ class PhoneAuthRemoteDataSourceImplTest {
     }
 
     @Test
-    suspend fun `userIdFlow when auth state changes and uid is not null then emits user id`() {
+    fun `userIdFlow when auth state changes and uid is not null then emits user id`() = runTest {
         // Given
         val mockUserId = "user-id-123"
         given { firebaseAuth.currentUser } returns firebaseUser
@@ -50,7 +51,7 @@ class PhoneAuthRemoteDataSourceImplTest {
     }
 
     @Test
-    suspend fun `userIdFlow when auth state changes and uid is null then emits null`() {
+    fun `userIdFlow when auth state changes and uid is null then emits null`() = runTest {
         // Given
         given { firebaseAuth.currentUser } returns null
 
@@ -62,7 +63,7 @@ class PhoneAuthRemoteDataSourceImplTest {
     }
 
     @Test
-    suspend fun `userIdFlow when no user logged in then emits null`() {
+    fun `userIdFlow when no user logged in then emits null`() = runTest {
         // Given
         given { firebaseAuth.currentUser } returns null
 
@@ -74,7 +75,7 @@ class PhoneAuthRemoteDataSourceImplTest {
     }
 
     @Test
-    suspend fun `signInWithCode when credential valid then returns remote user`() {
+    fun `signInWithCode when credential valid then returns remote user`() = runTest {
         // Given
         val verificationId = "verification-id"
         val smsCode = "123456"
@@ -109,7 +110,7 @@ class PhoneAuthRemoteDataSourceImplTest {
     }
 
     @Test
-    suspend fun `signInWithCode when credential valid but user is null then throws illegal state exception`() {
+    fun `signInWithCode when credential valid but user is null then throws illegal state exception`() = runTest {
         // Given
         val verificationId = "verification-id"
         val smsCode = "123456"

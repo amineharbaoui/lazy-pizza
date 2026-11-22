@@ -86,6 +86,21 @@ class MenuViewModelTest {
                     )
             }
         }
+
+        @Test
+        fun `uiState when signed in then shows the signed in state`() = runTest {
+            // Given
+            authTestData.givenSignedIn(USER_ID)
+            menuTestData.givenMenu(items = listOf(cola()))
+            val viewModel = viewModel()
+
+            viewModel.uiState.test {
+                skipItems(1)
+
+                // Then
+                assertThat(awaitItem().isLoggedIn).isTrue()
+            }
+        }
     }
 
     @Nested
@@ -159,6 +174,27 @@ class MenuViewModelTest {
                 assertThat(expectMostRecentItem().otherItem(COLA_ID).quantity).isEqualTo(1)
             }
         }
+
+        @Test
+        fun `addOtherItemToCart when signed in then stores the item in the user cart`() = runTest {
+            // Given
+            authTestData.givenSignedIn(USER_ID)
+            menuTestData.givenMenu(items = listOf(cola()))
+            val viewModel = viewModel()
+
+            viewModel.uiState.test {
+                skipItems(1)
+                val colaItem = awaitItem().otherItem(COLA_ID)
+
+                // When
+                viewModel.addOtherItemToCart(colaItem)
+                advanceUntilIdle()
+
+                // Then
+                assertThat(cartTestData.cartLines(CartOwner.User(USER_ID))).containsExactly(colaLine(quantity = SINGLE_QUANTITY))
+                cancelAndIgnoreRemainingEvents()
+            }
+        }
     }
 
     @Nested
@@ -182,6 +218,28 @@ class MenuViewModelTest {
 
                 // Then
                 assertThat(expectMostRecentItem().otherItem(COLA_ID).quantity).isEqualTo(NEW_COLA_QUANTITY)
+            }
+        }
+
+        @Test
+        fun `updateOtherItemQuantity when signed in then updates the quantity in the user cart`() = runTest {
+            // Given
+            authTestData.givenSignedIn(USER_ID)
+            menuTestData.givenMenu(items = listOf(cola()))
+            cartTestData.givenCart(CartOwner.User(USER_ID), colaLine(quantity = COLA_QUANTITY))
+            val viewModel = viewModel()
+
+            viewModel.uiState.test {
+                skipItems(1)
+                val colaItem = awaitItem().otherItem(COLA_ID)
+
+                // When
+                viewModel.updateOtherItemQuantity(colaItem, newQuantity = NEW_COLA_QUANTITY)
+                advanceUntilIdle()
+
+                // Then
+                assertThat(cartTestData.cartLines(CartOwner.User(USER_ID))).containsExactly(colaLine(quantity = NEW_COLA_QUANTITY))
+                cancelAndIgnoreRemainingEvents()
             }
         }
     }
@@ -255,6 +313,7 @@ class MenuViewModelTest {
         const val COLA_ID = "cola"
         const val COLA_NAME = "Cola"
         const val COLA_PRICE = 1.99
+        const val SINGLE_QUANTITY = 1
         const val COLA_QUANTITY = 2
         const val NEW_COLA_QUANTITY = 3
         const val MATCHING_QUERY = "marg"

@@ -45,8 +45,3 @@ paths:
 - Test data comes from fixture functions with default parameters (`cartItem(quantity = 2)`) and named constants. No magic strings or numbers in a test body.
 - No shared state between tests, no random values.
 - For a sealed state, assert the exact type and the fields that matter.
-
-## Code not to copy
-
-- The use-case tests in `:features:cart:domain` and `:features:auth:domain` mock their collaborators with MockK and check calls, for example `ClearCartUseCaseTest` with `coThen { repository.clear(...) }`. They stay until a screen's acceptance tests cover the same behavior.
-- Those tests and `PhoneAuthRemoteDataSourceImplTest` are plain `suspend fun` tests without `runTest`.
