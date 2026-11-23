@@ -31,9 +31,6 @@ dependencies {
 
     implementation(projects.core.model)
 
-    implementation(platform(libs.firebase.bom))
-    implementation(libs.firebase.firestore)
-
     testFixturesApi(projects.features.cart.domain)
     testFixturesImplementation(libs.kotlinx.coroutines.core)
 }
